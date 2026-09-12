@@ -152,3 +152,18 @@
 .separateur {
     -fx-background-color: -glass-border;
 }
+
+.bouton-nav {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text-secondary;
+    -fx-background-radius: 14;
+    -fx-alignment: center-left;
+    -fx-padding: 10 14 10 14;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.bouton-nav:hover {
+    -fx-background-color: -glass-bg-strong;
+    -fx-text-fill: -text-primary;
+}

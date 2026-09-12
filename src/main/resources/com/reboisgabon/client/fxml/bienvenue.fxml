@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="10" styleClass="carte-verre" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <Label styleClass="titre-2" text="Écran en construction"/>
+    <Label styleClass="sous-titre" text="Ce module sera implémenté dans une prochaine étape."/>
+</VBox>

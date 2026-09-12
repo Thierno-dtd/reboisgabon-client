@@ -78,15 +78,13 @@ public class LoginController {
         new Thread(() -> {
             try {
                 var profil = authApi.recupererProfil();
-                System.out.println("Profil récupéré : " + profil);
                 var permissions = authApi.recupererPermissions();
-                System.out.println("Permissions récupérées : " + permissions);
                 SessionManager.getInstance().setUtilisateurConnecte(profil);
                 SessionManager.getInstance().setPermissions(permissions);
                 Platform.runLater(() ->
-                        SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/espace-temporaire.fxml"));
+                        SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/shell.fxml"));
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 Platform.runLater(() -> afficherErreur("Connexion réussie mais profil injoignable."));
             }
         }).start();

@@ -48,7 +48,7 @@ public class Verification2faController {
                 SessionManager.getInstance().setUtilisateurConnecte(profil);
                 SessionManager.getInstance().setPermissions(permissions);
                 Platform.runLater(() ->
-                        SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/espace-temporaire.fxml"));
+                        SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/shell.fxml"));
             } catch (ApiException e) {
                 Platform.runLater(() -> {
                     boutonValider.setDisable(false);

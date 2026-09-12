@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="racineShell" styleClass="fond-application" xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml" fx:controller="com.reboisgabon.client.controllers.ShellController">
+    <left>
+        <VBox fx:id="raileLaterale" prefWidth="220" spacing="6" styleClass="rail-laterale">
+            <padding>
+                <Insets bottom="20" left="14" right="14" top="20"/>
+            </padding>
+            <Label styleClass="titre-2" text="ReboisGabon"/>
+            <Label styleClass="texte-muet" text="Gestion du reboisement"/>
+            <Region prefHeight="16"/>
+            <Button fx:id="boutonDashboard" maxWidth="Infinity" onAction="#allerDashboard" styleClass="bouton-nav" text="Tableau de bord"/>
+            <Button fx:id="boutonSites" maxWidth="Infinity" onAction="#allerSites" styleClass="bouton-nav" text="Sites"/>
+            <Button fx:id="boutonCampagnes" maxWidth="Infinity" onAction="#allerCampagnes" styleClass="bouton-nav" text="Campagnes"/>
+            <Button fx:id="boutonSuivis" maxWidth="Infinity" onAction="#allerSuivis" styleClass="bouton-nav" text="Suivis de croissance"/>
+            <Button fx:id="boutonEssences" maxWidth="Infinity" onAction="#allerEssences" styleClass="bouton-nav" text="Essences"/>
+            <Button fx:id="boutonObjectifs" maxWidth="Infinity" onAction="#allerObjectifs" styleClass="bouton-nav" text="Objectifs"/>
+            <Button fx:id="boutonFinances" maxWidth="Infinity" onAction="#allerFinances" styleClass="bouton-nav" text="Finances"/>
+            <Button fx:id="boutonIntelligence" maxWidth="Infinity" onAction="#allerIntelligence" styleClass="bouton-nav" text="Intelligence écologique"/>
+            <Button fx:id="boutonUtilisateurs" maxWidth="Infinity" onAction="#allerUtilisateurs" styleClass="bouton-nav" text="Utilisateurs"/>
+            <Button fx:id="boutonJournal" maxWidth="Infinity" onAction="#allerJournal" styleClass="bouton-nav" text="Journal d'activité"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button fx:id="boutonParametres" maxWidth="Infinity" onAction="#allerParametres" styleClass="bouton-nav" text="Paramètres"/>
+            <Button fx:id="boutonExports" maxWidth="Infinity" onAction="#allerExports" styleClass="bouton-nav" text="Exports"/>
+            <Button maxWidth="Infinity" onAction="#seDeconnecter" styleClass="bouton-secondaire" text="Déconnexion"/>
+        </VBox>
+    </left>
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16" styleClass="carte-verre-forte">
+            <padding>
+                <Insets bottom="14" left="24" right="24" top="14"/>
+            </padding>
+            <Label fx:id="libelleTitreEcran" styleClass="titre-2" text="Tableau de bord"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="boutonNotifications" onAction="#allerNotifications" styleClass="bouton-secondaire" text="Notifications"/>
+            <VBox alignment="CENTER_RIGHT" spacing="0">
+                <Label fx:id="libelleNomUtilisateur" styleClass="texte-corps"/>
+                <Label fx:id="libelleRoleUtilisateur" styleClass="texte-muet"/>
+            </VBox>
+        </HBox>
+    </top>
+    <center>
+        <StackPane fx:id="zoneContenu">
+            <padding>
+                <Insets bottom="24" left="24" right="24" top="24"/>
+            </padding>
+        </StackPane>
+    </center>
+</BorderPane>
