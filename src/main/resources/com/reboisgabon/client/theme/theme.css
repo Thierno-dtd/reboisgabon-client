@@ -1,0 +1,154 @@
+.root {
+    -bg-base: #060B08;
+    -bg-elevated: #0E1712;
+    -glass-bg: rgba(255,255,255,0.06);
+    -glass-bg-strong: rgba(255,255,255,0.10);
+    -glass-border: rgba(255,255,255,0.14);
+    -accent: #B7E778;
+    -accent-strong: #8FD14F;
+    -text-primary: #F4F7F1;
+    -text-secondary: rgba(244,247,241,0.62);
+    -text-muted: rgba(244,247,241,0.40);
+    -danger: #FF6B6B;
+    -success: #6FCF97;
+    -warning: #F5C36B;
+    -fx-font-family: "Segoe UI";
+    -fx-background-color: -bg-base;
+}
+
+.fond-application {
+    -fx-background-color: linear-gradient(to bottom right, #0B140F, #05100B 60%, #030705);
+}
+
+.carte-verre {
+    -fx-background-color: -glass-bg;
+    -fx-background-radius: 24;
+    -fx-border-color: -glass-border;
+    -fx-border-radius: 24;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 30, 0.15, 0, 12);
+}
+
+.carte-verre-forte {
+    -fx-background-color: -glass-bg-strong;
+    -fx-background-radius: 24;
+    -fx-border-color: -glass-border;
+    -fx-border-radius: 24;
+    -fx-border-width: 1;
+}
+
+.rail-laterale {
+    -fx-background-color: rgba(6,11,8,0.55);
+    -fx-background-radius: 20;
+    -fx-border-color: -glass-border;
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+}
+
+.bouton-icone {
+    -fx-background-color: transparent;
+    -fx-background-radius: 14;
+    -fx-cursor: hand;
+    -fx-min-width: 44;
+    -fx-min-height: 44;
+    -fx-alignment: center;
+}
+
+.bouton-icone:hover {
+    -fx-background-color: -glass-bg-strong;
+}
+
+.bouton-icone-actif {
+    -fx-background-color: -accent;
+    -fx-background-radius: 14;
+    -fx-min-width: 44;
+    -fx-min-height: 44;
+}
+
+.titre-1 {
+    -fx-text-fill: -text-primary;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.titre-2 {
+    -fx-text-fill: -text-primary;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.sous-titre {
+    -fx-text-fill: -text-secondary;
+    -fx-font-size: 13px;
+}
+
+.texte-corps {
+    -fx-text-fill: -text-primary;
+    -fx-font-size: 13px;
+}
+
+.texte-muet {
+    -fx-text-fill: -text-muted;
+    -fx-font-size: 12px;
+}
+
+.champ-texte {
+    -fx-background-color: rgba(255,255,255,0.08);
+    -fx-background-radius: 14;
+    -fx-border-color: -glass-border;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+    -fx-text-fill: -text-primary;
+    -fx-prompt-text-fill: -text-muted;
+    -fx-padding: 12 16 12 16;
+    -fx-font-size: 13px;
+}
+
+.champ-texte:focused {
+    -fx-border-color: -accent;
+}
+
+.bouton-primaire {
+    -fx-background-color: linear-gradient(to right, -accent-strong, -accent);
+    -fx-background-radius: 16;
+    -fx-text-fill: #08130B;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 12 24 12 24;
+    -fx-cursor: hand;
+}
+
+.bouton-primaire:hover {
+    -fx-opacity: 0.92;
+}
+
+.bouton-secondaire {
+    -fx-background-color: -glass-bg-strong;
+    -fx-background-radius: 16;
+    -fx-text-fill: -text-primary;
+    -fx-border-color: -glass-border;
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-padding: 12 24 12 24;
+    -fx-cursor: hand;
+}
+
+.badge-succes {
+    -fx-background-color: rgba(111,207,151,0.18);
+    -fx-text-fill: -success;
+    -fx-background-radius: 10;
+    -fx-padding: 4 10 4 10;
+    -fx-font-size: 11px;
+}
+
+.badge-erreur {
+    -fx-background-color: rgba(255,107,107,0.18);
+    -fx-text-fill: -danger;
+    -fx-background-radius: 10;
+    -fx-padding: 4 10 4 10;
+    -fx-font-size: 11px;
+}
+
+.separateur {
+    -fx-background-color: -glass-border;
+}
