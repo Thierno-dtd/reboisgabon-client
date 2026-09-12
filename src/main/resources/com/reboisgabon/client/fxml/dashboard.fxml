@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.reboisgabon.client.controllers.DashboardController">
+    <TabPane fx:id="ongletsDashboard" tabClosingPolicy="UNAVAILABLE">
+        <Tab fx:id="ongletApercu" text="Vue d'ensemble">
+            <ScrollPane fx:id="defilementApercu" fitToWidth="true" style="-fx-background-color: transparent;"/>
+        </Tab>
+        <Tab fx:id="ongletSites" text="Sites">
+            <ScrollPane fx:id="defilementSites" fitToWidth="true" style="-fx-background-color: transparent;"/>
+        </Tab>
+        <Tab fx:id="ongletEssences" text="Essences">
+            <ScrollPane fx:id="defilementEssences" fitToWidth="true" style="-fx-background-color: transparent;"/>
+        </Tab>
+        <Tab fx:id="ongletProvinces" text="Provinces">
+            <ScrollPane fx:id="defilementProvinces" fitToWidth="true" style="-fx-background-color: transparent;"/>
+        </Tab>
+        <Tab fx:id="ongletEvolution" text="Évolution">
+            <ScrollPane fx:id="defilementEvolution" fitToWidth="true" style="-fx-background-color: transparent;"/>
+        </Tab>
+        <Tab fx:id="ongletAlertes" text="Alertes">
+            <ScrollPane fx:id="defilementAlertes" fitToWidth="true" style="-fx-background-color: transparent;"/>
+        </Tab>
+        <Tab fx:id="ongletResponsables" text="Responsables">
+            <ScrollPane fx:id="defilementResponsables" fitToWidth="true" style="-fx-background-color: transparent;"/>
+        </Tab>
+        <Tab fx:id="ongletFinancier" text="Financier">
+            <ScrollPane fx:id="defilementFinancier" fitToWidth="true" style="-fx-background-color: transparent;"/>
+        </Tab>
+        <Tab fx:id="ongletObjectifs" text="Objectifs">
+            <ScrollPane fx:id="defilementObjectifs" fitToWidth="true" style="-fx-background-color: transparent;"/>
+        </Tab>
+        <Tab fx:id="ongletScores" text="Scores écologiques">
+            <ScrollPane fx:id="defilementScores" fitToWidth="true" style="-fx-background-color: transparent;"/>
+        </Tab>
+        <Tab fx:id="ongletCarte" text="Carte provinces">
+            <ScrollPane fx:id="defilementCarte" fitToWidth="true" style="-fx-background-color: transparent;"/>
+        </Tab>
+        <Tab fx:id="ongletComparaison" text="Comparaison période">
+            <ScrollPane fx:id="defilementComparaison" fitToWidth="true" style="-fx-background-color: transparent;"/>
+        </Tab>
+    </TabPane>
+</StackPane>

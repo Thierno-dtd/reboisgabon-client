@@ -167,3 +167,29 @@
     -fx-background-color: -glass-bg-strong;
     -fx-text-fill: -text-primary;
 }
+
+.table-generique {
+    -fx-background-color: transparent;
+    -fx-table-cell-border-color: transparent;
+}
+
+.table-generique .column-header-background {
+    -fx-background-color: -glass-bg-strong;
+    -fx-background-radius: 12 12 0 0;
+}
+
+.table-generique .table-row-cell {
+    -fx-background-color: -glass-bg;
+}
+
+.table-generique .table-row-cell:odd {
+    -fx-background-color: -bg-elevated;
+}
+
+.table-generique .table-cell {
+    -fx-text-fill: -text-primary;
+}
+
+.barre-pagination {
+    -fx-alignment: center-left;
+}
