@@ -10,4 +10,6 @@ module com.reboisgabon {
     exports com.reboisgabon.client;
 
     opens com.reboisgabon.client.controllers to javafx.fxml;
+    opens com.reboisgabon.client.dto.auth to com.fasterxml.jackson.databind;
+    opens com.reboisgabon.client.session to com.fasterxml.jackson.databind;
 }

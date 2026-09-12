@@ -11,11 +11,11 @@ public class App extends Application {
     public void start(Stage stagePrincipal) {
         SceneNavigator.getInstance().initialiser(stagePrincipal);
         ApiClient.getInstance().definirEcouteurExpiration(() ->
-                SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/splash.fxml"));
+                SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/login.fxml"));
         stagePrincipal.setTitle("ReboisGabon");
         stagePrincipal.setMinWidth(1200);
         stagePrincipal.setMinHeight(760);
-        SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/splash.fxml");
+        SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/login.fxml");
         stagePrincipal.show();
     }
 

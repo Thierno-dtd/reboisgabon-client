@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane styleClass="fond-application" xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml" fx:controller="com.reboisgabon.client.controllers.Verification2faController">
+    <VBox alignment="CENTER" maxWidth="380" spacing="18" styleClass="carte-verre">
+        <padding>
+            <Insets bottom="44" left="40" right="40" top="44"/>
+        </padding>
+        <Label styleClass="titre-1" text="Vérification en deux étapes"/>
+        <Label styleClass="sous-titre" text="Entrez le code généré par votre application d'authentification" wrapText="true"/>
+        <TextField fx:id="champCode" promptText="123456" styleClass="champ-texte"/>
+        <Label fx:id="libelleErreur" managed="false" styleClass="badge-erreur" visible="false" wrapText="true"/>
+        <Button fx:id="boutonValider" maxWidth="Infinity" onAction="#validerCode" styleClass="bouton-primaire" text="Valider"/>
+        <Button maxWidth="Infinity" onAction="#retourLogin" styleClass="bouton-secondaire" text="Retour"/>
+    </VBox>
+</StackPane>
