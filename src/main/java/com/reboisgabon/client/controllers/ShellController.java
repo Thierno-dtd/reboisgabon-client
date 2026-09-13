@@ -169,7 +169,7 @@ public class ShellController implements Initializable {
     @FXML
     private void allerIntelligence() {
         libelleTitreEcran.setText("Intelligence écologique");
-        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/bienvenue.fxml");
+        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/intelligence.fxml");
     }
 
     @FXML
@@ -199,7 +199,7 @@ public class ShellController implements Initializable {
     @FXML
     private void allerExports() {
         libelleTitreEcran.setText("Exports");
-        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/bienvenue.fxml");
+        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/exports.fxml");
     }
 
     @FXML

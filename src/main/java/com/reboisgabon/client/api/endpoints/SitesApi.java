@@ -6,6 +6,7 @@ import com.reboisgabon.client.dto.common.PageDrf;
 import com.reboisgabon.client.dto.sites.Site;
 import com.reboisgabon.client.dto.sites.SiteRequete;
 import com.reboisgabon.client.util.JsonMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Map;
 
@@ -49,5 +50,10 @@ public class SitesApi {
     private PageDrf<Site> lirePage(String corps) throws Exception {
         JavaType type = JsonMapper.instance().getTypeFactory().constructParametricType(PageDrf.class, Site.class);
         return JsonMapper.instance().readValue(corps, type);
+    }
+
+    public JsonNode scoreEcologique(String id) throws Exception {
+        var reponse = ApiClient.getInstance().get("sites/" + id + "/score-ecologique/");
+        return JsonMapper.instance().readTree(reponse.body());
     }
 }

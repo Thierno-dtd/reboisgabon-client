@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.reboisgabon.client.controllers.intelligence.IntelligenceController">
+    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="carte-verre">
+        <padding>
+            <Insets bottom="14" left="16" right="16" top="14"/>
+        </padding>
+        <Label styleClass="titre-2" text="Intelligence écologique"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="boutonReentrainer" onAction="#reentrainer" styleClass="bouton-secondaire" text="Réentraîner le modèle"/>
+    </HBox>
+    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <Tab text="Prédiction de survie">
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                <VBox maxWidth="520" spacing="14" styleClass="carte-verre">
+                    <padding>
+                        <Insets bottom="26" left="26" right="26" top="26"/>
+                    </padding>
+                    <VBox spacing="6">
+                        <Label styleClass="texte-muet" text="Essence"/>
+                        <ComboBox fx:id="comboEssence" maxWidth="Infinity" styleClass="champ-texte"/>
+                    </VBox>
+                    <VBox spacing="6">
+                        <Label styleClass="texte-muet" text="Province"/>
+                        <TextField fx:id="champProvince" styleClass="champ-texte"/>
+                    </VBox>
+                    <HBox spacing="14">
+                        <VBox HBox.hgrow="ALWAYS" spacing="6">
+                            <Label styleClass="texte-muet" text="Superficie du site (ha)"/>
+                            <TextField fx:id="champSuperficie" styleClass="champ-texte"/>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" spacing="6">
+                            <Label styleClass="texte-muet" text="Nombre de plants"/>
+                            <TextField fx:id="champNombrePlants" styleClass="champ-texte"/>
+                        </VBox>
+                    </HBox>
+                    <VBox spacing="6">
+                        <Label styleClass="texte-muet" text="Mois de plantation (1-12)"/>
+                        <TextField fx:id="champMoisPlantation" styleClass="champ-texte"/>
+                    </VBox>
+                    <CheckBox fx:id="caseCroissanceRapide" text="Essence à croissance rapide"/>
+                    <Button fx:id="boutonPredire" maxWidth="Infinity" onAction="#predire" styleClass="bouton-primaire" text="Prédire"/>
+                    <Label fx:id="libelleErreurPrediction" managed="false" styleClass="badge-erreur" visible="false" wrapText="true"/>
+                    <VBox fx:id="conteneurResultatPrediction" spacing="10"/>
+                </VBox>
+            </ScrollPane>
+        </Tab>
+        <Tab text="Recommandation d'essence">
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                <VBox spacing="16">
+                    <HBox spacing="12" styleClass="carte-verre">
+                        <padding>
+                            <Insets bottom="16" left="16" right="16" top="16"/>
+                        </padding>
+                        <TextField fx:id="champProvinceRecommandation" prefWidth="200" promptText="Province" styleClass="champ-texte"/>
+                        <TextField fx:id="champTopN" prefWidth="100" promptText="Top N" styleClass="champ-texte" text="3"/>
+                        <Button onAction="#recommander" styleClass="bouton-primaire" text="Recommander"/>
+                    </HBox>
+                    <VBox fx:id="conteneurRecommandation" spacing="10"/>
+                </VBox>
+            </ScrollPane>
+        </Tab>
+        <Tab text="Détection de risques">
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                <VBox fx:id="conteneurDetectionRisque" spacing="10"/>
+            </ScrollPane>
+        </Tab>
+    </TabPane>
+</VBox>

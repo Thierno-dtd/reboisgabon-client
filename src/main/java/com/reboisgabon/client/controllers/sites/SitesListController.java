@@ -19,7 +19,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
+import com.reboisgabon.client.controllers.commun.DetailJsonController;
 import javafx.scene.layout.HBox;
 
 import java.math.BigDecimal;
@@ -98,32 +98,85 @@ public class SitesListController implements Initializable {
         colonneActions.setCellFactory(colonne -> new TableCell<>() {
 
             private final Button boutonModifier = new Button("Modifier");
+            private final Button boutonScore = new Button("Score");
             private final Button boutonSupprimer = new Button("Supprimer");
-            private final HBox conteneur = new HBox(8, boutonModifier, boutonSupprimer);
+            private final HBox conteneur = new HBox(8, boutonModifier, boutonScore, boutonSupprimer);
 
             {
                 boutonModifier.getStyleClass().add("bouton-secondaire");
+                boutonScore.getStyleClass().add("bouton-secondaire");
                 boutonSupprimer.getStyleClass().add("bouton-secondaire");
-                boutonModifier.setOnAction(evenement -> ouvrirModification(getTableView().getItems().get(getIndex())));
-                boutonSupprimer.setOnAction(evenement -> supprimer(getTableView().getItems().get(getIndex())));
+
+                boutonModifier.setOnAction(evenement -> {
+                    Site site = getTableView().getItems().get(getIndex());
+                    ouvrirModification(site);
+                });
+
+                boutonScore.setOnAction(evenement -> {
+                    Site site = getTableView().getItems().get(getIndex());
+                    ouvrirScore(site);
+                });
+
+                boutonSupprimer.setOnAction(evenement -> {
+                    Site site = getTableView().getItems().get(getIndex());
+                    supprimer(site);
+                });
             }
 
             @Override
             protected void updateItem(Void item, boolean vide) {
                 super.updateItem(item, vide);
-                if (vide) {
+
+                if (vide || getIndex() < 0 || getIndex() >= getTableView().getItems().size()) {
                     setGraphic(null);
                     return;
                 }
-                boolean peutModifier = SessionManager.getInstance().peutAcceder("sites", "edit");
-                boolean peutSupprimer = SessionManager.getInstance().peutAcceder("sites", "delete");
+
+                boolean peutModifier =
+                        SessionManager.getInstance().peutAcceder("sites", "edit");
+
+                boolean peutSupprimer =
+                        SessionManager.getInstance().peutAcceder("sites", "delete");
+
                 boutonModifier.setVisible(peutModifier);
                 boutonModifier.setManaged(peutModifier);
+
                 boutonSupprimer.setVisible(peutSupprimer);
                 boutonSupprimer.setManaged(peutSupprimer);
+
                 setGraphic(conteneur);
             }
         });
+    }
+
+    private void ouvrirScore(Site site) {
+        new Thread(() -> {
+            try {
+                var score = sitesApi.scoreEcologique(site.getId());
+
+                javafx.application.Platform.runLater(() ->
+                        DialogUtil.<DetailJsonController>ouvrirModal(
+                                "/com/reboisgabon/client/fxml/detail-json.fxml",
+                                "Score écologique",
+                                controleur -> {
+                                    controleur.definirTitre(
+                                            "Score écologique — " + site.getNom()
+                                    );
+                                    controleur.definirContenu(score);
+                                }
+                        )
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                javafx.application.Platform.runLater(() ->
+                        AlertUtil.erreur(
+                                "Erreur",
+                                "Impossible de charger le score écologique."
+                        )
+                );
+            }
+        }).start();
     }
 
     @FXML
