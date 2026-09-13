@@ -22,4 +22,9 @@ public class EssencesApi {
         JavaType type = JsonMapper.instance().getTypeFactory().constructParametricType(PageDrf.class, Essence.class);
         return JsonMapper.instance().readValue(corps, type);
     }
+
+    public PageDrf<Essence> listerUrl(String urlAbsolue) throws Exception {
+        var reponse = ApiClient.getInstance().getUrlAbsolue(urlAbsolue);
+        return lirePage(reponse.body());
+    }
 }

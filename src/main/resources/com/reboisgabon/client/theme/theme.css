@@ -193,3 +193,25 @@
 .barre-pagination {
     -fx-alignment: center-left;
 }
+
+.zone-texte {
+    -fx-background-color: rgba(255,255,255,0.08);
+    -fx-background-radius: 14;
+    -fx-border-color: -glass-border;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+    -fx-text-fill: -text-primary;
+    -fx-font-size: 13px;
+}
+
+.zone-texte .content {
+    -fx-background-color: transparent;
+}
+
+.vignette-photo {
+    -fx-background-color: -glass-bg;
+    -fx-background-radius: 16;
+    -fx-border-color: -glass-border;
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+}

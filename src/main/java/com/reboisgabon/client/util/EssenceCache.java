@@ -38,6 +38,10 @@ public final class EssenceCache {
             try {
                 var page = essencesApi.lister();
                 page.getResults().forEach(essence -> parId.put(essence.getId(), essence));
+                while (page.getNext() != null) {
+                    page = essencesApi.listerUrl(page.getNext());
+                    page.getResults().forEach(essence -> parId.put(essence.getId(), essence));
+                }
                 charge = true;
                 enCoursDeChargement = false;
                 Platform.runLater(() -> auChargement.accept(List.copyOf(parId.values())));

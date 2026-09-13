@@ -106,7 +106,7 @@ public class ShellController implements Initializable {
     @FXML
     private void allerSuivis() {
         libelleTitreEcran.setText("Suivis de croissance");
-        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/bienvenue.fxml");
+        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/suivis.fxml");
     }
 
     @FXML

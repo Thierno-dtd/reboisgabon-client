@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane styleClass="fond-application" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.reboisgabon.client.controllers.suivis.SuiviFormController">
+    <VBox maxWidth="500" spacing="14" styleClass="carte-verre">
+        <padding>
+            <Insets bottom="30" left="30" right="30" top="30"/>
+        </padding>
+        <Label fx:id="libelleTitre" styleClass="titre-1" text="Nouveau suivi"/>
+        <VBox spacing="6">
+            <Label styleClass="texte-muet" text="Campagne"/>
+            <ComboBox fx:id="comboCampagne" maxWidth="Infinity" styleClass="champ-texte"/>
+        </VBox>
+        <HBox spacing="14">
+            <VBox HBox.hgrow="ALWAYS" spacing="6">
+                <Label styleClass="texte-muet" text="Date de contrôle"/>
+                <DatePicker fx:id="champDateControle" maxWidth="Infinity" styleClass="champ-texte"/>
+            </VBox>
+            <VBox HBox.hgrow="ALWAYS" spacing="6">
+                <Label styleClass="texte-muet" text="Prochain contrôle"/>
+                <DatePicker fx:id="champProchaineDate" maxWidth="Infinity" styleClass="champ-texte"/>
+            </VBox>
+        </HBox>
+        <HBox spacing="14">
+            <VBox HBox.hgrow="ALWAYS" spacing="6">
+                <Label styleClass="texte-muet" text="Taux de survie (%)"/>
+                <TextField fx:id="champTauxSurvie" styleClass="champ-texte"/>
+            </VBox>
+            <VBox HBox.hgrow="ALWAYS" spacing="6">
+                <Label styleClass="texte-muet" text="Plants vivants"/>
+                <TextField fx:id="champNombrePlantsVivants" styleClass="champ-texte"/>
+            </VBox>
+        </HBox>
+        <VBox spacing="6">
+            <Label styleClass="texte-muet" text="Observations"/>
+            <TextArea fx:id="champObservations" prefRowCount="3" styleClass="zone-texte" wrapText="true"/>
+        </VBox>
+        <Label fx:id="libelleErreur" managed="false" styleClass="badge-erreur" visible="false" wrapText="true"/>
+        <HBox spacing="12">
+            <Button fx:id="boutonEnregistrer" maxWidth="Infinity" onAction="#enregistrer" styleClass="bouton-primaire" text="Enregistrer" HBox.hgrow="ALWAYS"/>
+            <Button maxWidth="Infinity" onAction="#annuler" styleClass="bouton-secondaire" text="Annuler" HBox.hgrow="ALWAYS"/>
+        </HBox>
+    </VBox>
+</StackPane>

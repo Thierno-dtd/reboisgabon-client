@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.reboisgabon.client.controllers.suivis.CalendrierSuivisController">
+    <HBox spacing="12" styleClass="carte-verre">
+        <padding>
+            <Insets bottom="16" left="16" right="16" top="16"/>
+        </padding>
+        <Label styleClass="texte-corps" text="Horizon (jours)"/>
+        <TextField fx:id="champHorizon" prefWidth="100" styleClass="champ-texte" text="30"/>
+        <Button onAction="#actualiser" styleClass="bouton-primaire" text="Actualiser"/>
+    </HBox>
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+        <VBox fx:id="conteneurResultats" spacing="20"/>
+    </ScrollPane>
+</VBox>

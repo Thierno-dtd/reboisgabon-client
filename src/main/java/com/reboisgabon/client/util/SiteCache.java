@@ -39,6 +39,10 @@ public final class SiteCache {
             try {
                 var page = sitesApi.rechercher(new HashMap<>());
                 page.getResults().forEach(site -> parId.put(site.getId(), site));
+                while (page.getNext() != null) {
+                    page = sitesApi.rechercherUrl(page.getNext());
+                    page.getResults().forEach(site -> parId.put(site.getId(), site));
+                }
                 charge = true;
                 enCoursDeChargement = false;
                 Platform.runLater(() -> auChargement.accept(List.copyOf(parId.values())));

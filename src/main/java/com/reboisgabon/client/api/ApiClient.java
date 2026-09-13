@@ -11,6 +11,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Map;
+import com.reboisgabon.client.util.MultipartUtil;
+import java.io.File;
 
 public final class ApiClient {
 
@@ -159,5 +161,20 @@ public final class ApiClient {
                 .timeout(Duration.ofSeconds(AppConfig.TIMEOUT_REQUETE_SECONDES))
                 .GET();
         return executer(builder);
+    }
+
+    public HttpResponse<String> postMultipart(String chemin, Map<String, String> champs, String nomChampFichier, File fichier) {
+        try {
+            String boundary = "----ReboisGabonBoundary" + System.currentTimeMillis();
+            byte[] corps = MultipartUtil.construire(champs, nomChampFichier, fichier, boundary);
+            HttpRequest.Builder builder = HttpRequest.newBuilder()
+                    .uri(URI.create(AppConfig.API_BASE_URL + chemin))
+                    .timeout(Duration.ofSeconds(AppConfig.TIMEOUT_REQUETE_SECONDES))
+                    .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(corps));
+            return executer(builder);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
