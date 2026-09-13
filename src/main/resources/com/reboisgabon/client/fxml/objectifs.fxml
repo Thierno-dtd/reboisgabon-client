@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="18" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.reboisgabon.client.controllers.objectifs.ObjectifsListController">
+    <HBox spacing="12" styleClass="carte-verre">
+        <padding>
+            <Insets bottom="16" left="16" right="16" top="16"/>
+        </padding>
+        <ComboBox fx:id="comboPortee" prefWidth="150" promptText="Portée" styleClass="champ-texte"/>
+        <Button onAction="#rechercher" styleClass="bouton-primaire" text="Rechercher"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="boutonNouvelObjectif" onAction="#ouvrirCreation" styleClass="bouton-primaire" text="Nouvel objectif"/>
+    </HBox>
+    <TableView fx:id="tableObjectifs" styleClass="table-generique" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colonneTitre" prefWidth="200" text="Titre"/>
+            <TableColumn fx:id="colonnePortee" prefWidth="100" text="Portée"/>
+            <TableColumn fx:id="colonneEcheance" prefWidth="110" text="Échéance"/>
+            <TableColumn fx:id="colonneProgression" prefWidth="200" text="Progression"/>
+            <TableColumn fx:id="colonneStatut" prefWidth="120" text="Statut"/>
+            <TableColumn fx:id="colonneActions" prefWidth="180" text="Actions"/>
+        </columns>
+    </TableView>
+</VBox>

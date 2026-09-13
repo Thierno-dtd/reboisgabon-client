@@ -112,13 +112,13 @@ public class ShellController implements Initializable {
     @FXML
     private void allerEssences() {
         libelleTitreEcran.setText("Essences");
-        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/bienvenue.fxml");
+        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/essences.fxml");
     }
 
     @FXML
     private void allerObjectifs() {
         libelleTitreEcran.setText("Objectifs de reboisement");
-        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/bienvenue.fxml");
+        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/objectifs.fxml");
     }
 
     @FXML

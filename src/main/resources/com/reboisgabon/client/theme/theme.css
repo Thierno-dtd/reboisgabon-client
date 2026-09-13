@@ -215,3 +215,13 @@
     -fx-border-radius: 16;
     -fx-border-width: 1;
 }
+
+.barre-progression .bar {
+    -fx-background-color: linear-gradient(to right, -accent-strong, -accent);
+    -fx-background-radius: 8;
+}
+
+.barre-progression .track {
+    -fx-background-color: -glass-bg-strong;
+    -fx-background-radius: 8;
+}
