@@ -136,13 +136,13 @@ public class ShellController implements Initializable {
     @FXML
     private void allerUtilisateurs() {
         libelleTitreEcran.setText("Utilisateurs");
-        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/bienvenue.fxml");
+        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/utilisateurs.fxml");
     }
 
     @FXML
     private void allerJournal() {
         libelleTitreEcran.setText("Journal d'activité");
-        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/bienvenue.fxml");
+        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/journal.fxml");
     }
 
     @FXML
