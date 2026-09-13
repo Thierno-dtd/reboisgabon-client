@@ -94,7 +94,7 @@ public class ShellController implements Initializable {
     @FXML
     private void allerSites() {
         libelleTitreEcran.setText("Sites de reboisement");
-        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/bienvenue.fxml");
+        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/sites.fxml");
     }
 
     @FXML

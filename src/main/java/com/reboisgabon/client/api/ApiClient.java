@@ -152,4 +152,12 @@ public final class ApiClient {
             return false;
         }
     }
+
+    public HttpResponse<String> getUrlAbsolue(String urlComplete) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(urlComplete))
+                .timeout(Duration.ofSeconds(AppConfig.TIMEOUT_REQUETE_SECONDES))
+                .GET();
+        return executer(builder);
+    }
 }
