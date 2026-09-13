@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="18" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.reboisgabon.client.controllers.campagnes.CampagnesListController">
+    <HBox spacing="12" styleClass="carte-verre">
+        <padding>
+            <Insets bottom="16" left="16" right="16" top="16"/>
+        </padding>
+        <ComboBox fx:id="comboSite" prefWidth="180" promptText="Site" styleClass="champ-texte"/>
+        <ComboBox fx:id="comboEssence" prefWidth="180" promptText="Essence" styleClass="champ-texte"/>
+        <DatePicker fx:id="champDateDebut" prefWidth="150" promptText="Date début" styleClass="champ-texte"/>
+        <DatePicker fx:id="champDateFin" prefWidth="150" promptText="Date fin" styleClass="champ-texte"/>
+        <Button onAction="#rechercher" styleClass="bouton-primaire" text="Rechercher"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="boutonNouvelleCampagne" onAction="#ouvrirCreation" styleClass="bouton-primaire" text="Nouvelle campagne"/>
+    </HBox>
+    <TableView fx:id="tableCampagnes" styleClass="table-generique" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colonneSite" prefWidth="160" text="Site"/>
+            <TableColumn fx:id="colonneEssence" prefWidth="140" text="Essence"/>
+            <TableColumn fx:id="colonneDatePlantation" prefWidth="130" text="Date plantation"/>
+            <TableColumn fx:id="colonneNombrePlants" prefWidth="130" text="Nombre plants"/>
+            <TableColumn fx:id="colonneTauxSurvie" prefWidth="110" text="Taux survie"/>
+            <TableColumn fx:id="colonneActions" prefWidth="180" text="Actions"/>
+        </columns>
+    </TableView>
+    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="barre-pagination">
+        <Button fx:id="boutonPrecedent" onAction="#pagePrecedente" styleClass="bouton-secondaire" text="Précédent"/>
+        <Label fx:id="libelleInfoPagination" styleClass="texte-muet"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="boutonSuivant" onAction="#pageSuivante" styleClass="bouton-secondaire" text="Suivant"/>
+    </HBox>
+</VBox>

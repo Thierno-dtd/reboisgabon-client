@@ -58,12 +58,35 @@ public class SitesListController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         comboStatut.getItems().add(null);
         comboStatut.getItems().addAll(StatutSite.values());
-        colonneNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        colonneLocalite.setCellValueFactory(new PropertyValueFactory<>("localite"));
-        colonneProvince.setCellValueFactory(new PropertyValueFactory<>("province"));
-        colonneSuperficie.setCellValueFactory(new PropertyValueFactory<>("superficieHectares"));
-        colonneStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
-        colonneTauxSurvie.setCellValueFactory(new PropertyValueFactory<>("tauxSurvieMoyen"));
+        colonneNom.setCellValueFactory(data ->
+                new javafx.beans.property.ReadOnlyStringWrapper(
+                        data.getValue().getNom()
+                ));
+
+        colonneLocalite.setCellValueFactory(data ->
+                new javafx.beans.property.ReadOnlyStringWrapper(
+                        data.getValue().getLocalite()
+                ));
+
+        colonneProvince.setCellValueFactory(data ->
+                new javafx.beans.property.ReadOnlyStringWrapper(
+                        data.getValue().getProvince()
+                ));
+
+        colonneSuperficie.setCellValueFactory(data ->
+                new javafx.beans.property.ReadOnlyObjectWrapper<>(
+                        data.getValue().getSuperficieHectares()
+                ));
+
+        colonneStatut.setCellValueFactory(data ->
+                new javafx.beans.property.ReadOnlyObjectWrapper<>(
+                        data.getValue().getStatut()
+                ));
+
+        colonneTauxSurvie.setCellValueFactory(data ->
+                new javafx.beans.property.ReadOnlyObjectWrapper<>(
+                        data.getValue().getTauxSurvieMoyen()
+                ));
         construireColonneActions();
         boolean peutCreer = SessionManager.getInstance().peutAcceder("sites", "create");
         boutonNouveauSite.setVisible(peutCreer);

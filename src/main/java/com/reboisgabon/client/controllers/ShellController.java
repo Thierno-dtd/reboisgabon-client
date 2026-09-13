@@ -100,7 +100,7 @@ public class ShellController implements Initializable {
     @FXML
     private void allerCampagnes() {
         libelleTitreEcran.setText("Campagnes de plantation");
-        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/bienvenue.fxml");
+        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/campagnes.fxml");
     }
 
     @FXML

@@ -94,4 +94,9 @@ public class Site {
     public void setTauxSurvieMoyen(BigDecimal tauxSurvieMoyen) {
         this.tauxSurvieMoyen = tauxSurvieMoyen;
     }
+
+    @Override
+    public String toString() {
+        return nom;
+    }
 }
