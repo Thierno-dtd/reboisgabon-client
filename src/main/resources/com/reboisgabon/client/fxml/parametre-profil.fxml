@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxWidth="440" spacing="14" styleClass="carte-verre" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.reboisgabon.client.controllers.parametres.ParametreProfilController">
+    <padding>
+        <Insets bottom="26" left="26" right="26" top="26"/>
+    </padding>
+    <Label styleClass="titre-2" text="Informations personnelles"/>
+    <VBox spacing="6">
+        <Label styleClass="texte-muet" text="Prénom"/>
+        <TextField fx:id="champPrenom" styleClass="champ-texte"/>
+    </VBox>
+    <VBox spacing="6">
+        <Label styleClass="texte-muet" text="Nom"/>
+        <TextField fx:id="champNom" styleClass="champ-texte"/>
+    </VBox>
+    <Label fx:id="libelleMessage" managed="false" styleClass="texte-corps" visible="false" wrapText="true"/>
+    <Button fx:id="boutonEnregistrer" maxWidth="Infinity" onAction="#enregistrer" styleClass="bouton-primaire" text="Enregistrer"/>
+</VBox>

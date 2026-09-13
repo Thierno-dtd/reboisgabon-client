@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxWidth="440" spacing="14" styleClass="carte-verre" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.reboisgabon.client.controllers.parametres.ParametreMotDePasseController">
+    <padding>
+        <Insets bottom="26" left="26" right="26" top="26"/>
+    </padding>
+    <Label styleClass="titre-2" text="Changer le mot de passe"/>
+    <VBox spacing="6">
+        <Label styleClass="texte-muet" text="Ancien mot de passe"/>
+        <PasswordField fx:id="champAncien" styleClass="champ-texte"/>
+    </VBox>
+    <VBox spacing="6">
+        <Label styleClass="texte-muet" text="Nouveau mot de passe"/>
+        <PasswordField fx:id="champNouveau" styleClass="champ-texte"/>
+    </VBox>
+    <Label fx:id="libelleMessage" managed="false" styleClass="texte-corps" visible="false" wrapText="true"/>
+    <Button fx:id="boutonValider" maxWidth="Infinity" onAction="#changerMotDePasse" styleClass="bouton-primaire" text="Changer le mot de passe"/>
+</VBox>

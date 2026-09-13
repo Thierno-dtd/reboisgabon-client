@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+
+<TabPane tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <Tab text="Profil">
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <fx:include source="parametre-profil.fxml"/>
+        </ScrollPane>
+    </Tab>
+    <Tab text="Mot de passe">
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <fx:include source="parametre-mot-de-passe.fxml"/>
+        </ScrollPane>
+    </Tab>
+    <Tab text="2FA">
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <fx:include source="parametre-2fa.fxml"/>
+        </ScrollPane>
+    </Tab>
+</TabPane>

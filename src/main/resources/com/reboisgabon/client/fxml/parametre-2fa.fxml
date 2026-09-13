@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxWidth="440" spacing="14" styleClass="carte-verre" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.reboisgabon.client.controllers.parametres.Parametre2faController">
+    <padding>
+        <Insets bottom="26" left="26" right="26" top="26"/>
+    </padding>
+    <Label styleClass="titre-2" text="Authentification à deux facteurs"/>
+    <Label fx:id="libelleStatut" styleClass="sous-titre"/>
+    <VBox fx:id="conteneurActivation" spacing="14">
+        <Button fx:id="boutonDemarrerActivation" onAction="#demarrerActivation" styleClass="bouton-primaire" text="Activer la 2FA"/>
+        <ImageView fx:id="imageQrCode" fitHeight="200" fitWidth="200" managed="false" visible="false"/>
+        <Label fx:id="libelleSecret" managed="false" styleClass="texte-muet" visible="false" wrapText="true"/>
+        <TextField fx:id="champCode" managed="false" promptText="Code à 6 chiffres" styleClass="champ-texte" visible="false"/>
+        <Button fx:id="boutonConfirmer" managed="false" maxWidth="Infinity" onAction="#confirmerActivation" styleClass="bouton-primaire" text="Confirmer" visible="false"/>
+    </VBox>
+    <Button fx:id="boutonDesactiver" managed="false" maxWidth="Infinity" onAction="#desactiver" styleClass="bouton-secondaire" text="Désactiver la 2FA" visible="false"/>
+    <Label fx:id="libelleErreur" managed="false" styleClass="badge-erreur" visible="false" wrapText="true"/>
+</VBox>

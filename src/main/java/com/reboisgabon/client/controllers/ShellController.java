@@ -4,6 +4,7 @@ import com.reboisgabon.client.session.Role;
 import com.reboisgabon.client.session.SessionManager;
 import com.reboisgabon.client.util.ContentHost;
 import com.reboisgabon.client.util.SceneNavigator;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -12,6 +13,10 @@ import javafx.scene.layout.StackPane;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import com.reboisgabon.client.api.endpoints.NotificationsApi;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
 public class ShellController implements Initializable {
 
@@ -54,6 +59,9 @@ public class ShellController implements Initializable {
     @FXML
     private Button boutonJournal;
 
+    @FXML
+    private Label badgeNotifications;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ContentHost.getInstance().definirConteneur(zoneContenu);
@@ -64,6 +72,37 @@ public class ShellController implements Initializable {
         }
         appliquerVisibilitePermissions();
         allerDashboard();
+        demarrerRafraichissementNotifications();
+    }
+
+
+    private final NotificationsApi notificationsApi = new NotificationsApi();
+
+    private void demarrerRafraichissementNotifications() {
+        rafraichirBadgeNotifications();
+        Timeline minuteur = new Timeline(new KeyFrame(Duration.seconds(60), evenement -> rafraichirBadgeNotifications()));
+        minuteur.setCycleCount(Timeline.INDEFINITE);
+        minuteur.play();
+    }
+
+    private void rafraichirBadgeNotifications() {
+        new Thread(() -> {
+            try {
+                int nombre = notificationsApi.compterNonLues();
+                Platform.runLater(() -> {
+                    if (nombre > 0) {
+                        badgeNotifications.setText(String.valueOf(nombre));
+                        badgeNotifications.setVisible(true);
+                        badgeNotifications.setManaged(true);
+                    } else {
+                        badgeNotifications.setVisible(false);
+                        badgeNotifications.setManaged(false);
+                    }
+                });
+            } catch (Exception e) {
+                // silencieux, le badge se retentera au prochain cycle
+            }
+        }).start();
     }
 
     private void appliquerVisibilitePermissions() {
@@ -148,13 +187,13 @@ public class ShellController implements Initializable {
     @FXML
     private void allerNotifications() {
         libelleTitreEcran.setText("Notifications");
-        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/bienvenue.fxml");
+        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/notifications.fxml");
     }
 
     @FXML
     private void allerParametres() {
         libelleTitreEcran.setText("Paramètres du compte");
-        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/bienvenue.fxml");
+        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/parametres.fxml");
     }
 
     @FXML
