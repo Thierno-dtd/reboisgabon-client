@@ -124,7 +124,7 @@ public class ShellController implements Initializable {
     @FXML
     private void allerFinances() {
         libelleTitreEcran.setText("Finances");
-        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/bienvenue.fxml");
+        ContentHost.getInstance().afficher("/com/reboisgabon/client/fxml/finances.fxml");
     }
 
     @FXML

@@ -15,6 +15,7 @@ module com.reboisgabon {
     opens com.reboisgabon.client.controllers.suivis to javafx.fxml;
     opens com.reboisgabon.client.controllers.objectifs to javafx.fxml;
     opens com.reboisgabon.client.controllers.essences to javafx.fxml;
+    opens com.reboisgabon.client.controllers.finances to javafx.fxml;
     opens com.reboisgabon.client.dto.auth to com.fasterxml.jackson.databind;
     opens com.reboisgabon.client.dto.common to com.fasterxml.jackson.databind;
     opens com.reboisgabon.client.dto.sites to com.fasterxml.jackson.databind;
@@ -22,6 +23,7 @@ module com.reboisgabon {
     opens com.reboisgabon.client.dto.essences to com.fasterxml.jackson.databind;
     opens com.reboisgabon.client.dto.suivis to com.fasterxml.jackson.databind;
     opens com.reboisgabon.client.dto.objectifs to com.fasterxml.jackson.databind;
+    opens com.reboisgabon.client.dto.finances to com.fasterxml.jackson.databind;
     opens com.reboisgabon.client.dto.utilisateurs to com.fasterxml.jackson.databind;
     opens com.reboisgabon.client.session to com.fasterxml.jackson.databind;
 }

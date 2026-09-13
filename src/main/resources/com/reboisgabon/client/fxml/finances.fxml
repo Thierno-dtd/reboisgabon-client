@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+
+<TabPane tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <Tab text="Partenaires">
+        <fx:include source="partenaires.fxml"/>
+    </Tab>
+    <Tab text="Financements">
+        <fx:include source="financements.fxml"/>
+    </Tab>
+    <Tab text="Budgets">
+        <fx:include source="budgets.fxml"/>
+    </Tab>
+</TabPane>

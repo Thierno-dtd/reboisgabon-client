@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane styleClass="fond-application" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.reboisgabon.client.controllers.finances.PartenaireFormController">
+    <VBox maxWidth="440" spacing="14" styleClass="carte-verre">
+        <padding>
+            <Insets bottom="30" left="30" right="30" top="30"/>
+        </padding>
+        <Label fx:id="libelleTitre" styleClass="titre-1" text="Nouveau partenaire"/>
+        <VBox spacing="6">
+            <Label styleClass="texte-muet" text="Nom"/>
+            <TextField fx:id="champNom" styleClass="champ-texte"/>
+        </VBox>
+        <VBox spacing="6">
+            <Label styleClass="texte-muet" text="Type"/>
+            <ComboBox fx:id="comboType" maxWidth="Infinity" styleClass="champ-texte"/>
+        </VBox>
+        <VBox spacing="6">
+            <Label styleClass="texte-muet" text="Pays"/>
+            <TextField fx:id="champPays" styleClass="champ-texte"/>
+        </VBox>
+        <CheckBox fx:id="caseActif" selected="true" text="Actif"/>
+        <Label fx:id="libelleErreur" managed="false" styleClass="badge-erreur" visible="false" wrapText="true"/>
+        <HBox spacing="12">
+            <Button fx:id="boutonEnregistrer" maxWidth="Infinity" onAction="#enregistrer" styleClass="bouton-primaire" text="Enregistrer" HBox.hgrow="ALWAYS"/>
+            <Button maxWidth="Infinity" onAction="#annuler" styleClass="bouton-secondaire" text="Annuler" HBox.hgrow="ALWAYS"/>
+        </HBox>
+    </VBox>
+</StackPane>
