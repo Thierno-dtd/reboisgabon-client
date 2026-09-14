@@ -225,3 +225,12 @@
     -fx-background-color: -glass-bg-strong;
     -fx-background-radius: 8;
 }
+
+.icone-nav {
+    -fx-icon-color: -text-secondary;
+    -fx-icon-size: 18;
+}
+
+.bouton-nav:hover .icone-nav {
+    -fx-icon-color: -text-primary;
+}

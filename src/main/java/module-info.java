@@ -10,7 +10,9 @@ module com.reboisgabon {
     requires com.google.zxing.javase;
     requires java.desktop;
     requires javafx.swing;
-
+    requires javafx.web;
+    requires org.kordamp.ikonli.javafx;
+    requires org.kordamp.ikonli.materialdesign2;
     exports com.reboisgabon.client;
 
     opens com.reboisgabon.client.controllers to javafx.fxml;
