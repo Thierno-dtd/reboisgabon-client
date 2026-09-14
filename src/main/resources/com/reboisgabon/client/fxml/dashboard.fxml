@@ -1,48 +1,171 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.reboisgabon.client.controllers.DashboardController">
-    <TabPane fx:id="ongletsDashboard" tabClosingPolicy="UNAVAILABLE">
-        <Tab fx:id="ongletApercu" text="Vue d'ensemble">
-            <ScrollPane fx:id="defilementApercu" fitToWidth="true" style="-fx-background-color: transparent;"/>
+<VBox spacing="16"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.reboisgabon.client.controllers.DashboardController">
+
+    <padding>
+        <Insets top="8" right="8" bottom="12" left="8"/>
+    </padding>
+
+    <VBox spacing="4">
+        <Label text="TABLEAU DE BORD"
+               styleClass="dashboard-overline"/>
+
+        <Label text="Vue d'ensemble"
+               styleClass="dashboard-title"/>
+
+        <Label text="Une vision globale des sites, campagnes, essences, objectifs et performances du programme."
+               styleClass="dashboard-subtitle"
+               wrapText="true"/>
+    </VBox>
+
+    <TabPane fx:id="ongletsDashboard"
+             tabClosingPolicy="UNAVAILABLE"
+             styleClass="dashboard-tabs"
+             VBox.vgrow="ALWAYS">
+
+        <Tab fx:id="ongletApercu"
+             text="Synthèse"
+             styleClass="dashboard-tab">
+
+            <ScrollPane fx:id="defilementApercu"
+                        fitToWidth="true"
+                        fitToHeight="true"
+                        pannable="true"
+                        hbarPolicy="NEVER"
+                        styleClass="dashboard-scroll"/>
         </Tab>
-        <Tab fx:id="ongletSites" text="Sites">
-            <ScrollPane fx:id="defilementSites" fitToWidth="true" style="-fx-background-color: transparent;"/>
+
+        <Tab fx:id="ongletSites"
+             text="Sites">
+
+            <ScrollPane fx:id="defilementSites"
+                        fitToWidth="true"
+                        fitToHeight="true"
+                        pannable="true"
+                        hbarPolicy="NEVER"
+                        styleClass="dashboard-scroll"/>
         </Tab>
-        <Tab fx:id="ongletEssences" text="Essences">
-            <ScrollPane fx:id="defilementEssences" fitToWidth="true" style="-fx-background-color: transparent;"/>
+
+        <Tab fx:id="ongletEssences"
+             text="Essences">
+
+            <ScrollPane fx:id="defilementEssences"
+                        fitToWidth="true"
+                        fitToHeight="true"
+                        pannable="true"
+                        hbarPolicy="NEVER"
+                        styleClass="dashboard-scroll"/>
         </Tab>
-        <Tab fx:id="ongletProvinces" text="Provinces">
-            <ScrollPane fx:id="defilementProvinces" fitToWidth="true" style="-fx-background-color: transparent;"/>
+
+        <Tab fx:id="ongletProvinces"
+             text="Provinces">
+
+            <ScrollPane fx:id="defilementProvinces"
+                        fitToWidth="true"
+                        fitToHeight="true"
+                        pannable="true"
+                        hbarPolicy="NEVER"
+                        styleClass="dashboard-scroll"/>
         </Tab>
-        <Tab fx:id="ongletEvolution" text="Évolution">
-            <ScrollPane fx:id="defilementEvolution" fitToWidth="true" style="-fx-background-color: transparent;"/>
+
+        <Tab fx:id="ongletEvolution"
+             text="Évolution">
+
+            <ScrollPane fx:id="defilementEvolution"
+                        fitToWidth="true"
+                        fitToHeight="true"
+                        pannable="true"
+                        hbarPolicy="NEVER"
+                        styleClass="dashboard-scroll"/>
         </Tab>
-        <Tab fx:id="ongletAlertes" text="Alertes">
-            <ScrollPane fx:id="defilementAlertes" fitToWidth="true" style="-fx-background-color: transparent;"/>
+
+        <Tab fx:id="ongletAlertes"
+             text="Alertes">
+
+            <ScrollPane fx:id="defilementAlertes"
+                        fitToWidth="true"
+                        fitToHeight="true"
+                        pannable="true"
+                        hbarPolicy="NEVER"
+                        styleClass="dashboard-scroll"/>
         </Tab>
-        <Tab fx:id="ongletResponsables" text="Responsables">
-            <ScrollPane fx:id="defilementResponsables" fitToWidth="true" style="-fx-background-color: transparent;"/>
+
+        <Tab fx:id="ongletResponsables"
+             text="Responsables">
+
+            <ScrollPane fx:id="defilementResponsables"
+                        fitToWidth="true"
+                        fitToHeight="true"
+                        pannable="true"
+                        hbarPolicy="NEVER"
+                        styleClass="dashboard-scroll"/>
         </Tab>
-        <Tab fx:id="ongletFinancier" text="Financier">
-            <ScrollPane fx:id="defilementFinancier" fitToWidth="true" style="-fx-background-color: transparent;"/>
+
+        <Tab fx:id="ongletFinancier"
+             text="Financier">
+
+            <ScrollPane fx:id="defilementFinancier"
+                        fitToWidth="true"
+                        fitToHeight="true"
+                        pannable="true"
+                        hbarPolicy="NEVER"
+                        styleClass="dashboard-scroll"/>
         </Tab>
-        <Tab fx:id="ongletObjectifs" text="Objectifs">
-            <ScrollPane fx:id="defilementObjectifs" fitToWidth="true" style="-fx-background-color: transparent;"/>
+
+        <Tab fx:id="ongletObjectifs"
+             text="Objectifs">
+
+            <ScrollPane fx:id="defilementObjectifs"
+                        fitToWidth="true"
+                        fitToHeight="true"
+                        pannable="true"
+                        hbarPolicy="NEVER"
+                        styleClass="dashboard-scroll"/>
         </Tab>
-        <Tab fx:id="ongletScores" text="Scores écologiques">
-            <ScrollPane fx:id="defilementScores" fitToWidth="true" style="-fx-background-color: transparent;"/>
+
+        <Tab fx:id="ongletScores"
+             text="Scores">
+
+            <ScrollPane fx:id="defilementScores"
+                        fitToWidth="true"
+                        fitToHeight="true"
+                        pannable="true"
+                        hbarPolicy="NEVER"
+                        styleClass="dashboard-scroll"/>
         </Tab>
-        <Tab fx:id="ongletCarte" text="Carte provinces">
-            <ScrollPane fx:id="defilementCarte" fitToWidth="true" style="-fx-background-color: transparent;"/>
+
+        <Tab fx:id="ongletCarte"
+             text="Carte">
+
+            <ScrollPane fx:id="defilementCarte"
+                        fitToWidth="true"
+                        fitToHeight="true"
+                        pannable="true"
+                        hbarPolicy="NEVER"
+                        styleClass="dashboard-scroll"/>
         </Tab>
-        <Tab fx:id="ongletComparaison" text="Comparaison période">
-            <ScrollPane fx:id="defilementComparaison" fitToWidth="true" style="-fx-background-color: transparent;"/>
+
+        <Tab fx:id="ongletComparaison"
+             text="Comparaison">
+
+            <ScrollPane fx:id="defilementComparaison"
+                        fitToWidth="true"
+                        fitToHeight="true"
+                        pannable="true"
+                        hbarPolicy="NEVER"
+                        styleClass="dashboard-scroll"/>
         </Tab>
+
     </TabPane>
-</StackPane>
+
+</VBox>

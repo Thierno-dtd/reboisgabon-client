@@ -1,8 +1,8 @@
 package com.reboisgabon.client.controllers;
 
-import com.reboisgabon.client.api.ApiException;
 import com.reboisgabon.client.api.endpoints.AuthApi;
 import com.reboisgabon.client.dto.auth.ConnexionReponse;
+import com.reboisgabon.client.dto.auth.ConnexionRequete;
 import com.reboisgabon.client.session.SessionManager;
 import com.reboisgabon.client.util.SceneNavigator;
 import javafx.application.Platform;
@@ -11,98 +11,124 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+
+import java.net.URL;
 
 public class LoginController {
 
-    @FXML
-    private TextField champEmail;
+    @FXML private StackPane rootStackPane;
+    @FXML private MediaView mediaView;
+    @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
+    @FXML private TextField passwordTextField;
+    @FXML private Button togglePasswordBtn;
+    @FXML private Label errorLabel;
+
+    private MediaPlayer mediaPlayer;
+    private boolean isPasswordVisible = false;
 
     @FXML
-    private PasswordField champMotDePasse;
+    public void initialize() {
+        initVideoBackground();
+        setupPasswordSync();
+    }
+
+    private void initVideoBackground() {
+        try {
+            URL videoUrl = getClass().getResource("/com/reboisgabon/client/media/background.mp4");
+            if (videoUrl != null) {
+                Media media = new Media(videoUrl.toExternalForm());
+                mediaPlayer = new MediaPlayer(media);
+                mediaView.setMediaPlayer(mediaPlayer);
+                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                mediaPlayer.setMute(true);
+                mediaPlayer.play();
+
+                // Assurer que la vidéo s'étende sur tout l'écran de manière responsive
+                mediaView.fitWidthProperty().bind(rootStackPane.widthProperty());
+                mediaView.fitHeightProperty().bind(rootStackPane.heightProperty());
+            }
+        } catch (Exception e) {
+            // Fallback si la vidéo n'est pas présente
+        }
+    }
+
+    private void setupPasswordSync() {
+        passwordTextField.textProperty().bindBidirectional(passwordField.textProperty());
+    }
 
     @FXML
-    private Label libelleErreur;
+    private void handleTogglePassword() {
+        isPasswordVisible = !isPasswordVisible;
+        if (isPasswordVisible) {
+            passwordTextField.setVisible(true);
+            passwordTextField.setManaged(true);
+            passwordField.setVisible(false);
+            passwordField.setManaged(false);
+            togglePasswordBtn.setText("🙈");
+        } else {
+            passwordField.setVisible(true);
+            passwordField.setManaged(true);
+            passwordTextField.setVisible(false);
+            passwordTextField.setManaged(false);
+            togglePasswordBtn.setText("👁");
+        }
+    }
 
     @FXML
-    private Button boutonConnexion;
+    private void handleLogin() {
+        String email = emailField.getText();
+        String password = passwordField.getText();
 
-    private final AuthApi authApi = new AuthApi();
-
-    @FXML
-    private void seConnecter() {
-        String email = champEmail.getText();
-        String motDePasse = champMotDePasse.getText();
-        if (email == null || email.isBlank() || motDePasse == null || motDePasse.isBlank()) {
-            afficherErreur("Veuillez renseigner votre email et votre mot de passe.");
+        if (email == null || email.isBlank() || password == null || password.isBlank()) {
+            showError("Veuillez remplir tous les champs.");
             return;
         }
-        masquerErreur();
-        boutonConnexion.setDisable(true);
+
         new Thread(() -> {
             try {
-                ConnexionReponse reponse = authApi.connexion(email, motDePasse);
-                Platform.runLater(() -> traiterReponseConnexion(reponse));
-            } catch (ApiException e) {
+                AuthApi authApi = new AuthApi();
+                ConnexionReponse resp = authApi.connexion(email, password);
+
                 Platform.runLater(() -> {
-                    boutonConnexion.setDisable(false);
-                    if (e.getStatutHttp() == 429) {
-                        afficherErreur("Trop de tentatives. Veuillez patienter avant de réessayer.");
+                    if (resp.isRequiresTwoFa()) {
+                        SceneNavigator.getInstance().naviguerVers(
+                                "/com/reboisgabon/client/fxml/verification-2fa.fxml",
+                                (Verification2faController controller) -> controller.definirTempToken(resp.getTempToken())
+                        );
                     } else {
-                        afficherErreur("Email ou mot de passe incorrect.");
+                        SessionManager.getInstance().setAccessToken(resp.getAccess());
+                        SessionManager.getInstance().setRefreshToken(resp.getRefresh());
+
+                        new Thread(() -> {
+                            try {
+                                var profil = authApi.recupererProfil();
+                                var permissions = authApi.recupererPermissions();
+                                SessionManager.getInstance().setUtilisateurConnecte(profil);
+                                SessionManager.getInstance().setPermissions(permissions);
+
+                                Platform.runLater(() ->
+                                        SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/shell.fxml")
+                                );
+                            } catch (Exception e) {
+                                Platform.runLater(() -> showError("Erreur lors de la récupération du profil."));
+                            }
+                        }).start();
                     }
                 });
             } catch (Exception e) {
-                //e.printStackTrace();
-                Platform.runLater(() -> {
-                    boutonConnexion.setDisable(false);
-                    afficherErreur("Impossible de joindre le serveur.");
-                });
+                Platform.runLater(() -> showError("Identifiants incorrects ou erreur réseau."));
             }
         }).start();
     }
 
-    private void traiterReponseConnexion(ConnexionReponse reponse) {
-        boutonConnexion.setDisable(false);
-        if (reponse.isRequiresTwoFa()) {
-            SceneNavigator.getInstance().naviguerVers(
-                    "/com/reboisgabon/client/fxml/verification-2fa.fxml",
-                    (Verification2faController controleur) -> controleur.definirTempToken(reponse.getTempToken()));
-        } else {
-            SessionManager.getInstance().setAccessToken(reponse.getAccess());
-            SessionManager.getInstance().setRefreshToken(reponse.getRefresh());
-            chargerSessionEtBasculer();
-        }
-    }
-
-    private void chargerSessionEtBasculer() {
-        new Thread(() -> {
-            try {
-                var profil = authApi.recupererProfil();
-                var permissions = authApi.recupererPermissions();
-                SessionManager.getInstance().setUtilisateurConnecte(profil);
-                SessionManager.getInstance().setPermissions(permissions);
-                Platform.runLater(() ->
-                        SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/shell.fxml"));
-            } catch (Exception e) {
-                //e.printStackTrace();
-                Platform.runLater(() -> afficherErreur("Connexion réussie mais profil injoignable."));
-            }
-        }).start();
-    }
-
-    @FXML
-    private void ouvrirMotDePasseOublie() {
-        SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/mot-de-passe-oublie.fxml");
-    }
-
-    private void afficherErreur(String message) {
-        libelleErreur.setText(message);
-        libelleErreur.setVisible(true);
-        libelleErreur.setManaged(true);
-    }
-
-    private void masquerErreur() {
-        libelleErreur.setVisible(false);
-        libelleErreur.setManaged(false);
+    private void showError(String msg) {
+        errorLabel.setText(msg);
+        errorLabel.setVisible(true);
+        errorLabel.setManaged(true);
     }
 }

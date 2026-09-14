@@ -2,31 +2,69 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.media.MediaView?>
+<?import javafx.scene.text.Font?>
 
-<StackPane styleClass="fond-application" xmlns="http://javafx.com/javafx"
-           xmlns:fx="http://javafx.com/fxml" fx:controller="com.reboisgabon.client.controllers.LoginController">
-    <VBox alignment="CENTER" maxWidth="400" spacing="18" styleClass="carte-verre">
-        <padding>
-            <Insets bottom="44" left="40" right="40" top="44"/>
-        </padding>
-        <Label styleClass="titre-1" text="ReboisGabon"/>
-        <Label styleClass="sous-titre" text="Connectez-vous à votre espace"/>
-        <VBox spacing="6">
-            <Label styleClass="texte-muet" text="Email"/>
-            <TextField fx:id="champEmail" promptText="votre@email.ga" styleClass="champ-texte"/>
+<StackPane fx:id="rootStackPane" prefHeight="720.0" prefWidth="1280.0" stylesheets="@../theme/theme.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.reboisgabon.client.controllers.LoginController">
+    <children>
+        <!-- Background Video prenant tout l'écran -->
+        <MediaView fx:id="mediaView" preserveRatio="false" />
+
+        <!-- Overlay d'assombrissement -->
+        <AnchorPane style="-fx-background-color: rgba(11, 15, 25, 0.65);" />
+
+        <!-- Carte de Login centrée (Style Glassmorphism/Bento) -->
+        <VBox alignment="CENTER" fillWidth="false" spacing="20.0">
+            <children>
+                <VBox prefWidth="400.0" spacing="20.0" styleClass="bento-card">
+                    <children>
+                        <VBox spacing="5.0">
+                            <children>
+                                <Label text="ReboisGabon" styleClass="text-header-title" />
+                                <Label text="Connectez-vous à la plateforme décisionnelle" styleClass="text-sub-title" />
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="15.0">
+                            <children>
+                                <VBox spacing="5.0">
+                                    <children>
+                                        <Label text="Adresse Email" textFill="#94a3b8" />
+                                        <TextField fx:id="emailField" promptText="agent@reboisgabon.ga" />
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="5.0">
+                                    <children>
+                                        <Label text="Mot de passe" textFill="#94a3b8" />
+                                        <StackPane alignment="CENTER_RIGHT">
+                                            <children>
+                                                <PasswordField fx:id="passwordField" promptText="••••••••" />
+                                                <TextField fx:id="passwordTextField" managed="false" promptText="••••••••" visible="false" />
+                                                <Button fx:id="togglePasswordBtn" onAction="#handleTogglePassword" styleClass="icon-button" text="👁" textFill="#94a3b8" />
+                                            </children>
+                                        </StackPane>
+                                    </children>
+                                </VBox>
+
+                                <Label fx:id="errorLabel" managed="false" textFill="#ef4444" visible="false" wrapText="true" />
+
+                                <Button fx:id="loginButton" maxWidth="1.7976931348623157E308" onAction="#handleLogin" styleClass="button-primary" text="Se connecter" />
+                            </children>
+                        </VBox>
+                    </children>
+                    <padding>
+                        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                    </padding>
+                </VBox>
+            </children>
         </VBox>
-        <VBox spacing="6">
-            <Label styleClass="texte-muet" text="Mot de passe"/>
-            <PasswordField fx:id="champMotDePasse" promptText="••••••••" styleClass="champ-texte"/>
-        </VBox>
-        <Label fx:id="libelleErreur" managed="false" styleClass="badge-erreur" visible="false" wrapText="true"/>
-        <Button fx:id="boutonConnexion" maxWidth="Infinity" onAction="#seConnecter" styleClass="bouton-primaire" text="Se connecter"/>
-        <Hyperlink onAction="#ouvrirMotDePasseOublie" style="-fx-text-fill: -text-secondary;" text="Mot de passe oublié ?"/>
-    </VBox>
+    </children>
 </StackPane>
