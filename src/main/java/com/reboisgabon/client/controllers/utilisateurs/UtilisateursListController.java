@@ -17,8 +17,9 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import com.reboisgabon.client.util.BoutonIconeUtil;
+import com.reboisgabon.client.util.FiltreAutoUtil;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -82,21 +83,23 @@ public class UtilisateursListController implements Initializable {
                 ).asObject());
 
         construireColonneActions();
+
+        FiltreAutoUtil.surSaisie(champRecherche, this::rechercher);
+        FiltreAutoUtil.surValeur(comboRole, this::rechercher);
+        FiltreAutoUtil.surValeur(comboActif, this::rechercher);
+
         rechercher();
     }
 
     private void construireColonneActions() {
         colonneActions.setCellFactory(colonne -> new TableCell<>() {
 
-            private final Button boutonModifier = new Button("Modifier");
-            private final Button boutonDesactiver = new Button("Désactiver");
-            private final Button boutonReactiver = new Button("Réactiver");
-            private final HBox conteneur = new HBox(8, boutonModifier, boutonDesactiver, boutonReactiver);
+            private final Button boutonModifier = BoutonIconeUtil.creer("✏️", "Modifier");
+            private final Button boutonDesactiver = BoutonIconeUtil.creer("🚫", "Désactiver", "bouton-icone-danger");
+            private final Button boutonReactiver = BoutonIconeUtil.creer("✅", "Réactiver", "bouton-icone-succes");
+            private final HBox conteneur = new HBox(6, boutonModifier, boutonDesactiver, boutonReactiver);
 
             {
-                boutonModifier.getStyleClass().add("bouton-secondaire");
-                boutonDesactiver.getStyleClass().add("bouton-secondaire");
-                boutonReactiver.getStyleClass().add("bouton-secondaire");
                 boutonModifier.setOnAction(evenement -> ouvrirModification(getTableView().getItems().get(getIndex())));
                 boutonDesactiver.setOnAction(evenement -> desactiver(getTableView().getItems().get(getIndex())));
                 boutonReactiver.setOnAction(evenement -> reactiver(getTableView().getItems().get(getIndex())));

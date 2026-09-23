@@ -17,7 +17,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
+import com.reboisgabon.client.util.BoutonIconeUtil;
+import com.reboisgabon.client.util.FiltreAutoUtil;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -67,16 +68,18 @@ public class PartenairesListController implements Initializable {
         boutonNouveauPartenaire.setVisible(peutCreer);
         boutonNouveauPartenaire.setManaged(peutCreer);
 
+        FiltreAutoUtil.surSaisie(champRecherche, this::rechercher);
+        FiltreAutoUtil.surValeur(comboType, this::rechercher);
+
         rechercher();
     }
 
     private void construireColonneActions() {
         colonneActions.setCellFactory(colonne -> new TableCell<>() {
 
-            private final Button boutonModifier = new Button("Modifier");
+            private final Button boutonModifier = BoutonIconeUtil.creer("✏️", "Modifier");
 
             {
-                boutonModifier.getStyleClass().add("bouton-secondaire");
                 boutonModifier.setOnAction(evenement -> ouvrirModification(getTableView().getItems().get(getIndex())));
             }
 

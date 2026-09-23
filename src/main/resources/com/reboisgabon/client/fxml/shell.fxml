@@ -140,6 +140,19 @@
                                 onAction="#allerJournal"
                                 styleClass="nav-button"
                                 text="📜  Journal"/>
+                        <Button
+                                fx:id="boutonExports"
+                                maxWidth="1.7976931348623157E308"
+                                onAction="#allerExports"
+                                styleClass="nav-button"
+                                text="📤  Exports"/>
+
+                        <Button
+                                fx:id="boutonParametres"
+                                maxWidth="1.7976931348623157E308"
+                                onAction="#allerParametres"
+                                styleClass="nav-button"
+                                text="⚙️  Paramètres"/>
 
                     </children>
 

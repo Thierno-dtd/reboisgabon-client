@@ -6,7 +6,6 @@ import com.reboisgabon.client.session.SessionManager;
 import com.reboisgabon.client.util.AlertUtil;
 import com.reboisgabon.client.util.JsonVueUtil;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -16,23 +15,23 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +42,7 @@ import java.util.Set;
 public class DashboardController implements Initializable {
 
     @FXML private TabPane ongletsDashboard;
+    @FXML private ComboBox<String> comboPeriode;
 
     @FXML private Tab ongletApercu;
     @FXML private Tab ongletSites;
@@ -75,6 +75,52 @@ public class DashboardController implements Initializable {
 
     private final DecimalFormat formatNombre = new DecimalFormat("#,##0.##");
 
+    private static final Map<String, String> ICONES = new HashMap<>();
+    private static final Map<String, String> LIBELLES_COURTS = new HashMap<>();
+
+    static {
+        ICONES.put("site", "📍");
+        ICONES.put("sites", "📍");
+        ICONES.put("campagne", "🌱");
+        ICONES.put("campagnes", "🌱");
+        ICONES.put("essence", "🌳");
+        ICONES.put("essences", "🌳");
+        ICONES.put("province", "🗺️");
+        ICONES.put("provinces", "🗺️");
+        ICONES.put("objectif", "🎯");
+        ICONES.put("objectifs", "🎯");
+        ICONES.put("taux_survie", "📈");
+        ICONES.put("survie", "📈");
+        ICONES.put("superficie", "📐");
+        ICONES.put("plants", "🌿");
+        ICONES.put("plant", "🌿");
+        ICONES.put("budget", "💰");
+        ICONES.put("financement", "💰");
+        ICONES.put("financements", "💰");
+        ICONES.put("partenaire", "🤝");
+        ICONES.put("partenaires", "🤝");
+        ICONES.put("alerte", "⚠️");
+        ICONES.put("alertes", "⚠️");
+        ICONES.put("score", "🍃");
+        ICONES.put("scores", "🍃");
+        ICONES.put("utilisateur", "👥");
+        ICONES.put("utilisateurs", "👥");
+        ICONES.put("responsable", "👤");
+        ICONES.put("responsables", "👤");
+        ICONES.put("suivi", "📊");
+        ICONES.put("suivis", "📊");
+        ICONES.put("risque", "🚨");
+
+        LIBELLES_COURTS.put("taux_survie_moyen", "Taux survie moyen");
+        LIBELLES_COURTS.put("superficie_totale_hectares", "Superficie totale");
+        LIBELLES_COURTS.put("nombre_plants_total", "Plants total");
+        LIBELLES_COURTS.put("nombre_sites_actifs", "Sites actifs");
+        LIBELLES_COURTS.put("nombre_campagnes_actives", "Campagnes actives");
+        LIBELLES_COURTS.put("montant_total_finance", "Total financé");
+        LIBELLES_COURTS.put("budget_total_alloue", "Budget alloué");
+        LIBELLES_COURTS.put("budget_total_reel", "Budget dépensé");
+    }
+
     private interface FournisseurJson {
         JsonNode charger() throws Exception;
     }
@@ -85,6 +131,14 @@ public class DashboardController implements Initializable {
         if (!SessionManager.getInstance().peutAcceder("finances", "view")) {
             ongletsDashboard.getTabs().remove(ongletFinancier);
         }
+
+        comboPeriode.getItems().addAll("Semaine", "Mois", "Année");
+        comboPeriode.setValue("Mois");
+        comboPeriode.valueProperty().addListener((observable, ancien, nouveau) -> {
+            if (ongletsDashboard.getSelectionModel().getSelectedItem() == ongletComparaison) {
+                chargerComparaison();
+            }
+        });
 
         ongletsDashboard.getSelectionModel()
                 .selectedItemProperty()
@@ -125,12 +179,26 @@ public class DashboardController implements Initializable {
         } else if (onglet == ongletCarte) {
             chargerOnglet(defilementCarte, dashboardApi::carteProvinces, "Carte");
         } else if (onglet == ongletComparaison) {
-            chargerOnglet(
-                    defilementComparaison,
-                    () -> dashboardApi.comparaisonPeriode("mois"),
-                    "Comparaison"
-            );
+            chargerComparaison();
         }
+    }
+
+    private void chargerComparaison() {
+
+        String type;
+
+        switch (comboPeriode.getValue() == null ? "Mois" : comboPeriode.getValue()) {
+            case "Semaine":
+                type = "semaine";
+                break;
+            case "Année":
+                type = "annee";
+                break;
+            default:
+                type = "mois";
+        }
+
+        chargerOnglet(defilementComparaison, () -> dashboardApi.comparaisonPeriode(type), "Comparaison");
     }
 
     private void chargerSynthese() {
@@ -599,6 +667,27 @@ public class DashboardController implements Initializable {
                     "dashboard-stat-card"
             );
 
+            HBox entete = new HBox(8);
+            entete.setAlignment(Pos.CENTER_LEFT);
+
+            Label icone = new Label(iconePour(statistique.nom));
+            icone.setStyle("-fx-font-size: 16px;");
+
+            Label libelle =
+                    new Label(
+                            tronquer(libellePour(statistique.nom), 20)
+                    );
+
+            libelle.getStyleClass().add(
+                    "dashboard-stat-label"
+            );
+
+            libelle.setWrapText(true);
+
+            entete.getChildren().addAll(icone, libelle);
+
+            Tooltip.install(carte, new Tooltip(libellePour(statistique.nom)));
+
             Label valeur =
                     new Label(
                             formaterNombre(
@@ -614,22 +703,9 @@ public class DashboardController implements Initializable {
                     Double.MAX_VALUE
             );
 
-            Label libelle =
-                    new Label(
-                            humaniser(
-                                    statistique.nom
-                            )
-                    );
-
-            libelle.getStyleClass().add(
-                    "dashboard-stat-label"
-            );
-
-            libelle.setWrapText(true);
-
             carte.getChildren().addAll(
-                    valeur,
-                    libelle
+                    entete,
+                    valeur
             );
 
             flow.getChildren().add(carte);
@@ -655,14 +731,16 @@ public class DashboardController implements Initializable {
                 "dashboard-chart-card"
         );
 
+        String libelleComplet = libellePour(bloc.nom);
+
         Label titre =
-                new Label(
-                        humaniser(bloc.nom)
-                );
+                new Label(iconePour(bloc.nom) + "  " + tronquer(libelleComplet, 28));
 
         titre.getStyleClass().add(
                 "dashboard-chart-title"
         );
+
+        Tooltip.install(titre, new Tooltip(libelleComplet));
 
         carte.getChildren().add(titre);
 
@@ -679,7 +757,7 @@ public class DashboardController implements Initializable {
 
                 chart.getData().add(
                         new PieChart.Data(
-                                humaniser(point.nom),
+                                tronquer(humaniser(point.nom), 16),
                                 point.valeur
                         )
                 );
@@ -699,6 +777,7 @@ public class DashboardController implements Initializable {
 
             axeX.setLabel("");
             axeY.setLabel("");
+            axeX.setTickLabelRotation(-30);
 
             BarChart<String, Number> chart =
                     new BarChart<>(
@@ -718,7 +797,7 @@ public class DashboardController implements Initializable {
 
                 serie.getData().add(
                         new XYChart.Data<>(
-                                humaniser(point.nom),
+                                tronquer(humaniser(point.nom), 12),
                                 point.valeur
                         )
                 );
@@ -1316,6 +1395,42 @@ public class DashboardController implements Initializable {
         return formatNombre.format(nombre);
     }
 
+    private String dernierSegment(String chemin) {
+        if (chemin == null || chemin.isBlank()) {
+            return "";
+        }
+        String[] parties = chemin.split("\\.");
+        return parties[parties.length - 1];
+    }
+
+    private String iconePour(String chemin) {
+        String cle = dernierSegment(chemin).toLowerCase();
+        for (Map.Entry<String, String> entree : ICONES.entrySet()) {
+            if (cle.contains(entree.getKey())) {
+                return entree.getValue();
+            }
+        }
+        return "📊";
+    }
+
+    private String libellePour(String chemin) {
+        String cle = dernierSegment(chemin).toLowerCase();
+        if (LIBELLES_COURTS.containsKey(cle)) {
+            return LIBELLES_COURTS.get(cle);
+        }
+        return humaniser(chemin);
+    }
+
+    private String tronquer(String valeur, int maximum) {
+        if (valeur == null) {
+            return "";
+        }
+        if (valeur.length() <= maximum) {
+            return valeur;
+        }
+        return valeur.substring(0, maximum - 1).trim() + "…";
+    }
+
     private String humaniser(
             String valeur
     ) {
@@ -1325,8 +1440,10 @@ public class DashboardController implements Initializable {
             return "Données";
         }
 
+        String dernier = dernierSegment(valeur);
+
         String resultat =
-                valeur
+                dernier
                         .replace(".", " ")
                         .replace("_", " ")
                         .replace("-", " ");

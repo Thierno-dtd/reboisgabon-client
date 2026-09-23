@@ -21,8 +21,9 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import com.reboisgabon.client.util.BoutonIconeUtil;
+import com.reboisgabon.client.util.FiltreAutoUtil;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -87,21 +88,23 @@ public class SuivisListController implements Initializable {
         boutonNouveauSuivi.setVisible(peutCreer);
         boutonNouveauSuivi.setManaged(peutCreer);
 
+        FiltreAutoUtil.surValeur(champDateDebut, this::rechercher);
+        FiltreAutoUtil.surValeur(champDateFin, this::rechercher);
+        FiltreAutoUtil.surSaisie(champTauxSurvieMin, this::rechercher);
+        FiltreAutoUtil.surSaisie(champTauxSurvieMax, this::rechercher);
+
         rechercher();
     }
 
     private void construireColonneActions() {
         colonneActions.setCellFactory(colonne -> new TableCell<>() {
 
-            private final Button boutonModifier = new Button("Modifier");
-            private final Button boutonPhotos = new Button("Photos");
-            private final Button boutonSupprimer = new Button("Supprimer");
-            private final HBox conteneur = new HBox(8, boutonModifier, boutonPhotos, boutonSupprimer);
+            private final Button boutonModifier = BoutonIconeUtil.creer("✏️", "Modifier");
+            private final Button boutonPhotos = BoutonIconeUtil.creer("🖼️", "Photos");
+            private final Button boutonSupprimer = BoutonIconeUtil.creer("🗑️", "Supprimer", "bouton-icone-danger");
+            private final HBox conteneur = new HBox(6, boutonModifier, boutonPhotos, boutonSupprimer);
 
             {
-                boutonModifier.getStyleClass().add("bouton-secondaire");
-                boutonPhotos.getStyleClass().add("bouton-secondaire");
-                boutonSupprimer.getStyleClass().add("bouton-secondaire");
                 boutonModifier.setOnAction(evenement -> ouvrirModification(getTableView().getItems().get(getIndex())));
                 boutonPhotos.setOnAction(evenement -> ouvrirPhotos(getTableView().getItems().get(getIndex())));
                 boutonSupprimer.setOnAction(evenement -> supprimer(getTableView().getItems().get(getIndex())));

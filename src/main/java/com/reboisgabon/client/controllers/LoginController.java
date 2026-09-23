@@ -39,21 +39,20 @@ public class LoginController {
 
     private void initVideoBackground() {
         try {
-            URL videoUrl = getClass().getResource("/com/reboisgabon/client/media/background.mp4");
+            URL videoUrl = getClass().getResource("/com/reboisgabon/client/media/rebois-login.mp4");
             if (videoUrl != null) {
                 Media media = new Media(videoUrl.toExternalForm());
                 mediaPlayer = new MediaPlayer(media);
                 mediaView.setMediaPlayer(mediaPlayer);
                 mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
                 mediaPlayer.setMute(true);
+                mediaPlayer.setAutoPlay(true);
                 mediaPlayer.play();
 
-                // Assurer que la vidéo s'étende sur tout l'écran de manière responsive
                 mediaView.fitWidthProperty().bind(rootStackPane.widthProperty());
                 mediaView.fitHeightProperty().bind(rootStackPane.heightProperty());
             }
         } catch (Exception e) {
-            // Fallback si la vidéo n'est pas présente
         }
     }
 

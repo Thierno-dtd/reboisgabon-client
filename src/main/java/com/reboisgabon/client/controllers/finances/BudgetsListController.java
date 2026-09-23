@@ -16,6 +16,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.util.StringConverter;
+import com.reboisgabon.client.util.FiltreAutoUtil;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -65,6 +66,9 @@ public class BudgetsListController implements Initializable {
         boolean peutCreer = SessionManager.getInstance().peutAcceder("finances", "create");
         boutonNouveauBudget.setVisible(peutCreer);
         boutonNouveauBudget.setManaged(peutCreer);
+
+        FiltreAutoUtil.surValeur(comboCampagne, this::rechercher);
+
         rechercher();
     }
 

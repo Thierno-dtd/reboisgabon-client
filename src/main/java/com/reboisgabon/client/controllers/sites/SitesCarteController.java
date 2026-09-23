@@ -1,14 +1,25 @@
 package com.reboisgabon.client.controllers.sites;
 
 import com.reboisgabon.client.api.endpoints.GeolocalisationApi;
+import com.reboisgabon.client.api.endpoints.SitesApi;
+import com.reboisgabon.client.controllers.commun.DetailJsonController;
+import com.reboisgabon.client.dto.sites.Site;
+import com.reboisgabon.client.dto.sites.StatutSite;
 import com.reboisgabon.client.util.AlertUtil;
+import com.reboisgabon.client.util.DialogUtil;
 import com.reboisgabon.client.util.JsonVueUtil;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
+import netscape.javascript.JSObject;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -16,26 +27,83 @@ import java.util.ResourceBundle;
 public class SitesCarteController implements Initializable {
 
     @FXML private WebView carte;
+    @FXML private Label libelleProvinceActive;
+    @FXML private VBox panneauDetail;
+    @FXML private Label libelleTitrePanneau;
+    @FXML private Label libelleNomSite;
+    @FXML private Label badgeStatutSite;
+    @FXML private Label libelleLocaliteSite;
+    @FXML private Label libelleProvinceSite;
+    @FXML private Label libelleSuperficieSite;
+    @FXML private Label libelleResponsableSite;
+    @FXML private Label libelleTauxSurvieSite;
+    @FXML private ProgressBar barreSurvieSite;
+    @FXML private Button boutonScoreSite;
+    @FXML private Button boutonFermerDetail;
     @FXML private TextField champLatitude;
     @FXML private TextField champLongitude;
     @FXML private TextField champRayon;
     @FXML private VBox conteneurResultatsProximite;
 
     private final GeolocalisationApi geolocalisationApi = new GeolocalisationApi();
+    private final SitesApi sitesApi = new SitesApi();
     private double derniereLatitude;
     private double derniereLongitude;
     private double dernierRayon;
+    private Site siteAffiche;
+
+    private static final String GEOJSON_PROVINCES_GABON =
+            "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"nom\":\"Woleu-Ntem\"},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[11.657252,2.322495],[11.768149,2.280172],[12.202645,2.279552],[12.321604,2.314072],[12.749898,2.236712],[12.808189,2.264049],[13.04094,2.244205],[13.133337,2.284513],[13.254157,2.266891],[13.298392,2.215835],[13.291364,2.068945],[13.206925,1.993575],[13.162173,1.899833],[13.191008,1.828727],[13.150184,1.756302],[13.129617,1.592462],[13.239481,1.427976],[13.251263,1.337646],[13.150184,1.256617],[13.184885,1.222623],[12.354833,1.234705],[12.222489,0.999784],[12.204816,0.848166],[11.477212,0.352175],[11.582839,0.230115],[10.80702,0.231769],[10.969646,0.674843],[10.961223,0.818297],[10.404151,0.639703],[10.364463,0.73179],[10.409629,0.860155],[10.415045,1.002234],[11.336341,0.999165],[11.322078,2.16576],[11.351637,2.300584],[11.657252,2.322495]]]}},{\"type\":\"Feature\",\"properties\":{\"nom\":\"Ogooué-Ivindo\"},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[12.354833,1.234705],[13.2709,1.226024],[13.37694,1.294444],[13.543442,1.283489],[13.642247,1.357386],[13.75485,1.374336],[13.794744,1.434436],[14.00083,1.413016],[14.049509,1.376403],[14.14449,1.391622],[14.252184,1.330824],[14.28288,1.130113],[14.346442,1.087118],[14.400805,0.970329],[14.468088,0.913227],[14.437599,0.875142],[14.447624,0.81623],[14.33838,0.693912],[14.328768,0.621204],[14.231823,0.542552],[14.075967,0.539451],[14.045582,0.497283],[14.059121,0.435272],[13.945226,0.350419],[13.871225,0.196423],[13.894893,0.043668],[13.932927,0.022067],[13.910706,-0.065886],[13.888054,-0.092088],[13.722863,-0.009456],[13.522979,0.033848],[13.183154,0.058136],[13.116905,0.095757],[13.091894,0.185054],[13.048796,0.222571],[12.944668,0.251613],[12.889891,0.216783],[12.793049,0.233164],[12.744318,0.279208],[12.656055,0.247685],[12.614145,0.276624],[12.457566,-0.402352],[11.56253,-0.753494],[11.343112,-0.269957],[11.329469,-0.119062],[11.280273,-0.080357],[11.316292,0.011111],[11.576172,0.170326],[11.582839,0.230115],[11.477212,0.352175],[12.204816,0.848166],[12.222489,0.999784],[12.354833,1.234705]]]}},{\"type\":\"Feature\",\"properties\":{\"nom\":\"Haut-Ogooué\"},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[13.888054,-0.092088],[13.832158,-0.177094],[13.877426,-0.2605],[13.921558,-0.237865],[14.095398,-0.276623],[14.138289,-0.336361],[14.159683,-0.455113],[14.292698,-0.436406],[14.358637,-0.461314],[14.466538,-0.552678],[14.498991,-0.630916],[14.44597,-0.775714],[14.457133,-0.856122],[14.39202,-1.008981],[14.465814,-1.224369],[14.426333,-1.331029],[14.487725,-1.40937],[14.438426,-1.502595],[14.463127,-1.54869],[14.364839,-1.612045],[14.448761,-1.686253],[14.406696,-1.735552],[14.397291,-1.906808],[14.245053,-1.974814],[14.233787,-2.134494],[14.148004,-2.224824],[14.234407,-2.354946],[14.14418,-2.390189],[14.090023,-2.498606],[13.86213,-2.480933],[13.847661,-2.423055],[13.906158,-2.359803],[13.743171,-2.09708],[13.603386,-2.320012],[13.458899,-2.441039],[13.025024,-2.338202],[12.969006,-2.372412],[13.008177,-2.276501],[12.945649,-2.18245],[12.907098,-2.195369],[12.804572,-1.919107],[12.741014,-1.890672],[12.776306,-1.749867],[12.949318,-1.418156],[13.038202,-1.384256],[13.167031,-1.259199],[13.15804,-1.116262],[13.264803,-1.15657],[13.557447,-0.769617],[13.303095,-0.239572],[13.251264,-0.201486],[13.222738,-0.106195],[13.281391,0.04067],[13.522979,0.033848],[13.722863,-0.009456],[13.888054,-0.092088]]]}},{\"type\":\"Feature\",\"properties\":{\"nom\":\"Ogooué-Lolo\"},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[12.741014,-1.890672],[12.58319,-1.826502],[12.486555,-1.924894],[12.441753,-1.859938],[12.342275,-1.862677],[12.209157,-1.814876],[12.028341,-1.633182],[12.046686,-1.518202],[12.020125,-1.387047],[11.808044,-1.208608],[11.754508,-1.064276],[11.596223,-1.131352],[11.556329,-1.121792],[11.497831,-0.896431],[11.56253,-0.753494],[12.457566,-0.402352],[12.608874,0.273369],[12.656055,0.247685],[12.730986,0.28143],[12.804676,0.229495],[12.904308,0.219057],[12.944668,0.251613],[13.057167,0.218953],[13.123726,0.088005],[13.281391,0.04067],[13.222738,-0.106195],[13.251264,-0.201486],[13.303095,-0.239572],[13.558997,-0.753029],[13.264803,-1.15657],[13.15804,-1.116262],[13.167031,-1.259199],[12.909579,-1.470608],[12.741014,-1.890672]]]}},{\"type\":\"Feature\",\"properties\":{\"nom\":\"Ngounié\"},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[12.450009,-1.899298],[12.426921,-1.88407],[12.440046,-2.045817],[12.499784,-2.09553],[12.45927,-2.329934],[12.062292,-2.414994],[11.938372,-2.329107],[11.756057,-2.415097],[11.655908,-2.345644],[11.566198,-2.329727],[11.576533,-2.502533],[11.624386,-2.632758],[11.535566,-2.804996],[11.229372,-2.485843],[11.201001,-2.397786],[11.101834,-2.329883],[11.065661,-2.263634],[10.607136,-2.309885],[10.449936,-2.053156],[10.459238,-1.964221],[10.365859,-1.910219],[10.216875,-1.911873],[9.976993,-1.824539],[9.8724,-1.674419],[9.964591,-1.588016],[9.967382,-1.414074],[10.066497,-1.255479],[10.195636,-1.142514],[10.357332,-1.160911],[10.428542,-1.040556],[10.420481,-0.998595],[10.515255,-0.897774],[10.527864,-0.807857],[10.667804,-0.674687],[10.654626,-0.630142],[10.723356,-0.613967],[10.782009,-0.648849],[10.927736,-0.595002],[11.159247,-0.575365],[11.384091,-0.724297],[11.56253,-0.753494],[11.497831,-0.896431],[11.549352,-1.1128],[11.596223,-1.131352],[11.754508,-1.064276],[11.808044,-1.208608],[12.026171,-1.397589],[12.028341,-1.633182],[12.209157,-1.814876],[12.342275,-1.862677],[12.441753,-1.859938],[12.450009,-1.899298]]]}},{\"type\":\"Feature\",\"properties\":{\"nom\":\"Nyanga\"},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[11.535566,-2.804996],[11.530748,-2.866749],[11.636788,-2.833263],[11.778381,-3.005655],[11.706448,-3.04989],[11.687534,-3.17102],[11.944366,-3.303208],[11.954908,-3.335454],[11.898374,-3.389198],[11.827784,-3.548051],[11.834915,-3.592079],[11.898477,-3.622362],[11.897651,-3.66608],[11.838326,-3.710935],[11.665933,-3.691401],[11.569815,-3.54495],[11.482585,-3.509294],[11.413959,-3.587635],[11.212524,-3.697293],[11.114016,-3.936856],[11.021289,-3.857816],[10.96378,-3.691489],[10.646434,-3.451914],[10.635427,-3.313653],[9.961721,-2.745406],[10.325654,-2.644799],[10.358262,-2.554417],[10.416295,-2.520569],[10.398415,-2.474216],[10.430092,-2.41024],[10.607136,-2.309885],[11.039926,-2.253764],[11.192785,-2.388484],[11.229372,-2.485843],[11.535566,-2.804996]]]}},{\"type\":\"Feature\",\"properties\":{\"nom\":\"Estuaire\"},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[9.980765,0.997201],[10.415045,1.002234],[10.409629,0.860155],[10.364463,0.73179],[10.404151,0.639703],[10.957037,0.82088],[10.954867,0.62389],[10.874975,0.468447],[10.832755,0.260501],[10.668579,0.210117],[10.631992,0.137718],[10.639434,0.07891],[10.544142,0.001912],[10.551894,-0.045113],[10.521198,-0.077308],[10.231138,-0.299671],[10.019058,-0.413876],[9.969707,-0.323442],[9.902838,-0.302255],[9.814523,-0.365972],[9.756645,-0.34556],[9.567354,-0.416667],[9.570145,-0.578001],[9.402713,-0.457646],[9.306107,-0.271648],[9.355317,0.016181],[9.309093,0.32453],[9.365896,0.351549],[9.360199,0.181098],[9.424327,0.208197],[9.488048,0.098334],[9.504242,0.187974],[9.566417,0.167467],[9.586762,0.112291],[9.628429,0.153795],[9.712413,0.134833],[9.812185,0.023505],[9.758556,0.125556],[9.819591,0.119086],[9.908946,0.187974],[10.025645,0.195461],[9.93629,0.215969],[9.792247,0.181098],[9.668956,0.22724],[9.566417,0.318305],[9.498057,0.290961],[9.398692,0.488715],[9.305675,0.544257],[9.308849,0.614],[9.539073,0.681464],[9.559255,0.621527],[9.477794,0.619086],[9.464041,0.598863],[9.516449,0.604153],[9.545909,0.564765],[9.573253,0.598863],[9.573253,0.510077],[9.607921,0.469184],[9.6421,0.598863],[9.618175,0.806789],[9.561534,0.962795],[9.578949,1.004381],[9.668793,1.058173],[9.745128,1.059719],[9.792247,0.968817],[9.834107,0.994927],[9.944075,0.924854],[9.980765,0.997201]]]}},{\"type\":\"Feature\",\"properties\":{\"nom\":\"Ogooué-Maritime\"},\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[9.961721,-2.745406],[9.703461,-2.443048],[9.794932,-2.500909],[9.840099,-2.45672],[9.850271,-2.528416],[9.917817,-2.549981],[9.93629,-2.594496],[9.97047,-2.580255],[9.977306,-2.628676],[10.162283,-2.560317],[10.080333,-2.491469],[10.094005,-2.560317],[10.008311,-2.505141],[9.984141,-2.560317],[9.955333,-2.515232],[9.991547,-2.491469],[9.908946,-2.470392],[9.874522,-2.409356],[9.751964,-2.470392],[9.723969,-2.379083],[9.698416,-2.377537],[9.703461,-2.435724],[9.597016,-2.352227],[9.565766,-2.19256],[9.271251,-1.876642],[9.359711,-1.914727],[9.380707,-1.888279],[9.37794,-1.931817],[9.467296,-1.922459],[9.456554,-1.977634],[9.508067,-2.00156],[9.543224,-2.070896],[9.563731,-2.031671],[9.498057,-1.957127],[9.517751,-1.926446],[9.466645,-1.851332],[9.436046,-1.847263],[9.436046,-1.888279],[9.374522,-1.819268],[9.340505,-1.888279],[9.292166,-1.826104],[9.255382,-1.835219],[9.220063,-1.579767],[9.016612,-1.315851],[8.983572,-1.23089],[9.019379,-1.304783],[9.082286,-1.34352],[9.15919,-1.468032],[9.264659,-1.535333],[9.280284,-1.675063],[9.297537,-1.634535],[9.312511,-1.65545],[9.402029,-1.614435],[9.415538,-1.669692],[9.415538,-1.607599],[9.559581,-1.607599],[9.502452,-1.579848],[9.484386,-1.484145],[9.456554,-1.470473],[9.37908,-1.562921],[9.286632,-1.566095],[9.248546,-1.482029],[9.29713,-1.457696],[9.28533,-1.415785],[9.334158,-1.398614],[9.33546,-1.28338],[9.322927,-1.370864],[9.278331,-1.36061],[9.18572,-1.410577],[9.146495,-1.332289],[9.107107,-1.346368],[9.03004,-1.299086],[9.033051,-1.193455],[8.997244,-1.155206],[8.994151,-1.220392],[8.966645,-1.104425],[8.867442,-0.976983],[8.907725,-1.008559],[8.93572,-0.963474],[8.877452,-0.973728],[8.83961,-0.922459],[8.695567,-0.586602],[8.709158,-0.565606],[8.772309,-0.633233],[8.844412,-0.800226],[8.866059,-0.719496],[8.914561,-0.72324],[8.88795,-0.681573],[8.929047,-0.68727],[9.004649,-0.805108],[9.011485,-0.874607],[9.052013,-0.710626],[9.089122,-0.659926],[9.114513,-0.681573],[9.100841,-0.599705],[9.292166,-0.373712],[9.306107,-0.271648],[9.402713,-0.457646],[9.570145,-0.578001],[9.676598,-0.841757],[9.748429,-0.897361],[9.876276,-0.904337],[9.923457,-0.939167],[9.946091,-1.063346],[9.910279,-1.161686],[9.989861,-1.234808],[10.066497,-1.255479],[9.967382,-1.414074],[9.964591,-1.588016],[9.8724,-1.674419],[9.925162,-1.76816],[9.98614,-1.828622],[10.216875,-1.911873],[10.365859,-1.910219],[10.459238,-1.964221],[10.449936,-2.053156],[10.607136,-2.309885],[10.430092,-2.41024],[10.398415,-2.474216],[10.416295,-2.520569],[10.358262,-2.554417],[10.325654,-2.644799],[9.961721,-2.745406]]],[[[8.997244,-0.627618],[9.041515,-0.669854],[9.038748,-0.743748],[9.006602,-0.76214],[8.968516,-0.7374],[8.949474,-0.661716],[9.004649,-0.592869],[8.997244,-0.627618]]]]}},{\"type\":\"Feature\",\"properties\":{\"nom\":\"Moyen-Ogooué\"},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[11.582839,0.230115],[11.570281,0.159836],[11.356134,0.043409],[11.280118,-0.071365],[11.329469,-0.119062],[11.343112,-0.269957],[11.56253,-0.753494],[11.384091,-0.724297],[11.159247,-0.575365],[10.927736,-0.595002],[10.782009,-0.648849],[10.737774,-0.616138],[10.660363,-0.625491],[10.667804,-0.674687],[10.527864,-0.807857],[10.515255,-0.897774],[10.420481,-0.998595],[10.428542,-1.040556],[10.357332,-1.160911],[10.195636,-1.142514],[10.066497,-1.255479],[9.989861,-1.234808],[9.910279,-1.161686],[9.946091,-1.063346],[9.923457,-0.939167],[9.876276,-0.904337],[9.748429,-0.897361],[9.635619,-0.786722],[9.570145,-0.578001],[9.567354,-0.416667],[9.756645,-0.34556],[9.814523,-0.365972],[9.902838,-0.302255],[9.977304,-0.331711],[10.001488,-0.415271],[10.110112,-0.376049],[10.548173,-0.049092],[10.544142,0.001912],[10.644085,0.088315],[10.631992,0.137718],[10.668579,0.210117],[10.784179,0.235283],[11.582839,0.230115]]]}}]}";
+
+    public class PontCarteJava {
+        public void ouvrirDetail(String idSite) {
+            Platform.runLater(() -> chargerDetailSite(idSite));
+        }
+
+        public void provinceActive(String nomProvince) {
+            Platform.runLater(() -> libelleProvinceActive.setText(
+                    nomProvince == null || nomProvince.isBlank()
+                            ? "Toutes les provinces"
+                            : nomProvince
+            ));
+        }
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        carte.setContextMenuEnabled(false);
+
+        ChangeListener<Number> relayerTaille = (observable, ancien, nouveau) -> forcerRecalculTaille();
+        carte.widthProperty().addListener(relayerTaille);
+        carte.heightProperty().addListener(relayerTaille);
+
+        masquerDetail();
         chargerCarte();
+    }
+
+    private void forcerRecalculTaille() {
+        try {
+            carte.getEngine().executeScript(
+                    "if (window.carteRebois) { setTimeout(function(){ window.carteRebois.invalidateSize(true); }, 80); }"
+            );
+        } catch (Exception ignore) {
+        }
     }
 
     private void chargerCarte() {
         new Thread(() -> {
             try {
                 String geojson = geolocalisationApi.sitesGeojson();
-                Platform.runLater(() -> carte.getEngine().loadContent(construireHtmlCarte(geojson), "text/html"));
+                Platform.runLater(() -> {
+                    carte.getEngine().getLoadWorker().stateProperty().addListener((obs, ancien, nouveau) -> {
+                        if (nouveau == Worker.State.SUCCEEDED) {
+                            JSObject fenetre = (JSObject) carte.getEngine().executeScript("window");
+                            fenetre.setMember("pontJava", new PontCarteJava());
+                            forcerRecalculTaille();
+                        }
+                    });
+                    carte.getEngine().loadContent(construireHtmlCarte(geojson), "text/html");
+                });
             } catch (Exception e) {
                 Platform.runLater(() -> AlertUtil.erreur("Erreur", "Impossible de charger la carte des sites."));
             }
@@ -44,19 +112,200 @@ public class SitesCarteController implements Initializable {
 
     private String construireHtmlCarte(String geojson) {
         return "<!DOCTYPE html><html><head><meta charset=\"utf-8\"/>"
+                + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>"
                 + "<link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"/>"
-                + "<style>html,body,#carte{height:100%;margin:0;padding:0;background:#0B140F;}</style>"
+                + "<style>"
+                + "html,body{height:100%;margin:0;padding:0;background:#0a120c;}"
+                + "#carte{position:absolute;top:0;left:0;right:0;bottom:0;background:#0a120c;}"
+                + ".leaflet-container{background:#0a120c;}"
+                + ".marqueur-site{border:2px solid #0a120c;border-radius:50%;cursor:pointer;box-shadow:0 0 0 4px rgba(34,197,94,0.22);}"
+                + ".marqueur-site:hover{box-shadow:0 0 0 6px rgba(34,197,94,0.35);}"
+                + ".leaflet-control-zoom a{background:#101c14;color:#f2f7f3;border-color:#223a29;}"
+                + ".leaflet-control-attribution{background:rgba(10,18,12,0.7);color:#6c8a76;}"
+                + ".leaflet-control-attribution a{color:#9fb8a6;}"
+                + ".etiquette-province{background:transparent;border:none;box-shadow:none;color:#e7f3ea;font-size:10.5px;font-weight:bold;text-shadow:0 1px 3px rgba(0,0,0,0.9);}"
+                + "</style>"
                 + "</head><body><div id=\"carte\"></div>"
                 + "<script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script>"
                 + "<script>"
-                + "var carte = L.map('carte').setView([-0.8, 11.6], 6);"
-                + "L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(carte);"
+                + "var provincesGabon = " + GEOJSON_PROVINCES_GABON + ";"
+                + "var carte = L.map('carte', {zoomControl:true, attributionControl:true, minZoom:6});"
+                + "window.carteRebois = carte;"
+                + "L.control.attribution({prefix:false}).addTo(carte).setPrefix('Frontières provinciales — Natural Earth (Public Domain)');"
+                + "var palette = ['#16a34a','#22c55e','#84cc16','#0d9488','#4d7c0f','#059669','#65a30d','#14b8a6','#15803d'];"
+                + "var provinceSelectionnee = null;"
+                + "var calquesProvinces = {};"
+                + "function normaliser(texte) {"
+                + "  return (texte || '').toString().toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');"
+                + "}"
+                + "var coucheProvinces = L.geoJSON(provincesGabon, {"
+                + "  style: function(feature) {"
+                + "    var index = provincesGabon.features.indexOf(feature);"
+                + "    return {color:'#f2f7f3', weight:1, opacity:0.35, fillColor: palette[index % palette.length], fillOpacity:0.28};"
+                + "  },"
+                + "  onEachFeature: function(feature, calque) {"
+                + "    var nom = feature.properties.nom;"
+                + "    calquesProvinces[nom] = calque;"
+                + "    calque.bindTooltip(nom, {permanent:true, direction:'center', className:'etiquette-province'});"
+                + "    calque.on('mouseover', function() { if (provinceSelectionnee !== nom) { calque.setStyle({fillOpacity:0.45, weight:2}); } });"
+                + "    calque.on('mouseout', function() { if (provinceSelectionnee !== nom) { calque.setStyle({fillOpacity:0.28, weight:1}); } });"
+                + "    calque.on('click', function() { selectionnerProvince(provinceSelectionnee === nom ? null : nom); });"
+                + "  }"
+                + "}).addTo(carte);"
+                + "var limitesGabon = coucheProvinces.getBounds();"
+                + "carte.fitBounds(limitesGabon, {padding:[20,20]});"
+                + "carte.setMaxBounds(limitesGabon.pad(0.15));"
+                + "carte.setMaxBoundsViscosity(0.9);"
+                + "function couleurStatut(statut) {"
+                + "  if (statut === 'TERMINE') { return '#16a34a'; }"
+                + "  if (statut === 'EN_COURS') { return '#84cc16'; }"
+                + "  if (statut === 'SUSPENDU') { return '#ef4444'; }"
+                + "  return '#f59e0b';"
+                + "}"
                 + "var donnees = " + geojson + ";"
-                + "var couche = L.geoJSON(donnees, {onEachFeature: function(feature, calque) {"
-                + "  if (feature.properties && feature.properties.nom) { calque.bindPopup(feature.properties.nom); }"
-                + "}}).addTo(carte);"
-                + "if (donnees.features && donnees.features.length > 0) { carte.fitBounds(couche.getBounds()); }"
+                + "var coucheSites = L.geoJSON(donnees, {"
+                + "  pointToLayer: function(feature, latlng) {"
+                + "    var statut = feature.properties ? feature.properties.statut : null;"
+                + "    var marqueur = L.circleMarker(latlng, {radius:8, className:'marqueur-site', color:'#0a120c', weight:2, fillColor:couleurStatut(statut), fillOpacity:1});"
+                + "    marqueur.feature = feature;"
+                + "    return marqueur;"
+                + "  },"
+                + "  onEachFeature: function(feature, calque) {"
+                + "    calque.on('click', function(e) {"
+                + "      if (e.originalEvent) { e.originalEvent.stopPropagation(); }"
+                + "      var idSite = feature.id || (feature.properties && feature.properties.id);"
+                + "      if (window.pontJava && idSite) { window.pontJava.ouvrirDetail(String(idSite)); }"
+                + "    });"
+                + "  }"
+                + "}).addTo(carte);"
+                + "function selectionnerProvince(nom) {"
+                + "  provinceSelectionnee = nom;"
+                + "  Object.keys(calquesProvinces).forEach(function(cle) {"
+                + "    var calque = calquesProvinces[cle];"
+                + "    var actif = (cle === nom);"
+                + "    calque.setStyle({fillOpacity: actif ? 0.5 : 0.28, weight: actif ? 3 : 1, color: actif ? '#f2f7f3' : '#f2f7f3'});"
+                + "  });"
+                + "  coucheSites.eachLayer(function(calque) {"
+                + "    var proprietes = calque.feature ? calque.feature.properties : null;"
+                + "    var provinceSite = proprietes ? proprietes.province : null;"
+                + "    var visible = !nom || normaliser(provinceSite) === normaliser(nom);"
+                + "    var element = calque.getElement ? calque.getElement() : null;"
+                + "    if (element) { element.style.display = visible ? '' : 'none'; }"
+                + "  });"
+                + "  if (nom && calquesProvinces[nom]) {"
+                + "    carte.fitBounds(calquesProvinces[nom].getBounds(), {padding:[30,30]});"
+                + "  } else {"
+                + "    carte.fitBounds(limitesGabon, {padding:[20,20]});"
+                + "  }"
+                + "  if (window.pontJava) { window.pontJava.provinceActive(nom); }"
+                + "}"
+                + "window.reinitialiserVueGabon = function() { selectionnerProvince(null); };"
+                + "setTimeout(function(){ carte.invalidateSize(true); }, 150);"
+                + "window.addEventListener('resize', function(){ carte.invalidateSize(true); });"
                 + "</script></body></html>";
+    }
+
+    private void chargerDetailSite(String idSite) {
+        panneauDetail.setDisable(true);
+        libelleTitrePanneau.setText("Chargement…");
+
+        new Thread(() -> {
+            try {
+                Site site = sitesApi.obtenir(idSite);
+                Platform.runLater(() -> afficherDetail(site));
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    panneauDetail.setDisable(false);
+                    AlertUtil.erreur("Erreur", "Impossible de charger le détail de ce site.");
+                });
+            }
+        }).start();
+    }
+
+    private void afficherDetail(Site site) {
+        siteAffiche = site;
+        panneauDetail.setDisable(false);
+        panneauDetail.setVisible(true);
+        panneauDetail.setManaged(true);
+
+        libelleTitrePanneau.setText("Détail du site");
+        libelleNomSite.setText(site.getNom() != null ? site.getNom() : "—");
+
+        String statutTexte = site.getStatut() != null ? libelleStatut(site.getStatut()) : "—";
+        badgeStatutSite.setText(statutTexte);
+        badgeStatutSite.getStyleClass().removeAll("badge-succes", "badge-erreur");
+        badgeStatutSite.getStyleClass().add(classeStatut(site.getStatut()));
+
+        libelleLocaliteSite.setText(site.getLocalite() != null ? site.getLocalite() : "—");
+        libelleProvinceSite.setText(site.getProvince() != null ? site.getProvince() : "—");
+        libelleSuperficieSite.setText(site.getSuperficieHectares() != null ? site.getSuperficieHectares() + " ha" : "—");
+        libelleResponsableSite.setText(site.getResponsable() != null ? site.getResponsable() : "—");
+
+        double taux = site.getTauxSurvieMoyen() != null ? site.getTauxSurvieMoyen().doubleValue() : 0;
+        libelleTauxSurvieSite.setText(site.getTauxSurvieMoyen() != null ? taux + " %" : "—");
+        barreSurvieSite.setProgress(taux / 100.0);
+    }
+
+    private String libelleStatut(StatutSite statut) {
+        switch (statut) {
+            case PLANIFIE:
+                return "Planifié";
+            case EN_COURS:
+                return "En cours";
+            case TERMINE:
+                return "Terminé";
+            case SUSPENDU:
+                return "Suspendu";
+            default:
+                return statut.toString();
+        }
+    }
+
+    private String classeStatut(StatutSite statut) {
+        if (statut == StatutSite.SUSPENDU) {
+            return "badge-erreur";
+        }
+        return "badge-succes";
+    }
+
+    @FXML
+    private void masquerDetail() {
+        siteAffiche = null;
+        panneauDetail.setVisible(false);
+        panneauDetail.setManaged(false);
+    }
+
+    @FXML
+    private void reinitialiserVueGabon() {
+        try {
+            carte.getEngine().executeScript("if (window.reinitialiserVueGabon) { window.reinitialiserVueGabon(); }");
+        } catch (Exception ignore) {
+        }
+    }
+
+    @FXML
+    private void voirScoreSite() {
+        if (siteAffiche == null) {
+            return;
+        }
+        Site site = siteAffiche;
+        new Thread(() -> {
+            try {
+                var score = sitesApi.scoreEcologique(site.getId());
+                Platform.runLater(() ->
+                        DialogUtil.<DetailJsonController>ouvrirModal(
+                                "/com/reboisgabon/client/fxml/detail-json.fxml",
+                                "Score écologique",
+                                controleur -> {
+                                    controleur.definirTitre("Score écologique — " + site.getNom());
+                                    controleur.definirContenu(score);
+                                }
+                        )
+                );
+            } catch (Exception e) {
+                Platform.runLater(() -> AlertUtil.erreur("Erreur", "Impossible de charger le score écologique."));
+            }
+        }).start();
     }
 
     @FXML

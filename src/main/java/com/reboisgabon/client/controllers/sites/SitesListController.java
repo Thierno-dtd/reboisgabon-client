@@ -6,9 +6,7 @@ import com.reboisgabon.client.dto.common.PageDrf;
 import com.reboisgabon.client.dto.sites.Site;
 import com.reboisgabon.client.dto.sites.StatutSite;
 import com.reboisgabon.client.session.SessionManager;
-import com.reboisgabon.client.util.AlertUtil;
-import com.reboisgabon.client.util.DialogUtil;
-import com.reboisgabon.client.util.ErreurApiUtil;
+import com.reboisgabon.client.util.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -91,22 +89,24 @@ public class SitesListController implements Initializable {
         boolean peutCreer = SessionManager.getInstance().peutAcceder("sites", "create");
         boutonNouveauSite.setVisible(peutCreer);
         boutonNouveauSite.setManaged(peutCreer);
+
+        FiltreAutoUtil.surSaisie(champRecherche, this::rechercher);
+        FiltreAutoUtil.surSaisie(champProvince, this::rechercher);
+        FiltreAutoUtil.surSaisie(champTauxSurvieMin, this::rechercher);
+        FiltreAutoUtil.surValeur(comboStatut, this::rechercher);
+
         rechercher();
     }
 
     private void construireColonneActions() {
         colonneActions.setCellFactory(colonne -> new TableCell<>() {
 
-            private final Button boutonModifier = new Button("Modifier");
-            private final Button boutonScore = new Button("Score");
-            private final Button boutonSupprimer = new Button("Supprimer");
-            private final HBox conteneur = new HBox(8, boutonModifier, boutonScore, boutonSupprimer);
+            private final Button boutonModifier = BoutonIconeUtil.creer("✏️", "Modifier");
+            private final Button boutonScore = BoutonIconeUtil.creer("🍃", "Score écologique");
+            private final Button boutonSupprimer = BoutonIconeUtil.creer("🗑️", "Supprimer", "bouton-icone-danger");
+            private final HBox conteneur = new HBox(6, boutonModifier, boutonScore, boutonSupprimer);
 
             {
-                boutonModifier.getStyleClass().add("bouton-secondaire");
-                boutonScore.getStyleClass().add("bouton-secondaire");
-                boutonSupprimer.getStyleClass().add("bouton-secondaire");
-
                 boutonModifier.setOnAction(evenement -> {
                     Site site = getTableView().getItems().get(getIndex());
                     ouvrirModification(site);

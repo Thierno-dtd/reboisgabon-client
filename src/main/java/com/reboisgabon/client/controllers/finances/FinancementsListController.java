@@ -18,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import com.reboisgabon.client.util.FiltreAutoUtil;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -95,6 +96,9 @@ public class FinancementsListController implements Initializable {
         boolean peutCreer = SessionManager.getInstance().peutAcceder("finances", "create");
         boutonNouveauFinancement.setVisible(peutCreer);
         boutonNouveauFinancement.setManaged(peutCreer);
+
+        FiltreAutoUtil.surValeur(comboPartenaire, this::rechercher);
+        FiltreAutoUtil.surValeur(comboDevise, this::rechercher);
 
         rechercher();
     }

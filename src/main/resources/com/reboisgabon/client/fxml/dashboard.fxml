@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox spacing="16"
@@ -16,17 +19,24 @@
         <Insets top="8" right="8" bottom="12" left="8"/>
     </padding>
 
-    <VBox spacing="4">
-        <Label text="TABLEAU DE BORD"
-               styleClass="dashboard-overline"/>
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="TABLEAU DE BORD"
+                   styleClass="dashboard-overline"/>
 
-        <Label text="Vue d'ensemble"
-               styleClass="dashboard-title"/>
+            <Label text="Vue d'ensemble"
+                   styleClass="dashboard-title"/>
 
-        <Label text="Une vision globale des sites, campagnes, essences, objectifs et performances du programme."
-               styleClass="dashboard-subtitle"
-               wrapText="true"/>
-    </VBox>
+            <Label text="Une vision globale des sites, campagnes, essences, objectifs et performances du programme."
+                   styleClass="dashboard-subtitle"
+                   wrapText="true"/>
+        </VBox>
+
+        <VBox spacing="4" alignment="CENTER_RIGHT">
+            <Label text="Période (onglet Comparaison)" styleClass="texte-muet"/>
+            <ComboBox fx:id="comboPeriode" prefWidth="150" styleClass="champ-texte"/>
+        </VBox>
+    </HBox>
 
     <TabPane fx:id="ongletsDashboard"
              tabClosingPolicy="UNAVAILABLE"

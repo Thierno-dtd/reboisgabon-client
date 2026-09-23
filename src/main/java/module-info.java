@@ -14,6 +14,7 @@ module com.reboisgabon {
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.ikonli.materialdesign2;
     requires javafx.media;
+    requires jdk.jsobject;
     exports com.reboisgabon.client;
 
     opens com.reboisgabon.client.controllers to javafx.fxml;

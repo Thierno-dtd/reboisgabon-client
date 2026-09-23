@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import com.reboisgabon.client.util.FiltreAutoUtil;
 
 public class JournalController implements Initializable {
 
@@ -43,6 +44,13 @@ public class JournalController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         comboAction.getItems().add(null);
         comboAction.getItems().addAll(ActionAudit.values());
+
+        FiltreAutoUtil.surSaisie(champRecherche, this::rechercher);
+        FiltreAutoUtil.surSaisie(champModele, this::rechercher);
+        FiltreAutoUtil.surValeur(comboAction, this::rechercher);
+        FiltreAutoUtil.surValeur(champDateDebut, this::rechercher);
+        FiltreAutoUtil.surValeur(champDateFin, this::rechercher);
+
         rechercher();
     }
 

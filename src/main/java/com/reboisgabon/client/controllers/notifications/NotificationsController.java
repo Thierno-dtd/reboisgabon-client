@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import com.reboisgabon.client.util.BoutonIconeUtil;
 
 public class NotificationsController implements Initializable {
 
@@ -52,8 +53,7 @@ public class NotificationsController implements Initializable {
             HBox.setHgrow(espaceur, javafx.scene.layout.Priority.ALWAYS);
             ligne.getChildren().addAll(libelleMessage, espaceur);
             if (!notification.isLue()) {
-                Button boutonMarquer = new Button("Marquer comme lu");
-                boutonMarquer.getStyleClass().add("bouton-secondaire");
+                Button boutonMarquer = BoutonIconeUtil.creer("✅", "Marquer comme lu", "bouton-icone-succes");
                 boutonMarquer.setOnAction(evenement -> marquerLue(notification.getId()));
                 ligne.getChildren().add(boutonMarquer);
             }

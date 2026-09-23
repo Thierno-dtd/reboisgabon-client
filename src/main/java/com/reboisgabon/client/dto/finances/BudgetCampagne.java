@@ -8,9 +8,9 @@ public class BudgetCampagne {
 
     private String id;
     private String campagne;
-    @JsonProperty("montant_alloue")
+    @JsonProperty("budget_alloue")
     private BigDecimal montantAlloue;
-    @JsonProperty("montant_reel")
+    @JsonProperty("cout_reel")
     private BigDecimal montantReel;
 
     public String getId() {

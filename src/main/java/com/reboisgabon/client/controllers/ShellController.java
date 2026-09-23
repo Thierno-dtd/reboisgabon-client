@@ -75,6 +75,12 @@ public class ShellController implements Initializable {
     @FXML
     private Label badgeNotifications;
 
+    @FXML
+    private Button boutonExports;
+
+    @FXML
+    private Button boutonParametres;
+
     private final NotificationsApi notificationsApi = new NotificationsApi();
 
     private boolean isExpanded = true;
@@ -289,7 +295,9 @@ public class ShellController implements Initializable {
                 boutonFinances,
                 boutonIntelligence,
                 boutonUtilisateurs,
-                boutonJournal
+                boutonJournal,
+                boutonExports,
+                boutonParametres
         };
 
         for (Button bouton : boutons) {

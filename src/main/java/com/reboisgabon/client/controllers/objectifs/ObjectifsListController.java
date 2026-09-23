@@ -18,8 +18,9 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import com.reboisgabon.client.util.BoutonIconeUtil;
+import com.reboisgabon.client.util.FiltreAutoUtil;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -76,7 +77,39 @@ public class ObjectifsListController implements Initializable {
         boutonNouvelObjectif.setVisible(peutCreer);
         boutonNouvelObjectif.setManaged(peutCreer);
 
+        FiltreAutoUtil.surValeur(comboPortee, this::rechercher);
+
         rechercher();
+    }
+
+    private void construireColonneActions() {
+        colonneActions.setCellFactory(colonne -> new TableCell<>() {
+
+            private final Button boutonModifier = BoutonIconeUtil.creer("✏️", "Modifier");
+            private final Button boutonSupprimer = BoutonIconeUtil.creer("🗑️", "Supprimer", "bouton-icone-danger");
+            private final HBox conteneur = new HBox(6, boutonModifier, boutonSupprimer);
+
+            {
+                boutonModifier.setOnAction(evenement -> ouvrirModification(getTableView().getItems().get(getIndex())));
+                boutonSupprimer.setOnAction(evenement -> supprimer(getTableView().getItems().get(getIndex())));
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean vide) {
+                super.updateItem(item, vide);
+                if (vide) {
+                    setGraphic(null);
+                    return;
+                }
+                boolean peutModifier = SessionManager.getInstance().peutAcceder("objectifs", "edit");
+                boolean peutSupprimer = SessionManager.getInstance().peutAcceder("objectifs", "delete");
+                boutonModifier.setVisible(peutModifier);
+                boutonModifier.setManaged(peutModifier);
+                boutonSupprimer.setVisible(peutSupprimer);
+                boutonSupprimer.setManaged(peutSupprimer);
+                setGraphic(conteneur);
+            }
+        });
     }
 
     private void construireColonneProgression() {
@@ -101,38 +134,6 @@ public class ObjectifsListController implements Initializable {
                         ? objectif.getProgressionPourcentage().doubleValue() / 100.0 : 0.0;
                 barre.setProgress(Math.min(1.0, Math.max(0.0, valeur)));
                 setGraphic(barre);
-            }
-        });
-    }
-
-    private void construireColonneActions() {
-        colonneActions.setCellFactory(colonne -> new TableCell<>() {
-
-            private final Button boutonModifier = new Button("Modifier");
-            private final Button boutonSupprimer = new Button("Supprimer");
-            private final HBox conteneur = new HBox(8, boutonModifier, boutonSupprimer);
-
-            {
-                boutonModifier.getStyleClass().add("bouton-secondaire");
-                boutonSupprimer.getStyleClass().add("bouton-secondaire");
-                boutonModifier.setOnAction(evenement -> ouvrirModification(getTableView().getItems().get(getIndex())));
-                boutonSupprimer.setOnAction(evenement -> supprimer(getTableView().getItems().get(getIndex())));
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean vide) {
-                super.updateItem(item, vide);
-                if (vide) {
-                    setGraphic(null);
-                    return;
-                }
-                boolean peutModifier = SessionManager.getInstance().peutAcceder("objectifs", "edit");
-                boolean peutSupprimer = SessionManager.getInstance().peutAcceder("objectifs", "delete");
-                boutonModifier.setVisible(peutModifier);
-                boutonModifier.setManaged(peutModifier);
-                boutonSupprimer.setVisible(peutSupprimer);
-                boutonSupprimer.setManaged(peutSupprimer);
-                setGraphic(conteneur);
             }
         });
     }
