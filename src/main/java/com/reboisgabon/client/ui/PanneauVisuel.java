@@ -37,7 +37,7 @@ public class PanneauVisuel extends StackPane {
         voile.widthProperty().bind(widthProperty());
         voile.heightProperty().bind(heightProperty());
         voile.setFill(new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.web("#12281B", 0.72)), new Stop(0.55, Color.web("#12281B", 0.55)), new Stop(1, Color.web("#0D1F15", 0.94))));
+                new Stop(0, Color.web("#12281B", 0.55)), new Stop(0.5, Color.web("#12281B", 0.32)), new Stop(1, Color.web("#0D1F15", 0.9))));
         voile.setMouseTransparent(true);
 
         Illustrations.CourbesNiveau courbes = new Illustrations.CourbesNiveau(Color.web("#DCEAD5"), 0.10, 13);

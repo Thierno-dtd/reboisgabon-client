@@ -483,7 +483,7 @@ public class CarteController implements Initializable {
             if (n++ >= 3) {
                 break;
             }
-            dessins.getChildren().add(Illustrations.feuille(Illustrations.especePour(essence), 88, Color.web("#3E8E5A"), Color.web("#FFFFFF")));
+            dessins.getChildren().add(Illustrations.feuille(Illustrations.especePour(essence), 62, Color.web("#3E8E5A"), Color.web("#FFFFFF")));
         }
 
         StackPane planche = new StackPane();

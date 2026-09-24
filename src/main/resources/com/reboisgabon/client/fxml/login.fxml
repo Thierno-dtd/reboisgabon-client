@@ -17,7 +17,7 @@
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.reboisgabon.client.controllers.LoginController">
 
-    <PanneauVisuel HBox.hgrow="ALWAYS" prefWidth="720"/>
+    <PanneauVisuel video="true" HBox.hgrow="ALWAYS" prefWidth="720"/>
 
     <StackPane minWidth="460" prefWidth="560" maxWidth="620" HBox.hgrow="SOMETIMES">
         <VBox alignment="CENTER_LEFT" maxWidth="380" spacing="26" styleClass="formulaire-connexion">

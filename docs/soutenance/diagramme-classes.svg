@@ -1,0 +1,247 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3200" height="1800" viewBox="0 0 3200 1800" font-family="Arial, Helvetica, sans-serif">
+<defs><marker id="losange" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="20" markerHeight="12" orient="auto-start-reverse"><path d="M1,6 L10,1 L19,6 L10,11 Z" fill="#16291D"/></marker><filter id="ombre" x="-5%" y="-5%" width="110%" height="115%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#16291D" flood-opacity="0.12"/></filter></defs>
+<rect width="3200" height="1800" fill="#F4F6F1"/>
+<text x="95" y="92" font-size="46" font-weight="bold" fill="#16291D">Diagramme de classes — ReboisGabon</text>
+<text x="95" y="140" font-size="24" fill="#46594B">Modèle de données de l'API Django (sujet n°7 : Site de reboisement, Campagne de plantation, Suivi de croissance)</text>
+<rect x="2045" y="70" width="34" height="26" rx="4" fill="#1F5136"/>
+<text x="2091" y="90" font-size="22" fill="#16291D">Entités du sujet n°7</text>
+<rect x="2635" y="70" width="34" height="26" rx="4" fill="#3E8E5A"/>
+<text x="2681" y="90" font-size="22" fill="#16291D">Domaine reboisement</text>
+<rect x="2045" y="118" width="34" height="26" rx="4" fill="#C99A1C"/>
+<text x="2091" y="138" font-size="22" fill="#16291D">Finances</text>
+<rect x="2635" y="118" width="34" height="26" rx="4" fill="#46594B"/>
+<text x="2681" y="138" font-size="22" fill="#16291D">Comptes, sécurité, audit</text>
+<path d="M1900,632 L1900,820" fill="none" stroke="#16291D" stroke-width="2.4"/>
+<polygon points="1900.0,632.0 1892.0,645.0 1900.0,658.0 1908.0,645.0" fill="#16291D"/>
+<text x="1914" y="668" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">1</text>
+<text x="1914" y="806" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">0..*</text>
+<text x="1884" y="734" font-size="21" fill="#16291D" text-anchor="end" font-style="italic">comporte</text>
+<path d="M1900,1072 L1900,1230" fill="none" stroke="#16291D" stroke-width="2.4"/>
+<polygon points="1900.0,1072.0 1892.0,1085.0 1900.0,1098.0 1908.0,1085.0" fill="#16291D"/>
+<text x="1914" y="1108" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">1</text>
+<text x="1914" y="1216" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">0..*</text>
+<text x="1884" y="1159" font-size="21" fill="#16291D" text-anchor="end" font-style="italic">contrôlée par</text>
+<path d="M1585,900 L1685,900" fill="none" stroke="#16291D" stroke-width="2.4"/>
+<text x="1593" y="890" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">1</text>
+<text x="1677" y="928" font-size="21" fill="#16291D" text-anchor="end" font-weight="bold">0..*</text>
+<path d="M1585,330 L1685,330" fill="none" stroke="#16291D" stroke-width="2.4"/>
+<text x="1593" y="320" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">0..*</text>
+<text x="1677" y="358" font-size="21" fill="#16291D" text-anchor="end" font-weight="bold">0..1</text>
+<path d="M2215,380 L2115,380" fill="none" stroke="#16291D" stroke-width="2.4"/>
+<text x="2207" y="370" font-size="21" fill="#16291D" text-anchor="end" font-weight="bold">0..*</text>
+<text x="2123" y="408" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">0..1</text>
+<path d="M2255,542 L2255,855 L2115,855" fill="none" stroke="#16291D" stroke-width="2.4"/>
+<text x="2267" y="574" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">0..*</text>
+<text x="2123" y="883" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">0..1</text>
+<path d="M2115,1010 L2215,1010" fill="none" stroke="#16291D" stroke-width="2.4"/>
+<polygon points="2115.0,1010.0 2128.0,1018.0 2141.0,1010.0 2128.0,1002.0" fill="#16291D"/>
+<text x="2145" y="1000" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">1</text>
+<text x="2207" y="1038" font-size="21" fill="#16291D" text-anchor="end" font-weight="bold">0..1</text>
+<path d="M2115,1400 L2215,1400" fill="none" stroke="#16291D" stroke-width="2.4"/>
+<polygon points="2115.0,1400.0 2128.0,1408.0 2141.0,1400.0 2128.0,1392.0" fill="#16291D"/>
+<text x="2145" y="1390" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">1</text>
+<text x="2207" y="1428" font-size="21" fill="#16291D" text-anchor="end" font-weight="bold">0..*</text>
+<path d="M2645,330 L2745,330" fill="none" stroke="#16291D" stroke-width="2.4"/>
+<text x="2653" y="320" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">0..*</text>
+<text x="2737" y="358" font-size="21" fill="#16291D" text-anchor="end" font-weight="bold">1</text>
+<path d="M310,662 L310,850" fill="none" stroke="#16291D" stroke-width="2.4"/>
+<polygon points="310.0,662.0 302.0,675.0 310.0,688.0 318.0,675.0" fill="#16291D"/>
+<text x="324" y="698" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">1</text>
+<text x="324" y="836" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">0..1</text>
+<text x="294" y="764" font-size="21" fill="#16291D" text-anchor="end" font-weight="bold">2FA</text>
+<path d="M95,420 L40,420 L40,1370 L95,1370" fill="none" stroke="#16291D" stroke-width="2.4"/>
+<polygon points="95.0,420.0 82.0,412.0 69.0,420.0 82.0,428.0" fill="#16291D"/>
+<text x="50" y="410" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">1</text>
+<text x="48" y="1360" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">0..*</text>
+<path d="M525,330 L625,330" fill="none" stroke="#16291D" stroke-width="2.4"/>
+<text x="533" y="320" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">0..1</text>
+<text x="617" y="358" font-size="21" fill="#16291D" text-anchor="end" font-weight="bold">0..*</text>
+<path d="M525,632 L625,632" fill="none" stroke="#16291D" stroke-width="2.4"/>
+<polygon points="525.0,632.0 538.0,640.0 551.0,632.0 538.0,624.0" fill="#16291D"/>
+<text x="555" y="622" font-size="21" fill="#16291D" text-anchor="start" font-weight="bold">1</text>
+<text x="617" y="660" font-size="21" fill="#16291D" text-anchor="end" font-weight="bold">0..*</text>
+<g filter="url(#ombre)"><rect x="95" y="230" width="430" height="432" rx="6" fill="#FFFFFF" stroke="#46594B" stroke-width="2.4"/></g>
+<path d="M95,294 L95,236 Q95,230 101,230 L519,230 Q525,230 525,236 L525,294 Z" fill="#46594B"/>
+<text x="310.0" y="272" font-size="27" font-weight="bold" fill="#FFFFFF" text-anchor="middle">User</text>
+<text x="113" y="329" font-size="20" fill="#16291D">- id : UUID</text>
+<text x="113" y="359" font-size="20" fill="#16291D">- email : String {unique}</text>
+<text x="113" y="389" font-size="20" fill="#16291D">- first_name : String</text>
+<text x="113" y="419" font-size="20" fill="#16291D">- last_name : String</text>
+<text x="113" y="449" font-size="20" fill="#16291D">- role : Role</text>
+<text x="113" y="479" font-size="20" fill="#16291D">- is_active : Boolean</text>
+<text x="113" y="509" font-size="20" fill="#16291D">- two_fa_enabled : Boolean</text>
+<text x="113" y="539" font-size="20" fill="#16291D">- date_joined : DateTime</text>
+<text x="113" y="569" font-size="20" fill="#16291D">- created_by : User [0..1]</text>
+<line x1="95" y1="584" x2="525" y2="584" stroke="#46594B" stroke-width="1.6"/>
+<text x="113" y="613" font-size="20" fill="#16291D">+ get_full_name() : String</text>
+<text x="113" y="643" font-size="20" fill="#16291D">+ is_admin() : Boolean</text>
+<g filter="url(#ombre)"><rect x="95" y="850" width="430" height="252" rx="6" fill="#FFFFFF" stroke="#46594B" stroke-width="2.4"/></g>
+<path d="M95,914 L95,856 Q95,850 101,850 L519,850 Q525,850 525,856 L525,914 Z" fill="#46594B"/>
+<text x="310.0" y="892" font-size="27" font-weight="bold" fill="#FFFFFF" text-anchor="middle">TOTPDevice</text>
+<text x="113" y="949" font-size="20" fill="#16291D">- secret : String</text>
+<text x="113" y="979" font-size="20" fill="#16291D">- confirmed : Boolean</text>
+<text x="113" y="1009" font-size="20" fill="#16291D">- created_at : DateTime</text>
+<line x1="95" y1="1024" x2="525" y2="1024" stroke="#46594B" stroke-width="1.6"/>
+<text x="113" y="1053" font-size="20" fill="#16291D">+ verify(code) : Boolean</text>
+<text x="113" y="1083" font-size="20" fill="#16291D">+ get_provisioning_uri() : String</text>
+<g filter="url(#ombre)"><rect x="95" y="1250" width="430" height="282" rx="6" fill="#FFFFFF" stroke="#46594B" stroke-width="2.4"/></g>
+<path d="M95,1314 L95,1256 Q95,1250 101,1250 L519,1250 Q525,1250 525,1256 L525,1314 Z" fill="#46594B"/>
+<text x="310.0" y="1292" font-size="27" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PasswordResetToken</text>
+<text x="113" y="1349" font-size="20" fill="#16291D">- id : UUID</text>
+<text x="113" y="1379" font-size="20" fill="#16291D">- token : String {unique}</text>
+<text x="113" y="1409" font-size="20" fill="#16291D">- created_at : DateTime</text>
+<text x="113" y="1439" font-size="20" fill="#16291D">- expires_at : DateTime</text>
+<text x="113" y="1469" font-size="20" fill="#16291D">- used : Boolean</text>
+<line x1="95" y1="1484" x2="525" y2="1484" stroke="#46594B" stroke-width="1.6"/>
+<text x="113" y="1513" font-size="20" fill="#16291D">+ is_valid() : Boolean</text>
+<g filter="url(#ombre)"><rect x="625" y="230" width="430" height="328" rx="6" fill="#FFFFFF" stroke="#46594B" stroke-width="2.4"/></g>
+<path d="M625,294 L625,236 Q625,230 631,230 L1049,230 Q1055,230 1055,236 L1055,294 Z" fill="#46594B"/>
+<text x="840.0" y="272" font-size="27" font-weight="bold" fill="#FFFFFF" text-anchor="middle">JournalActivite</text>
+<text x="643" y="329" font-size="20" fill="#16291D">- id : UUID</text>
+<text x="643" y="359" font-size="20" fill="#16291D">- action : Action</text>
+<text x="643" y="389" font-size="20" fill="#16291D">- modele : String</text>
+<text x="643" y="419" font-size="20" fill="#16291D">- objet_id : String</text>
+<text x="643" y="449" font-size="20" fill="#16291D">- objet_repr : String</text>
+<text x="643" y="479" font-size="20" fill="#16291D">- details : JSON</text>
+<text x="643" y="509" font-size="20" fill="#16291D">- adresse_ip : IP</text>
+<text x="643" y="539" font-size="20" fill="#16291D">- date_action : DateTime</text>
+<g filter="url(#ombre)"><rect x="625" y="600" width="430" height="298" rx="6" fill="#FFFFFF" stroke="#46594B" stroke-width="2.4"/></g>
+<path d="M625,664 L625,606 Q625,600 631,600 L1049,600 Q1055,600 1055,606 L1055,664 Z" fill="#46594B"/>
+<text x="840.0" y="642" font-size="27" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Notification</text>
+<text x="643" y="699" font-size="20" fill="#16291D">- id : UUID</text>
+<text x="643" y="729" font-size="20" fill="#16291D">- type_notification : TypeNotification</text>
+<text x="643" y="759" font-size="20" fill="#16291D">- titre : String</text>
+<text x="643" y="789" font-size="20" fill="#16291D">- message : Text</text>
+<text x="643" y="819" font-size="20" fill="#16291D">- lue : Boolean</text>
+<text x="643" y="849" font-size="20" fill="#16291D">- lien_modele : String</text>
+<text x="643" y="879" font-size="20" fill="#16291D">- created_at : DateTime</text>
+<g filter="url(#ombre)"><rect x="1155" y="230" width="430" height="448" rx="6" fill="#FFFFFF" stroke="#3E8E5A" stroke-width="2.4"/></g>
+<path d="M1155,294 L1155,236 Q1155,230 1161,230 L1579,230 Q1585,230 1585,236 L1585,294 Z" fill="#3E8E5A"/>
+<text x="1370.0" y="272" font-size="27" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ObjectifReboisement</text>
+<text x="1173" y="329" font-size="20" fill="#16291D">- id : UUID</text>
+<text x="1173" y="359" font-size="20" fill="#16291D">- titre : String</text>
+<text x="1173" y="389" font-size="20" fill="#16291D">- portee : Portee</text>
+<text x="1173" y="419" font-size="20" fill="#16291D">- province : String</text>
+<text x="1173" y="449" font-size="20" fill="#16291D">- nombre_plants_cible : Integer</text>
+<text x="1173" y="479" font-size="20" fill="#16291D">- taux_survie_minimum_vise : Decimal</text>
+<text x="1173" y="509" font-size="20" fill="#16291D">- date_debut : Date</text>
+<text x="1173" y="539" font-size="20" fill="#16291D">- date_echeance : Date</text>
+<text x="1173" y="569" font-size="20" fill="#16291D">- responsable : User</text>
+<text x="1173" y="599" font-size="20" fill="#16291D">- /plants_realises : Integer</text>
+<text x="1173" y="629" font-size="20" fill="#16291D">- /progression_pourcentage : Decimal</text>
+<text x="1173" y="659" font-size="20" fill="#16291D">- /statut_calcule : Statut</text>
+<g filter="url(#ombre)"><rect x="1155" y="820" width="430" height="208" rx="6" fill="#FFFFFF" stroke="#3E8E5A" stroke-width="2.4"/></g>
+<path d="M1155,884 L1155,826 Q1155,820 1161,820 L1579,820 Q1585,820 1585,826 L1585,884 Z" fill="#3E8E5A"/>
+<text x="1370.0" y="862" font-size="27" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Essence</text>
+<text x="1173" y="919" font-size="20" fill="#16291D">- id : UUID</text>
+<text x="1173" y="949" font-size="20" fill="#16291D">- nom : String {unique}</text>
+<text x="1173" y="979" font-size="20" fill="#16291D">- nom_scientifique : String</text>
+<text x="1173" y="1009" font-size="20" fill="#16291D">- croissance_rapide : Boolean</text>
+<g filter="url(#ombre)"><rect x="1155" y="1150" width="430" height="208" rx="6" fill="#FFFFFF" stroke="#E4EFDE" stroke-width="2.4"/></g>
+<path d="M1155,1214 L1155,1156 Q1155,1150 1161,1150 L1579,1150 Q1585,1150 1585,1156 L1585,1214 Z" fill="#E4EFDE"/>
+<text x="1370.0" y="1174" font-size="18" fill="#1F5136" text-anchor="middle">«énumération»</text>
+<text x="1370.0" y="1202" font-size="26" font-weight="bold" fill="#1F5136" text-anchor="middle">Role</text>
+<text x="1173" y="1249" font-size="20" fill="#16291D">ADMIN</text>
+<text x="1173" y="1279" font-size="20" fill="#16291D">SUPERVISEUR</text>
+<text x="1173" y="1309" font-size="20" fill="#16291D">AGENT</text>
+<text x="1173" y="1339" font-size="20" fill="#16291D">FINANCIER</text>
+<g filter="url(#ombre)"><rect x="1155" y="1470" width="430" height="208" rx="6" fill="#FFFFFF" stroke="#E4EFDE" stroke-width="2.4"/></g>
+<path d="M1155,1534 L1155,1476 Q1155,1470 1161,1470 L1579,1470 Q1585,1470 1585,1476 L1585,1534 Z" fill="#E4EFDE"/>
+<text x="1370.0" y="1494" font-size="18" fill="#1F5136" text-anchor="middle">«énumération»</text>
+<text x="1370.0" y="1522" font-size="26" font-weight="bold" fill="#1F5136" text-anchor="middle">StatutSite</text>
+<text x="1173" y="1569" font-size="20" fill="#16291D">PLANIFIE</text>
+<text x="1173" y="1599" font-size="20" fill="#16291D">EN_COURS</text>
+<text x="1173" y="1629" font-size="20" fill="#16291D">TERMINE</text>
+<text x="1173" y="1659" font-size="20" fill="#16291D">SUSPENDU</text>
+<g filter="url(#ombre)"><rect x="1685" y="230" width="430" height="402" rx="6" fill="#FFFFFF" stroke="#1F5136" stroke-width="2.4"/></g>
+<path d="M1685,294 L1685,236 Q1685,230 1691,230 L2109,230 Q2115,230 2115,236 L2115,294 Z" fill="#1F5136"/>
+<text x="1900.0" y="272" font-size="27" font-weight="bold" fill="#FFFFFF" text-anchor="middle">SiteReboisement</text>
+<text x="1703" y="329" font-size="20" fill="#16291D">- id : UUID</text>
+<text x="1703" y="359" font-size="20" fill="#16291D">- nom : String</text>
+<text x="1703" y="389" font-size="20" fill="#16291D">- localite : String</text>
+<text x="1703" y="419" font-size="20" fill="#16291D">- province : String</text>
+<text x="1703" y="449" font-size="20" fill="#16291D">- superficie_hectares : Decimal</text>
+<text x="1703" y="479" font-size="20" fill="#16291D">- statut : StatutSite</text>
+<text x="1703" y="509" font-size="20" fill="#16291D">- latitude : Decimal</text>
+<text x="1703" y="539" font-size="20" fill="#16291D">- longitude : Decimal</text>
+<text x="1703" y="569" font-size="20" fill="#16291D">- responsable : User</text>
+<line x1="1685" y1="584" x2="2115" y2="584" stroke="#1F5136" stroke-width="1.6"/>
+<text x="1703" y="613" font-size="20" fill="#16291D" font-weight="bold">+ taux_survie_moyen() : Decimal</text>
+<g filter="url(#ombre)"><rect x="1685" y="820" width="430" height="252" rx="6" fill="#FFFFFF" stroke="#1F5136" stroke-width="2.4"/></g>
+<path d="M1685,884 L1685,826 Q1685,820 1691,820 L2109,820 Q2115,820 2115,826 L2115,884 Z" fill="#1F5136"/>
+<text x="1900.0" y="862" font-size="27" font-weight="bold" fill="#FFFFFF" text-anchor="middle">CampagnePlantation</text>
+<text x="1703" y="919" font-size="20" fill="#16291D">- id : UUID</text>
+<text x="1703" y="949" font-size="20" fill="#16291D">- date_plantation : Date</text>
+<text x="1703" y="979" font-size="20" fill="#16291D">- nombre_plants : Integer</text>
+<text x="1703" y="1009" font-size="20" fill="#16291D">- responsable : User</text>
+<line x1="1685" y1="1024" x2="2115" y2="1024" stroke="#1F5136" stroke-width="1.6"/>
+<text x="1703" y="1053" font-size="20" fill="#16291D" font-weight="bold">+ taux_survie_moyen() : Decimal</text>
+<g filter="url(#ombre)"><rect x="1685" y="1230" width="430" height="342" rx="6" fill="#FFFFFF" stroke="#1F5136" stroke-width="2.4"/></g>
+<path d="M1685,1294 L1685,1236 Q1685,1230 1691,1230 L2109,1230 Q2115,1230 2115,1236 L2115,1294 Z" fill="#1F5136"/>
+<text x="1900.0" y="1272" font-size="27" font-weight="bold" fill="#FFFFFF" text-anchor="middle">SuiviCroissance</text>
+<text x="1703" y="1329" font-size="20" fill="#16291D">- id : UUID</text>
+<text x="1703" y="1359" font-size="20" fill="#16291D">- date_controle : Date</text>
+<text x="1703" y="1389" font-size="20" fill="#16291D">- prochaine_date_controle : Date</text>
+<text x="1703" y="1419" font-size="20" fill="#16291D">- taux_survie : Decimal [0..100]</text>
+<text x="1703" y="1449" font-size="20" fill="#16291D">- nombre_plants_vivants : Integer</text>
+<text x="1703" y="1479" font-size="20" fill="#16291D">- observations : Text</text>
+<text x="1703" y="1509" font-size="20" fill="#16291D">- controle_par : User</text>
+<line x1="1685" y1="1524" x2="2115" y2="1524" stroke="#1F5136" stroke-width="1.6"/>
+<text x="1703" y="1553" font-size="20" fill="#16291D">+ clean() : contrôle ≥ plantation</text>
+<g filter="url(#ombre)"><rect x="2215" y="230" width="430" height="312" rx="6" fill="#FFFFFF" stroke="#C99A1C" stroke-width="2.4"/></g>
+<path d="M2215,294 L2215,236 Q2215,230 2221,230 L2639,230 Q2645,230 2645,236 L2645,294 Z" fill="#C99A1C"/>
+<text x="2430.0" y="272" font-size="27" font-weight="bold" fill="#12281B" text-anchor="middle">Financement</text>
+<text x="2233" y="329" font-size="20" fill="#16291D">- id : UUID</text>
+<text x="2233" y="359" font-size="20" fill="#16291D">- montant : Decimal</text>
+<text x="2233" y="389" font-size="20" fill="#16291D">- devise : Devise</text>
+<text x="2233" y="419" font-size="20" fill="#16291D">- date_financement : Date</text>
+<text x="2233" y="449" font-size="20" fill="#16291D">- reference : String</text>
+<text x="2233" y="479" font-size="20" fill="#16291D">- enregistre_par : User</text>
+<line x1="2215" y1="494" x2="2645" y2="494" stroke="#C99A1C" stroke-width="1.6"/>
+<text x="2233" y="523" font-size="20" fill="#16291D">+ clean() : campagne XOR site</text>
+<g filter="url(#ombre)"><rect x="2215" y="900" width="430" height="252" rx="6" fill="#FFFFFF" stroke="#C99A1C" stroke-width="2.4"/></g>
+<path d="M2215,964 L2215,906 Q2215,900 2221,900 L2639,900 Q2645,900 2645,906 L2645,964 Z" fill="#C99A1C"/>
+<text x="2430.0" y="942" font-size="27" font-weight="bold" fill="#12281B" text-anchor="middle">BudgetCampagne</text>
+<text x="2233" y="999" font-size="20" fill="#16291D">- budget_alloue : Decimal</text>
+<text x="2233" y="1029" font-size="20" fill="#16291D">- cout_reel : Decimal</text>
+<text x="2233" y="1059" font-size="20" fill="#16291D">- devise : Devise</text>
+<line x1="2215" y1="1074" x2="2645" y2="1074" stroke="#C99A1C" stroke-width="1.6"/>
+<text x="2233" y="1103" font-size="20" fill="#16291D">+ ecart_budgetaire() : Decimal</text>
+<text x="2233" y="1133" font-size="20" fill="#16291D">+ cout_par_plant_survivant() : Decimal</text>
+<g filter="url(#ombre)"><rect x="2215" y="1300" width="430" height="238" rx="6" fill="#FFFFFF" stroke="#3E8E5A" stroke-width="2.4"/></g>
+<path d="M2215,1364 L2215,1306 Q2215,1300 2221,1300 L2639,1300 Q2645,1300 2645,1306 L2645,1364 Z" fill="#3E8E5A"/>
+<text x="2430.0" y="1342" font-size="27" font-weight="bold" fill="#FFFFFF" text-anchor="middle">PhotoSuivi</text>
+<text x="2233" y="1399" font-size="20" fill="#16291D">- id : UUID</text>
+<text x="2233" y="1429" font-size="20" fill="#16291D">- image : Image</text>
+<text x="2233" y="1459" font-size="20" fill="#16291D">- legende : String</text>
+<text x="2233" y="1489" font-size="20" fill="#16291D">- prise_par : User</text>
+<text x="2233" y="1519" font-size="20" fill="#16291D">- created_at : DateTime</text>
+<g filter="url(#ombre)"><rect x="2745" y="230" width="430" height="312" rx="6" fill="#FFFFFF" stroke="#C99A1C" stroke-width="2.4"/></g>
+<path d="M2745,294 L2745,236 Q2745,230 2751,230 L3169,230 Q3175,230 3175,236 L3175,294 Z" fill="#C99A1C"/>
+<text x="2960.0" y="272" font-size="27" font-weight="bold" fill="#12281B" text-anchor="middle">Partenaire</text>
+<text x="2763" y="329" font-size="20" fill="#16291D">- id : UUID</text>
+<text x="2763" y="359" font-size="20" fill="#16291D">- nom : String {unique}</text>
+<text x="2763" y="389" font-size="20" fill="#16291D">- type_partenaire : TypePartenaire</text>
+<text x="2763" y="419" font-size="20" fill="#16291D">- pays : String</text>
+<text x="2763" y="449" font-size="20" fill="#16291D">- contact_email : String</text>
+<text x="2763" y="479" font-size="20" fill="#16291D">- actif : Boolean</text>
+<line x1="2745" y1="494" x2="3175" y2="494" stroke="#C99A1C" stroke-width="1.6"/>
+<text x="2763" y="523" font-size="20" fill="#16291D">+ montant_total_finance() : Decimal</text>
+<rect x="2745" y="780" width="430" height="700" rx="6" fill="#FFFFFF" stroke="#DDE3D6" stroke-width="2"/>
+<text x="2767" y="824" font-size="23" font-weight="bold" fill="#1F5136">Lecture</text>
+<text x="2767" y="858" font-size="20" fill="#46594B">◆ composition : la partie est supprimée</text>
+<text x="2767" y="889" font-size="20" fill="#46594B">   avec le tout (on_delete CASCADE)</text>
+<text x="2767" y="920" font-size="20" fill="#46594B">— association simple</text>
+<text x="2767" y="951" font-size="20" fill="#46594B">/attribut : valeur calculée</text>
+<text x="2767" y="1013" font-size="23" font-weight="bold" fill="#1F5136">Défi du sujet</text>
+<text x="2767" y="1047" font-size="20" fill="#46594B">taux_survie_moyen() = moyenne des</text>
+<text x="2767" y="1078" font-size="20" fill="#46594B">taux_survie de tous les suivis des</text>
+<text x="2767" y="1109" font-size="20" fill="#46594B">campagnes du site (AVG en SQL).</text>
+<text x="2767" y="1171" font-size="23" font-weight="bold" fill="#1F5136">Références à User</text>
+<text x="2767" y="1205" font-size="20" fill="#46594B">responsable, controle_par, prise_par,</text>
+<text x="2767" y="1236" font-size="20" fill="#46594B">enregistre_par et created_by sont</text>
+<text x="2767" y="1267" font-size="20" fill="#46594B">des clés étrangères vers User,</text>
+<text x="2767" y="1298" font-size="20" fill="#46594B">indiquées en attributs pour garder</text>
+<text x="2767" y="1329" font-size="20" fill="#46594B">le diagramme lisible.</text>
+<text x="2767" y="1391" font-size="20" fill="#46594B">Tous les identifiants sont des UUID.</text>
+</svg>
