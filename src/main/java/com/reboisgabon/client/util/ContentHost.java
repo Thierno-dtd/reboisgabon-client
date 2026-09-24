@@ -37,6 +37,13 @@ public final class ContentHost {
                 configurerControleur.accept(controleur);
             }
             conteneur.getChildren().setAll(vue);
+            for (javafx.scene.Node entete : vue.lookupAll(".entete-page")) {
+                for (javafx.scene.Node n : entete.lookupAll(".button")) {
+                    if (n instanceof javafx.scene.control.Button bouton) {
+                        bouton.setMinWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
+                    }
+                }
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -26,7 +26,7 @@ public class SiteFormController implements Initializable {
     @FXML private Label libelleTitre;
     @FXML private TextField champNom;
     @FXML private TextField champLocalite;
-    @FXML private TextField champProvince;
+    @FXML private javafx.scene.control.ComboBox<String> champProvince;
     @FXML private TextField champSuperficie;
     @FXML private ComboBox<StatutSite> comboStatut;
     @FXML private TextField champLatitude;
@@ -42,6 +42,7 @@ public class SiteFormController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        champProvince.getItems().setAll(SitesListController.PROVINCES);
         comboStatut.getItems().setAll(StatutSite.values());
         chargerResponsables();
     }
@@ -51,7 +52,7 @@ public class SiteFormController implements Initializable {
         libelleTitre.setText("Modifier le site");
         champNom.setText(site.getNom());
         champLocalite.setText(site.getLocalite());
-        champProvince.setText(site.getProvince());
+        champProvince.setValue(site.getProvince());
         champSuperficie.setText(site.getSuperficieHectares() != null ? site.getSuperficieHectares().toString() : "");
         comboStatut.setValue(site.getStatut());
         champLatitude.setText(site.getLatitude() != null ? site.getLatitude().toString() : "");
@@ -90,7 +91,7 @@ public class SiteFormController implements Initializable {
         SiteRequete requete = new SiteRequete();
         requete.setNom(champNom.getText());
         requete.setLocalite(champLocalite.getText());
-        requete.setProvince(champProvince.getText());
+        requete.setProvince(champProvince.getValue());
         requete.setStatut(comboStatut.getValue());
         requete.setResponsable(comboResponsable.getValue() != null ? comboResponsable.getValue().getId() : null);
         try {

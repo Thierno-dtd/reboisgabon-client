@@ -5,22 +5,51 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<VBox maxWidth="440" spacing="14" styleClass="carte-verre" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<VBox maxWidth="720" maxHeight="-Infinity" styleClass="feuille" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.reboisgabon.client.controllers.parametres.Parametre2faController">
-    <padding>
-        <Insets bottom="26" left="26" right="26" top="26"/>
-    </padding>
-    <Label styleClass="titre-2" text="Authentification à deux facteurs"/>
-    <Label fx:id="libelleStatut" styleClass="sous-titre"/>
-    <VBox fx:id="conteneurActivation" spacing="14">
-        <Button fx:id="boutonDemarrerActivation" onAction="#demarrerActivation" styleClass="bouton-primaire" text="Activer la 2FA"/>
-        <ImageView fx:id="imageQrCode" fitHeight="200" fitWidth="200" managed="false" visible="false"/>
-        <Label fx:id="libelleSecret" managed="false" styleClass="texte-muet" visible="false" wrapText="true"/>
-        <TextField fx:id="champCode" managed="false" promptText="Code à 6 chiffres" styleClass="champ-texte" visible="false"/>
-        <Button fx:id="boutonConfirmer" managed="false" maxWidth="Infinity" onAction="#confirmerActivation" styleClass="bouton-primaire" text="Confirmer" visible="false"/>
+    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="feuille-titre">
+        <VBox spacing="2" HBox.hgrow="ALWAYS">
+            <Label styleClass="titre-section" text="Double authentification (2FA)"/>
+            <Label styleClass="texte-muet" wrapText="true" text="Après le mot de passe, un code à 6 chiffres généré par Google Authenticator ou Microsoft Authenticator est demandé."/>
+        </VBox>
+        <Label fx:id="libelleStatut" styleClass="pastille" text="—"/>
+    </HBox>
+    <VBox spacing="16">
+        <padding><Insets top="20" right="22" bottom="22" left="22"/></padding>
+
+        <VBox fx:id="conteneurActivation" spacing="16">
+            <HBox spacing="12" alignment="CENTER_LEFT" styleClass="message-info">
+                <FontIcon iconLiteral="mdi2s-shield-lock-outline" iconSize="22" iconColor="#2E6A9E"/>
+                <Label styleClass="texte-corps" wrapText="true" HBox.hgrow="ALWAYS"
+                       text="Recommandé pour les comptes administrateur et financier : même si le mot de passe fuit, l'accès reste protégé."/>
+            </HBox>
+            <Button fx:id="boutonDemarrerActivation" onAction="#demarrerActivation" styleClass="bouton-primaire" text="Activer la double authentification">
+                <graphic><FontIcon iconLiteral="mdi2t-two-factor-authentication"/></graphic>
+            </Button>
+            <HBox spacing="22">
+                <StackPane fx:id="cadreQr" styleClass="vignette-photo" minWidth="236" minHeight="236" maxWidth="236" maxHeight="236"
+                           managed="false" visible="false">
+                    <ImageView fx:id="imageQrCode" fitHeight="220" fitWidth="220" managed="false" visible="false"/>
+                </StackPane>
+                <VBox fx:id="etapesActivation" spacing="12" HBox.hgrow="ALWAYS" managed="false" visible="false">
+                    <Label styleClass="titre-3" text="1.  Scannez le QR code avec votre application d'authentification"/>
+                    <Label fx:id="libelleSecret" managed="false" styleClass="texte-muet" visible="false" wrapText="true"/>
+                    <Label styleClass="titre-3" text="2.  Saisissez le code à 6 chiffres affiché"/>
+                    <TextField fx:id="champCode" managed="false" promptText="000 000" visible="false" styleClass="code-otp" maxWidth="200"/>
+                    <Label styleClass="titre-3" text="3.  Confirmez l'activation"/>
+                    <Button fx:id="boutonConfirmer" managed="false" onAction="#confirmerActivation" styleClass="bouton-primaire" text="Confirmer l'activation" visible="false"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <Button fx:id="boutonDesactiver" managed="false" onAction="#desactiver" styleClass="bouton-secondaire" text="Désactiver la double authentification" visible="false">
+            <graphic><FontIcon iconLiteral="mdi2c-close"/></graphic>
+        </Button>
+        <Label fx:id="libelleErreur" managed="false" styleClass="message-erreur" visible="false" wrapText="true" maxWidth="Infinity"/>
     </VBox>
-    <Button fx:id="boutonDesactiver" managed="false" maxWidth="Infinity" onAction="#desactiver" styleClass="bouton-secondaire" text="Désactiver la 2FA" visible="false"/>
-    <Label fx:id="libelleErreur" managed="false" styleClass="badge-erreur" visible="false" wrapText="true"/>
 </VBox>

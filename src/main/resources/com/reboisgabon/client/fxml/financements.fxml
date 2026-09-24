@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.StackPane?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.control.Label?>
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -9,25 +12,24 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="18" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<VBox spacing="16" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.reboisgabon.client.controllers.finances.FinancementsListController">
-    <HBox spacing="12" styleClass="carte-verre">
-        <padding>
-            <Insets bottom="16" left="16" right="16" top="16"/>
-        </padding>
-        <ComboBox fx:id="comboPartenaire" prefWidth="180" promptText="Partenaire" styleClass="champ-texte"/>
-        <ComboBox fx:id="comboDevise" prefWidth="120" promptText="Devise" styleClass="champ-texte"/>
-        <Button onAction="#rechercher" styleClass="bouton-primaire" text="Rechercher"/>
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="barre-filtres">
+        <FontIcon iconLiteral="mdi2f-filter-variant" iconSize="18" iconColor="#66766A"/>
+        <ComboBox fx:id="comboPartenaire" prefWidth="180" promptText="Partenaire"/>
+        <ComboBox fx:id="comboDevise" prefWidth="120" promptText="Devise"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="boutonNouveauFinancement" onAction="#ouvrirCreation" styleClass="bouton-primaire" text="Nouveau financement"/>
+        <Button fx:id="boutonNouveauFinancement" onAction="#ouvrirCreation" styleClass="bouton-primaire" text="Nouveau financement">
+            <graphic><FontIcon iconLiteral="mdi2p-plus"/></graphic>
+        </Button>
     </HBox>
-    <TableView fx:id="tableFinancements" styleClass="table-generique" VBox.vgrow="ALWAYS">
+    <TableView fx:id="tableFinancements" minHeight="340" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="colonnePartenaire" prefWidth="180" text="Partenaire"/>
-            <TableColumn fx:id="colonneCible" prefWidth="220" text="Cible"/>
-            <TableColumn fx:id="colonneMontant" prefWidth="130" text="Montant"/>
-            <TableColumn fx:id="colonneDevise" prefWidth="90" text="Devise"/>
-            <TableColumn fx:id="colonneDate" prefWidth="120" text="Date"/>
+            <TableColumn fx:id="colonnePartenaire" prefWidth="180" text="PARTENAIRE"/>
+            <TableColumn fx:id="colonneCible" prefWidth="220" text="CIBLE"/>
+            <TableColumn fx:id="colonneMontant" prefWidth="130" text="MONTANT"/>
+            <TableColumn fx:id="colonneDevise" prefWidth="90" text="DEVISE"/>
+            <TableColumn fx:id="colonneDate" prefWidth="120" text="DATE"/>
         </columns>
     </TableView>
 </VBox>

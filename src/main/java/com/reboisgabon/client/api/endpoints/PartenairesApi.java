@@ -15,7 +15,7 @@ public class PartenairesApi {
         StringBuilder chemin = new StringBuilder("partenaires/?");
         filtres.forEach((cle, valeur) -> {
             if (valeur != null && !valeur.isBlank()) {
-                chemin.append(cle).append("=").append(valeur).append("&");
+                chemin.append(cle).append("=").append(java.net.URLEncoder.encode(valeur.trim(), java.nio.charset.StandardCharsets.UTF_8)).append("&");
             }
         });
         var reponse = ApiClient.getInstance().get(chemin.toString());

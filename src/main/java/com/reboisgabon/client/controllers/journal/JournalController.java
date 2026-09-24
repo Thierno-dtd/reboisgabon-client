@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.reboisgabon.client.api.endpoints.JournalApi;
 import com.reboisgabon.client.dto.audit.ActionAudit;
 import com.reboisgabon.client.util.AlertUtil;
-import com.reboisgabon.client.util.JsonVueUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -104,38 +103,84 @@ public class JournalController implements Initializable {
 
     private void afficherPage(JsonNode resultat) {
         pageCourante = resultat;
-        conteneurTableau.getChildren().setAll(JsonVueUtil.construireTableau(resultat.path("results")));
+        javafx.scene.layout.VBox feuille = new javafx.scene.layout.VBox();
+        feuille.getStyleClass().add("feuille");
+        for (JsonNode entree : resultat.path("results")) {
+            feuille.getChildren().add(ligne(entree));
+        }
+        if (feuille.getChildren().isEmpty()) {
+            feuille.getChildren().add(com.reboisgabon.client.ui.Composants.etatVide("Aucune activité", "Aucune action ne correspond à ces filtres."));
+        }
+        conteneurTableau.getChildren().setAll(feuille);
         int total = resultat.path("count").asInt(0);
-        libelleInfoPagination.setText(total + " résultats");
+        libelleInfoPagination.setText(total + " action" + (total > 1 ? "s" : "") + " enregistrée" + (total > 1 ? "s" : ""));
         boutonPrecedent.setDisable(resultat.path("previous").isNull() || resultat.path("previous").isMissingNode());
         boutonSuivant.setDisable(resultat.path("next").isNull() || resultat.path("next").isMissingNode());
     }
 
-    @FXML
-    private void exporterCsv() {
-        new Thread(() -> {
-            try {
-                byte[] contenu = journalApi.exporterCsv();
-                Platform.runLater(() -> enregistrerFichier(contenu));
-            } catch (Exception e) {
-                Platform.runLater(() -> AlertUtil.erreur("Erreur", "Impossible d'exporter le journal."));
-            }
-        }).start();
+    private javafx.scene.layout.HBox ligne(JsonNode e) {
+        String action = e.path("action").asText();
+        String[] style = switch (action) {
+            case "CREATION" -> new String[]{"Création", "foret", com.reboisgabon.client.ui.Icones.AJOUTER};
+            case "MODIFICATION" -> new String[]{"Modification", "ocean", com.reboisgabon.client.ui.Icones.MODIFIER};
+            case "SUPPRESSION" -> new String[]{"Suppression", "rouge", com.reboisgabon.client.ui.Icones.SUPPRIMER};
+            case "CONNEXION" -> new String[]{"Connexion", "neutre", "mdi2l-login"};
+            case "CONNEXION_ECHOUEE" -> new String[]{"Échec de connexion", "laterite", com.reboisgabon.client.ui.Icones.ALERTE};
+            case "DESACTIVATION" -> new String[]{"Désactivation", "laterite", com.reboisgabon.client.ui.Icones.DESACTIVER};
+            default -> new String[]{action, "neutre", com.reboisgabon.client.ui.Icones.HORLOGE};
+        };
+        javafx.scene.layout.StackPane pastille = new javafx.scene.layout.StackPane(com.reboisgabon.client.ui.Icones.icone(style[2], 17, javafx.scene.paint.Color.web("#46594B")));
+        pastille.setMinSize(34, 34);
+        pastille.setMaxSize(34, 34);
+        pastille.setStyle("-fx-background-color: #F1F4EE; -fx-background-radius: 17;");
+        String auteur = e.path("utilisateur_nom").asText("");
+        if (auteur.isBlank()) {
+            auteur = e.path("utilisateur_email").asText("Système");
+        }
+        Label phrase = new Label(auteur + "  —  " + libelleModele(e.path("modele").asText()) + " « " + e.path("objet_repr").asText("") + " »");
+        phrase.getStyleClass().add("titre-3");
+        phrase.setWrapText(true);
+        String date = "";
+        try {
+            date = java.time.OffsetDateTime.parse(e.path("date_action").asText())
+                    .format(java.time.format.DateTimeFormatter.ofPattern("d MMM yyyy 'à' HH:mm", java.util.Locale.FRANCE));
+        } catch (Exception ignore) {
+        }
+        Label detail = new Label(date + (e.hasNonNull("adresse_ip") ? "  ·  IP " + e.path("adresse_ip").asText() : ""));
+        detail.getStyleClass().add("texte-petit");
+        javafx.scene.layout.VBox textes = new javafx.scene.layout.VBox(2, phrase, detail);
+        javafx.scene.layout.HBox.setHgrow(textes, javafx.scene.layout.Priority.ALWAYS);
+        textes.setMinWidth(0);
+        javafx.scene.layout.HBox ligne = new javafx.scene.layout.HBox(12, pastille, textes, com.reboisgabon.client.ui.Composants.pastille(style[0], style[1]));
+        ligne.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        ligne.getStyleClass().add("ligne-liste");
+        return ligne;
     }
 
-    private void enregistrerFichier(byte[] contenu) {
-        FileChooser selecteur = new FileChooser();
-        selecteur.setInitialFileName("journal-activite.csv");
-        selecteur.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV", "*.csv"));
-        File fichier = selecteur.showSaveDialog((Stage) champRecherche.getScene().getWindow());
-        if (fichier == null) {
-            return;
-        }
-        try (FileOutputStream sortie = new FileOutputStream(fichier)) {
-            sortie.write(contenu);
-            AlertUtil.information("Export réussi", "Le journal a été enregistré.");
-        } catch (Exception e) {
-            AlertUtil.erreur("Erreur", "Impossible d'enregistrer le fichier.");
-        }
+    private String libelleModele(String modele) {
+        return switch (modele) {
+            case "User" -> "Compte";
+            case "SiteReboisement" -> "Site";
+            case "CampagnePlantation" -> "Campagne";
+            case "SuiviCroissance" -> "Suivi";
+            case "Essence" -> "Essence";
+            case "ObjectifReboisement" -> "Objectif";
+            case "Partenaire" -> "Partenaire";
+            case "Financement" -> "Financement";
+            case "BudgetCampagne" -> "Budget";
+            case "PhotoSuivi" -> "Photo";
+            default -> modele;
+        };
+    }
+
+    @FXML
+    private void exporterCsv(javafx.event.ActionEvent evenement) {
+        com.reboisgabon.client.ui.ExportUtil.csv((javafx.scene.Node) evenement.getSource(), "journal-activite", () -> {
+            try {
+                return journalApi.exporterCsv();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }

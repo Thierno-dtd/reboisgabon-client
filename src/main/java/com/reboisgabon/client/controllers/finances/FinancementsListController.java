@@ -1,5 +1,7 @@
 package com.reboisgabon.client.controllers.finances;
 
+import com.reboisgabon.client.ui.Cellules;
+import com.reboisgabon.client.ui.Composants;
 import com.reboisgabon.client.api.endpoints.FinancementsApi;
 import com.reboisgabon.client.dto.finances.Devise;
 import com.reboisgabon.client.dto.finances.Financement;
@@ -97,6 +99,14 @@ public class FinancementsListController implements Initializable {
         boutonNouveauFinancement.setVisible(peutCreer);
         boutonNouveauFinancement.setManaged(peutCreer);
 
+        Cellules.rendu(colonnePartenaire, Cellules::principal);
+        Cellules.rendu(colonneMontant, v -> {
+            Double n = Cellules.enNombre(v);
+            return Cellules.aDroite(n == null ? v.toString() : Composants.nombre(n));
+        });
+        Cellules.rendu(colonneDevise, v -> Composants.pastille(v.toString(), "neutre"));
+        Cellules.rendu(colonneDate, v -> new javafx.scene.control.Label(Composants.date(v.toString())));
+        Cellules.preparer(tableFinancements, "Aucun financement", "Les apports des partenaires apparaîtront ici.");
         FiltreAutoUtil.surValeur(comboPartenaire, this::rechercher);
         FiltreAutoUtil.surValeur(comboDevise, this::rechercher);
 

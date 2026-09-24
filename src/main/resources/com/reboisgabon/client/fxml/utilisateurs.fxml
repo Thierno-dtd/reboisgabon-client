@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.StackPane?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.control.Label?>
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -10,27 +13,32 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="18" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<VBox spacing="16" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.reboisgabon.client.controllers.utilisateurs.UtilisateursListController">
-    <HBox spacing="12" styleClass="carte-verre">
-        <padding>
-            <Insets bottom="16" left="16" right="16" top="16"/>
-        </padding>
-        <TextField fx:id="champRecherche" promptText="Rechercher..." styleClass="champ-texte" HBox.hgrow="ALWAYS"/>
-        <ComboBox fx:id="comboRole" prefWidth="150" promptText="Rôle" styleClass="champ-texte"/>
-        <ComboBox fx:id="comboActif" prefWidth="130" promptText="Statut" styleClass="champ-texte"/>
-        <Button onAction="#rechercher" styleClass="bouton-primaire" text="Rechercher"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="boutonNouvelUtilisateur" onAction="#ouvrirCreation" styleClass="bouton-primaire" text="Nouvel utilisateur"/>
+    <HBox spacing="14" alignment="CENTER_LEFT" styleClass="entete-page">
+        <StackPane styleClass="icone-page"><FontIcon iconLiteral="mdi2a-account-group-outline"/></StackPane>
+        <VBox spacing="2" HBox.hgrow="ALWAYS">
+            <Label styleClass="titre-page" text="Utilisateurs"/>
+            <Label styleClass="sous-titre" text="Comptes créés par l'administration : aucune inscription publique n'est possible." wrapText="true"/>
+        </VBox>
+        <Button fx:id="boutonNouvelUtilisateur" onAction="#ouvrirCreation" styleClass="bouton-primaire" text="Nouvel utilisateur">
+            <graphic><FontIcon iconLiteral="mdi2p-plus"/></graphic>
+        </Button>
     </HBox>
-    <TableView fx:id="tableUtilisateurs" styleClass="table-generique" VBox.vgrow="ALWAYS">
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="barre-filtres">
+        <FontIcon iconLiteral="mdi2f-filter-variant" iconSize="18" iconColor="#66766A"/>
+        <TextField fx:id="champRecherche" promptText="Rechercher..." HBox.hgrow="ALWAYS"/>
+        <ComboBox fx:id="comboRole" prefWidth="150" promptText="Rôle"/>
+        <ComboBox fx:id="comboActif" prefWidth="130" promptText="Statut"/>
+    </HBox>
+    <TableView fx:id="tableUtilisateurs" minHeight="340" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="colonneEmail" prefWidth="220" text="Email"/>
-            <TableColumn fx:id="colonnePrenom" prefWidth="130" text="Prénom"/>
-            <TableColumn fx:id="colonneNom" prefWidth="130" text="Nom"/>
-            <TableColumn fx:id="colonneRole" prefWidth="120" text="Rôle"/>
-            <TableColumn fx:id="colonneActif" prefWidth="80" text="Actif"/>
-            <TableColumn fx:id="colonneActions" prefWidth="220" text="Actions"/>
+            <TableColumn fx:id="colonneEmail" prefWidth="220" text="EMAIL"/>
+            <TableColumn fx:id="colonnePrenom" prefWidth="130" text="PRÉNOM"/>
+            <TableColumn fx:id="colonneNom" prefWidth="130" text="NOM"/>
+            <TableColumn fx:id="colonneRole" prefWidth="120" text="RÔLE"/>
+            <TableColumn fx:id="colonneActif" prefWidth="80" text="ACTIF"/>
+            <TableColumn fx:id="colonneActions" prefWidth="220" text=""/>
         </columns>
     </TableView>
 </VBox>

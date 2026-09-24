@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.StackPane?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.control.Label?>
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -9,25 +12,30 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="18" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<VBox spacing="16" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.reboisgabon.client.controllers.objectifs.ObjectifsListController">
-    <HBox spacing="12" styleClass="carte-verre">
-        <padding>
-            <Insets bottom="16" left="16" right="16" top="16"/>
-        </padding>
-        <ComboBox fx:id="comboPortee" prefWidth="150" promptText="Portée" styleClass="champ-texte"/>
-        <Button onAction="#rechercher" styleClass="bouton-primaire" text="Rechercher"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="boutonNouvelObjectif" onAction="#ouvrirCreation" styleClass="bouton-primaire" text="Nouvel objectif"/>
+    <HBox spacing="14" alignment="CENTER_LEFT" styleClass="entete-page">
+        <StackPane styleClass="icone-page"><FontIcon iconLiteral="mdi2f-flag-outline"/></StackPane>
+        <VBox spacing="2" HBox.hgrow="ALWAYS">
+            <Label styleClass="titre-page" text="Objectifs de reboisement"/>
+            <Label styleClass="sous-titre" text="Cibles nationales, provinciales ou par site, suivies automatiquement à partir des campagnes." wrapText="true"/>
+        </VBox>
+        <Button fx:id="boutonNouvelObjectif" onAction="#ouvrirCreation" styleClass="bouton-primaire" text="Nouvel objectif">
+            <graphic><FontIcon iconLiteral="mdi2p-plus"/></graphic>
+        </Button>
     </HBox>
-    <TableView fx:id="tableObjectifs" styleClass="table-generique" VBox.vgrow="ALWAYS">
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="barre-filtres">
+        <FontIcon iconLiteral="mdi2f-filter-variant" iconSize="18" iconColor="#66766A"/>
+        <ComboBox fx:id="comboPortee" prefWidth="150" promptText="Portée"/>
+    </HBox>
+    <TableView fx:id="tableObjectifs" minHeight="340" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="colonneTitre" prefWidth="200" text="Titre"/>
-            <TableColumn fx:id="colonnePortee" prefWidth="100" text="Portée"/>
-            <TableColumn fx:id="colonneEcheance" prefWidth="110" text="Échéance"/>
-            <TableColumn fx:id="colonneProgression" prefWidth="200" text="Progression"/>
-            <TableColumn fx:id="colonneStatut" prefWidth="120" text="Statut"/>
-            <TableColumn fx:id="colonneActions" prefWidth="180" text="Actions"/>
+            <TableColumn fx:id="colonneTitre" prefWidth="330" text="TITRE"/>
+            <TableColumn fx:id="colonnePortee" prefWidth="100" text="PORTÉE"/>
+            <TableColumn fx:id="colonneEcheance" prefWidth="110" text="ÉCHÉANCE"/>
+            <TableColumn fx:id="colonneProgression" prefWidth="190" text="PROGRESSION"/>
+            <TableColumn fx:id="colonneStatut" prefWidth="120" text="STATUT"/>
+            <TableColumn fx:id="colonneActions" prefWidth="90" minWidth="90" sortable="false" text=""/>
         </columns>
     </TableView>
 </VBox>

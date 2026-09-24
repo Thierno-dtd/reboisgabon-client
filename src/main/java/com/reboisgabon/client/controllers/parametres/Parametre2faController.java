@@ -27,6 +27,9 @@ public class Parametre2faController implements Initializable {
     @FXML private Button boutonConfirmer;
     @FXML private Button boutonDesactiver;
     @FXML private Label libelleErreur;
+    @FXML private javafx.scene.layout.StackPane cadreQr;
+    @FXML private javafx.scene.layout.VBox etapesActivation;
+    @FXML private javafx.scene.layout.VBox conteneurActivation;
 
     private final MeApi meApi = new MeApi();
     private final AuthApi authApi = new AuthApi();
@@ -39,7 +42,11 @@ public class Parametre2faController implements Initializable {
     private void rafraichirEtat() {
         var utilisateur = SessionManager.getInstance().getUtilisateurConnecte();
         boolean active = utilisateur != null && utilisateur.isTwoFaEnabled();
-        libelleStatut.setText(active ? "La 2FA est actuellement activée." : "La 2FA est actuellement désactivée.");
+        libelleStatut.setText(active ? "Activée" : "Désactivée");
+        libelleStatut.getStyleClass().removeAll("pastille-foret", "pastille-neutre");
+        libelleStatut.getStyleClass().add(active ? "pastille-foret" : "pastille-neutre");
+        conteneurActivation.setVisible(!active);
+        conteneurActivation.setManaged(!active);
         boutonDemarrerActivation.setVisible(!active);
         boutonDemarrerActivation.setManaged(!active);
         boutonDesactiver.setVisible(active);
@@ -62,7 +69,13 @@ public class Parametre2faController implements Initializable {
                     imageQrCode.setImage(qrCode);
                     imageQrCode.setVisible(true);
                     imageQrCode.setManaged(true);
-                    libelleSecret.setText("Code secret manuel : " + reponse.getSecret());
+                    cadreQr.setVisible(true);
+                    cadreQr.setManaged(true);
+                    etapesActivation.setVisible(true);
+                    etapesActivation.setManaged(true);
+                    boutonDemarrerActivation.setVisible(false);
+                    boutonDemarrerActivation.setManaged(false);
+                    libelleSecret.setText("Impossible de scanner ? Saisissez ce code manuellement : " + reponse.getSecret());
                     libelleSecret.setVisible(true);
                     libelleSecret.setManaged(true);
                     champCode.setVisible(true);
@@ -133,6 +146,10 @@ public class Parametre2faController implements Initializable {
     }
 
     private void masquerFormulaireActivation() {
+        cadreQr.setVisible(false);
+        cadreQr.setManaged(false);
+        etapesActivation.setVisible(false);
+        etapesActivation.setManaged(false);
         imageQrCode.setVisible(false);
         imageQrCode.setManaged(false);
         libelleSecret.setVisible(false);

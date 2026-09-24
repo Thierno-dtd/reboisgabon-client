@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.StackPane?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -11,33 +13,32 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="18" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<VBox spacing="16" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.reboisgabon.client.controllers.suivis.SuivisListController">
-    <HBox spacing="12" styleClass="carte-verre">
-        <padding>
-            <Insets bottom="16" left="16" right="16" top="16"/>
-        </padding>
-        <DatePicker fx:id="champDateDebut" prefWidth="150" promptText="Date début" styleClass="champ-texte"/>
-        <DatePicker fx:id="champDateFin" prefWidth="150" promptText="Date fin" styleClass="champ-texte"/>
-        <TextField fx:id="champTauxSurvieMin" prefWidth="120" promptText="Taux survie min" styleClass="champ-texte"/>
-        <TextField fx:id="champTauxSurvieMax" prefWidth="120" promptText="Taux survie max" styleClass="champ-texte"/>
-        <Button onAction="#rechercher" styleClass="bouton-primaire" text="Rechercher"/>
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="barre-filtres">
+        <FontIcon iconLiteral="mdi2f-filter-variant" iconSize="18" iconColor="#66766A"/>
+        <DatePicker fx:id="champDateDebut" prefWidth="150" promptText="Date début"/>
+        <DatePicker fx:id="champDateFin" prefWidth="150" promptText="Date fin"/>
+        <TextField fx:id="champTauxSurvieMin" prefWidth="120" promptText="Taux survie min"/>
+        <TextField fx:id="champTauxSurvieMax" prefWidth="120" promptText="Taux survie max"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="boutonNouveauSuivi" onAction="#ouvrirCreation" styleClass="bouton-primaire" text="Nouveau suivi"/>
+        <Button fx:id="boutonNouveauSuivi" onAction="#ouvrirCreation" styleClass="bouton-primaire" text="Nouveau suivi">
+            <graphic><FontIcon iconLiteral="mdi2p-plus"/></graphic>
+        </Button>
     </HBox>
-    <TableView fx:id="tableSuivis" styleClass="table-generique" VBox.vgrow="ALWAYS">
+    <TableView fx:id="tableSuivis" minHeight="340" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="colonneCampagne" prefWidth="240" text="Campagne"/>
-            <TableColumn fx:id="colonneDateControle" prefWidth="120" text="Date contrôle"/>
-            <TableColumn fx:id="colonneTauxSurvie" prefWidth="110" text="Taux survie"/>
-            <TableColumn fx:id="colonnePlantsVivants" prefWidth="110" text="Plants vivants"/>
-            <TableColumn fx:id="colonneActions" prefWidth="220" text="Actions"/>
+            <TableColumn fx:id="colonneCampagne" prefWidth="240" text="CAMPAGNE"/>
+            <TableColumn fx:id="colonneDateControle" prefWidth="120" text="DATE CONTRÔLE"/>
+            <TableColumn fx:id="colonneTauxSurvie" prefWidth="110" text="TAUX SURVIE"/>
+            <TableColumn fx:id="colonnePlantsVivants" prefWidth="110" text="PLANTS VIVANTS"/>
+            <TableColumn fx:id="colonneActions" prefWidth="220" text=""/>
         </columns>
     </TableView>
     <HBox alignment="CENTER_LEFT" spacing="12" styleClass="barre-pagination">
-        <Button fx:id="boutonPrecedent" onAction="#pagePrecedente" styleClass="bouton-secondaire" text="Précédent"/>
         <Label fx:id="libelleInfoPagination" styleClass="texte-muet"/>
         <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="boutonPrecedent" onAction="#pagePrecedente" styleClass="bouton-secondaire" text="Précédent"/>
         <Button fx:id="boutonSuivant" onAction="#pageSuivante" styleClass="bouton-secondaire" text="Suivant"/>
     </HBox>
 </VBox>

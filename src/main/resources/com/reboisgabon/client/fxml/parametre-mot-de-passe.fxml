@@ -4,22 +4,44 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<VBox maxWidth="440" spacing="14" styleClass="carte-verre" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<VBox maxWidth="720" maxHeight="-Infinity" styleClass="feuille" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.reboisgabon.client.controllers.parametres.ParametreMotDePasseController">
-    <padding>
-        <Insets bottom="26" left="26" right="26" top="26"/>
-    </padding>
-    <Label styleClass="titre-2" text="Changer le mot de passe"/>
-    <VBox spacing="6">
-        <Label styleClass="texte-muet" text="Ancien mot de passe"/>
-        <PasswordField fx:id="champAncien" styleClass="champ-texte"/>
+    <VBox spacing="2" styleClass="feuille-titre">
+        <Label styleClass="titre-section" text="Mot de passe"/>
+        <Label styleClass="texte-muet" wrapText="true" text="Changez régulièrement votre mot de passe, en particulier après un accès depuis un poste partagé."/>
     </VBox>
-    <VBox spacing="6">
-        <Label styleClass="texte-muet" text="Nouveau mot de passe"/>
-        <PasswordField fx:id="champNouveau" styleClass="champ-texte"/>
-    </VBox>
-    <Label fx:id="libelleMessage" managed="false" styleClass="texte-corps" visible="false" wrapText="true"/>
-    <Button fx:id="boutonValider" maxWidth="Infinity" onAction="#changerMotDePasse" styleClass="bouton-primaire" text="Changer le mot de passe"/>
+    <HBox spacing="24">
+        <padding><Insets top="20" right="22" bottom="22" left="22"/></padding>
+        <VBox spacing="16" HBox.hgrow="ALWAYS">
+            <VBox spacing="6">
+                <Label styleClass="libelle-champ" text="Mot de passe actuel"/>
+                <PasswordField fx:id="champAncien"/>
+            </VBox>
+            <VBox spacing="6">
+                <Label styleClass="libelle-champ" text="Nouveau mot de passe"/>
+                <PasswordField fx:id="champNouveau"/>
+            </VBox>
+            <VBox spacing="6">
+                <Label styleClass="libelle-champ" text="Confirmer le nouveau mot de passe"/>
+                <PasswordField fx:id="champConfirmation"/>
+            </VBox>
+            <Label fx:id="libelleMessage" managed="false" visible="false" wrapText="true" maxWidth="Infinity"/>
+            <HBox alignment="CENTER_RIGHT">
+                <Button fx:id="boutonValider" onAction="#changerMotDePasse" styleClass="bouton-primaire" text="Mettre à jour le mot de passe">
+                    <graphic><FontIcon iconLiteral="mdi2l-lock-reset"/></graphic>
+                </Button>
+            </HBox>
+        </VBox>
+        <VBox spacing="10" prefWidth="230" minWidth="230" styleClass="message-info">
+            <Label styleClass="titre-3" text="Un mot de passe solide"/>
+            <Label fx:id="regleLongueur" styleClass="texte-petit" text="8 caractères au minimum" wrapText="true"/>
+            <Label fx:id="regleMajuscule" styleClass="texte-petit" text="Une majuscule et une minuscule" wrapText="true"/>
+            <Label fx:id="regleChiffre" styleClass="texte-petit" text="Au moins un chiffre" wrapText="true"/>
+            <Label fx:id="regleIdentique" styleClass="texte-petit" text="Les deux saisies sont identiques" wrapText="true"/>
+        </VBox>
+    </HBox>
 </VBox>

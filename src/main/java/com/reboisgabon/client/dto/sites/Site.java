@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 public class Site {
 
+    private Integer nombreCampagnes;
+    private String responsableNom;
     private String id;
     private String nom;
     private String localite;
@@ -93,6 +95,22 @@ public class Site {
 
     public void setTauxSurvieMoyen(BigDecimal tauxSurvieMoyen) {
         this.tauxSurvieMoyen = tauxSurvieMoyen;
+    }
+
+    public String getResponsableNom() {
+        return responsableNom;
+    }
+
+    public void setResponsableNom(String responsableNom) {
+        this.responsableNom = responsableNom;
+    }
+
+    public Integer getNombreCampagnes() {
+        return nombreCampagnes;
+    }
+
+    public void setNombreCampagnes(Integer nombreCampagnes) {
+        this.nombreCampagnes = nombreCampagnes;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.reboisgabon.client.controllers.finances;
 
+import com.reboisgabon.client.ui.Cellules;
+import com.reboisgabon.client.ui.Composants;
 import com.reboisgabon.client.api.endpoints.PartenairesApi;
 import com.reboisgabon.client.dto.finances.Partenaire;
 import com.reboisgabon.client.dto.finances.TypePartenaire;
@@ -63,6 +65,19 @@ public class PartenairesListController implements Initializable {
                 ));
 
         construireColonneActions();
+        Cellules.rendu(colonneNom, Cellules::principal);
+        Cellules.rendu(colonneType, v -> {
+            String t = v.toString();
+            return switch (t) {
+                case "BAILLEUR_INTL" -> Composants.pastille("Bailleur international", "ocean");
+                case "ETAT" -> Composants.pastille("État", "or");
+                case "ONG" -> Composants.pastille("ONG", "canopee");
+                case "ENTREPRISE" -> Composants.pastille("Entreprise", "laterite");
+                default -> Composants.pastille(t, "neutre");
+            };
+        });
+        Cellules.rendu(colonneActif, v -> Boolean.TRUE.equals(v) || "true".equals(v.toString()) ? Composants.pastille("Actif", "foret") : Composants.pastille("Inactif", "neutre"));
+        Cellules.preparer(tablePartenaires, "Aucun partenaire", "Enregistrez les bailleurs et partenaires qui financent le programme.");
 
         boolean peutCreer = SessionManager.getInstance().peutAcceder("finances", "create");
         boutonNouveauPartenaire.setVisible(peutCreer);

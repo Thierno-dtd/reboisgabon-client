@@ -6,288 +6,123 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<BorderPane
-        prefHeight="768.0"
-        prefWidth="1280.0"
-        stylesheets="@../theme/theme.css"
-        xmlns="http://javafx.com/javafx/21"
-        xmlns:fx="http://javafx.com/fxml/1"
-        fx:controller="com.reboisgabon.client.controllers.ShellController">
+<BorderPane prefHeight="800.0" prefWidth="1280.0" styleClass="fond-application"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.reboisgabon.client.controllers.ShellController">
 
     <left>
-
-        <VBox
-                fx:id="sidebar"
-                prefWidth="240.0"
-                minWidth="72.0"
-                maxWidth="240.0"
-                styleClass="sidebar"
-                BorderPane.alignment="CENTER">
-
-            <children>
-
-                <HBox
-                        alignment="CENTER_LEFT"
-                        spacing="10.0">
-
+        <StackPane fx:id="conteneurBarreLaterale" prefWidth="248" minWidth="248" maxWidth="248" styleClass="barre-laterale">
+            <VBox fx:id="decorBarreLaterale" alignment="BOTTOM_CENTER" mouseTransparent="true"/>
+            <VBox spacing="0">
+                <HBox fx:id="zoneMarque" alignment="CENTER_LEFT" spacing="11">
                     <padding>
-                        <Insets
-                                top="20.0"
-                                right="15.0"
-                                bottom="20.0"
-                                left="15.0"/>
+                        <Insets top="20" right="16" bottom="14" left="18"/>
                     </padding>
-
-                    <children>
-
-                        <Button
-                                fx:id="toggleSidebarBtn"
-                                onAction="#handleToggleSidebar"
-                                styleClass="icon-button"
-                                text="☰"/>
-
-                        <Label
-                                fx:id="logoLabel"
-                                styleClass="text-header-title"
-                                text="ReboisGabon"/>
-
-                    </children>
-
+                    <VBox spacing="1">
+                        <Label text="ReboisGabon" styleClass="marque-nom"/>
+                        <Label text="Pilotage du reboisement" styleClass="marque-sous-titre"/>
+                    </VBox>
                 </HBox>
 
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS" styleClass="content-scroll">
+                    <VBox spacing="2">
+                        <padding>
+                            <Insets top="0" right="12" bottom="12" left="12"/>
+                        </padding>
 
-                <VBox
-                        spacing="5.0"
-                        VBox.vgrow="ALWAYS">
+                        <Label text="PILOTAGE" styleClass="groupe-nav"/>
+                        <Button fx:id="boutonDashboard" maxWidth="Infinity" onAction="#allerDashboard" styleClass="nav-button" text="Tableau de bord">
+                            <graphic><FontIcon iconLiteral="mdi2v-view-dashboard-outline"/></graphic>
+                        </Button>
+                        <Button fx:id="boutonCarte" maxWidth="Infinity" onAction="#allerCarte" styleClass="nav-button" text="Carte du territoire">
+                            <graphic><FontIcon iconLiteral="mdi2m-map-outline"/></graphic>
+                        </Button>
 
-                    <padding>
-                        <Insets
-                                left="10.0"
-                                right="10.0"/>
-                    </padding>
+                        <Label fx:id="groupeTerrain" text="TERRAIN" styleClass="groupe-nav"/>
+                        <Button fx:id="boutonSites" maxWidth="Infinity" onAction="#allerSites" styleClass="nav-button" text="Sites de reboisement">
+                            <graphic><FontIcon iconLiteral="mdi2m-map-marker-outline"/></graphic>
+                        </Button>
+                        <Button fx:id="boutonCampagnes" maxWidth="Infinity" onAction="#allerCampagnes" styleClass="nav-button" text="Campagnes de plantation">
+                            <graphic><FontIcon iconLiteral="mdi2s-sprout-outline"/></graphic>
+                        </Button>
+                        <Button fx:id="boutonSuivis" maxWidth="Infinity" onAction="#allerSuivis" styleClass="nav-button" text="Suivis de croissance">
+                            <graphic><FontIcon iconLiteral="mdi2c-clipboard-text-outline"/></graphic>
+                        </Button>
+                        <Button fx:id="boutonEssences" maxWidth="Infinity" onAction="#allerEssences" styleClass="nav-button" text="Essences">
+                            <graphic><FontIcon iconLiteral="mdi2p-pine-tree"/></graphic>
+                        </Button>
 
-                    <children>
+                        <Label fx:id="groupeProgramme" text="PROGRAMME" styleClass="groupe-nav"/>
+                        <Button fx:id="boutonObjectifs" maxWidth="Infinity" onAction="#allerObjectifs" styleClass="nav-button" text="Objectifs">
+                            <graphic><FontIcon iconLiteral="mdi2f-flag-outline"/></graphic>
+                        </Button>
+                        <Button fx:id="boutonFinances" maxWidth="Infinity" onAction="#allerFinances" styleClass="nav-button" text="Finances">
+                            <graphic><FontIcon iconLiteral="mdi2b-bank-outline"/></graphic>
+                        </Button>
+                        <Button fx:id="boutonIntelligence" maxWidth="Infinity" onAction="#allerIntelligence" styleClass="nav-button" text="Intelligence écologique">
+                            <graphic><FontIcon iconLiteral="mdi2f-flask-outline"/></graphic>
+                        </Button>
 
-                        <Button
-                                fx:id="boutonDashboard"
-                                maxWidth="1.7976931348623157E308"
-                                onAction="#allerDashboard"
-                                styleClass="nav-button"
-                                text="📊  Dashboard"/>
-
-                        <Button
-                                fx:id="boutonSites"
-                                maxWidth="1.7976931348623157E308"
-                                onAction="#allerSites"
-                                styleClass="nav-button"
-                                text="📍  Sites"/>
-
-                        <Button
-                                fx:id="boutonCampagnes"
-                                maxWidth="1.7976931348623157E308"
-                                onAction="#allerCampagnes"
-                                styleClass="nav-button"
-                                text="🌱  Campagnes"/>
-
-                        <Button
-                                fx:id="boutonSuivis"
-                                maxWidth="1.7976931348623157E308"
-                                onAction="#allerSuivis"
-                                styleClass="nav-button"
-                                text="📈  Suivis"/>
-
-                        <Button
-                                fx:id="boutonEssences"
-                                maxWidth="1.7976931348623157E308"
-                                onAction="#allerEssences"
-                                styleClass="nav-button"
-                                text="🌳  Essences"/>
-
-                        <Button
-                                fx:id="boutonObjectifs"
-                                maxWidth="1.7976931348623157E308"
-                                onAction="#allerObjectifs"
-                                styleClass="nav-button"
-                                text="🎯  Objectifs"/>
-
-                        <Button
-                                fx:id="boutonFinances"
-                                maxWidth="1.7976931348623157E308"
-                                onAction="#allerFinances"
-                                styleClass="nav-button"
-                                text="💰  Finances"/>
-
-                        <Button
-                                fx:id="boutonIntelligence"
-                                maxWidth="1.7976931348623157E308"
-                                onAction="#allerIntelligence"
-                                styleClass="nav-button"
-                                text="🤖  IA Ecologique"/>
-
-                        <Button
-                                fx:id="boutonUtilisateurs"
-                                maxWidth="1.7976931348623157E308"
-                                onAction="#allerUtilisateurs"
-                                styleClass="nav-button"
-                                text="👥  Utilisateurs"/>
-
-                        <Button
-                                fx:id="boutonJournal"
-                                maxWidth="1.7976931348623157E308"
-                                onAction="#allerJournal"
-                                styleClass="nav-button"
-                                text="📜  Journal"/>
-                        <Button
-                                fx:id="boutonExports"
-                                maxWidth="1.7976931348623157E308"
-                                onAction="#allerExports"
-                                styleClass="nav-button"
-                                text="📤  Exports"/>
-
-                        <Button
-                                fx:id="boutonParametres"
-                                maxWidth="1.7976931348623157E308"
-                                onAction="#allerParametres"
-                                styleClass="nav-button"
-                                text="⚙️  Paramètres"/>
-
-                    </children>
-
-                </VBox>
-
-
-                <VBox
-                        spacing="10.0">
-
-                    <padding>
-                        <Insets
-                                top="10.0"
-                                right="10.0"
-                                bottom="20.0"
-                                left="10.0"/>
-                    </padding>
-
-                    <children>
-
-                        <Button
-                                maxWidth="1.7976931348623157E308"
-                                onAction="#seDeconnecter"
-                                styleClass="nav-button, logout-button"
-                                text="🚪  Déconnexion"/>
-
-                    </children>
-
-                </VBox>
-
-            </children>
-
-        </VBox>
-
-    </left>
-
-
-    <center>
-
-        <BorderPane>
-
-            <top>
-
-                <HBox
-                        alignment="CENTER_LEFT"
-                        spacing="20.0"
-                        styleClass="content-header">
-
-                    <padding>
-                        <Insets
-                                top="20.0"
-                                right="25.0"
-                                bottom="20.0"
-                                left="25.0"/>
-                    </padding>
-
-                    <children>
-
-                        <Label
-                                fx:id="libelleTitreEcran"
-                                styleClass="screen-title"
-                                text="Tableau de bord"/>
-
-                        <HBox
-                                alignment="CENTER_RIGHT"
-                                spacing="10.0"
-                                HBox.hgrow="ALWAYS">
-
-                            <children>
-
-                                <Button
-                                        onAction="#allerNotifications"
-                                        styleClass="icon-button"
-                                        text="🔔"/>
-
-                                <Label
-                                        fx:id="badgeNotifications"
-                                        styleClass="notification-badge"
-                                        text="0"
-                                        visible="false"
-                                        managed="false"/>
-
-                                <VBox
-                                        spacing="2.0">
-
-                                    <children>
-
-                                        <Label
-                                                fx:id="libelleNomUtilisateur"
-                                                styleClass="user-name"
-                                                text="Utilisateur"/>
-
-                                        <Label
-                                                fx:id="libelleRoleUtilisateur"
-                                                styleClass="user-role"
-                                                text="Rôle"/>
-
-                                    </children>
-
-                                </VBox>
-
-                            </children>
-
-                        </HBox>
-
-                    </children>
-
-                </HBox>
-
-            </top>
-
-
-            <center>
-
-                <ScrollPane
-                        fitToHeight="true"
-                        fitToWidth="true"
-                        hbarPolicy="NEVER"
-                        styleClass="content-scroll">
-
-                    <content>
-
-                        <StackPane
-                                fx:id="zoneContenu"
-                                styleClass="content-area">
-
-                        </StackPane>
-
-                    </content>
-
+                        <Label fx:id="groupeAdministration" text="ADMINISTRATION" styleClass="groupe-nav"/>
+                        <Button fx:id="boutonUtilisateurs" maxWidth="Infinity" onAction="#allerUtilisateurs" styleClass="nav-button" text="Utilisateurs">
+                            <graphic><FontIcon iconLiteral="mdi2a-account-group-outline"/></graphic>
+                        </Button>
+                        <Button fx:id="boutonJournal" maxWidth="Infinity" onAction="#allerJournal" styleClass="nav-button" text="Journal d'activité">
+                            <graphic><FontIcon iconLiteral="mdi2h-history"/></graphic>
+                        </Button>
+                    </VBox>
                 </ScrollPane>
 
+                <VBox spacing="8">
+                    <padding>
+                        <Insets top="6" right="12" bottom="16" left="12"/>
+                    </padding>
+                    <Button fx:id="boutonParametres" maxWidth="Infinity" onAction="#allerParametres" styleClass="nav-button" text="Paramètres">
+                        <graphic><FontIcon iconLiteral="mdi2c-cog-outline"/></graphic>
+                    </Button>
+                    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="carte-utilisateur">
+                        <Label fx:id="libelleInitiales" styleClass="avatar" text="RG"/>
+                        <VBox spacing="1" HBox.hgrow="ALWAYS">
+                            <Label fx:id="libelleNomUtilisateur" styleClass="user-name" text="Utilisateur"/>
+                            <Label fx:id="libelleRoleUtilisateur" styleClass="user-role" text="Rôle"/>
+                        </VBox>
+                        <Button fx:id="boutonDeconnexion" onAction="#seDeconnecter" styleClass="bouton-deconnexion">
+                            <graphic><FontIcon iconLiteral="mdi2l-logout-variant"/></graphic>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </StackPane>
+    </left>
+
+    <center>
+        <BorderPane>
+            <top>
+                <HBox alignment="CENTER_LEFT" spacing="16" styleClass="barre-haute">
+                    <padding>
+                        <Insets top="10" right="24" bottom="10" left="28"/>
+                    </padding>
+                    <Label fx:id="libelleDate" styleClass="texte-muet" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                    <Region prefWidth="4"/>
+                    <StackPane>
+                        <Button fx:id="boutonNotifications" onAction="#allerNotifications" styleClass="bouton-barre">
+                            <graphic><FontIcon iconLiteral="mdi2b-bell-outline"/></graphic>
+                        </Button>
+                        <Label fx:id="badgeNotifications" styleClass="notification-badge" text="0" visible="false"
+                               StackPane.alignment="TOP_RIGHT" mouseTransparent="true"/>
+                    </StackPane>
+                </HBox>
+            </top>
+            <center>
+                <ScrollPane fx:id="defilementContenu" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" styleClass="content-scroll">
+                    <StackPane fx:id="zoneContenu" styleClass="content-area"/>
+                </ScrollPane>
             </center>
-
         </BorderPane>
-
     </center>
-
 </BorderPane>

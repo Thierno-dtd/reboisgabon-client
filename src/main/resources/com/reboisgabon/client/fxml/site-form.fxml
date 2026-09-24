@@ -26,7 +26,7 @@
         </VBox>
         <VBox spacing="6">
             <Label styleClass="texte-muet" text="Province"/>
-            <TextField fx:id="champProvince" styleClass="champ-texte"/>
+            <ComboBox fx:id="champProvince" maxWidth="Infinity" promptText="Choisir une province"/>
         </VBox>
         <HBox spacing="14">
             <VBox HBox.hgrow="ALWAYS" spacing="6">

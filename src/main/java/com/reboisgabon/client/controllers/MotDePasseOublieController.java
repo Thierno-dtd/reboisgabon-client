@@ -25,7 +25,7 @@ public class MotDePasseOublieController {
     private void envoyerDemande() {
         String email = champEmail.getText();
         if (email == null || email.isBlank()) {
-            afficherMessage("Veuillez saisir votre email.", "badge-erreur");
+            afficherMessage("Saisissez l'adresse e-mail de votre compte.", "message-erreur");
             return;
         }
         boutonEnvoyer.setDisable(true);
@@ -34,12 +34,12 @@ public class MotDePasseOublieController {
                 authApi.demanderReinitialisation(email);
                 Platform.runLater(() -> {
                     boutonEnvoyer.setDisable(false);
-                    afficherMessage("Si ce compte existe, un email a été envoyé.", "badge-succes");
+                    afficherMessage("Si ce compte existe, un code vient de vous être envoyé par e-mail. Il est valable une heure.", "message-succes");
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     boutonEnvoyer.setDisable(false);
-                    afficherMessage("Une erreur est survenue.", "badge-erreur");
+                    afficherMessage("La demande n'a pas pu être envoyée. Vérifiez votre connexion puis réessayez.", "message-erreur");
                 });
             }
         }).start();
@@ -56,7 +56,7 @@ public class MotDePasseOublieController {
     }
 
     private void afficherMessage(String message, String classeStyle) {
-        libelleMessage.getStyleClass().removeAll("badge-erreur", "badge-succes");
+        libelleMessage.getStyleClass().removeAll("message-erreur", "message-succes");
         libelleMessage.getStyleClass().add(classeStyle);
         libelleMessage.setText(message);
         libelleMessage.setVisible(true);

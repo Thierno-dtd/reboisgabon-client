@@ -29,8 +29,7 @@ module com.reboisgabon {
     opens com.reboisgabon.client.controllers.notifications to javafx.fxml;
     opens com.reboisgabon.client.controllers.utilisateurs to javafx.fxml;
     opens com.reboisgabon.client.controllers.intelligence to javafx.fxml;
-    opens com.reboisgabon.client.controllers.commun to javafx.fxml;
-    opens com.reboisgabon.client.controllers.exports to javafx.fxml;
+    opens com.reboisgabon.client.ui to javafx.fxml, javafx.web;
     opens com.reboisgabon.client.dto.auth to com.fasterxml.jackson.databind;
     opens com.reboisgabon.client.dto.common to com.fasterxml.jackson.databind;
     opens com.reboisgabon.client.dto.sites to com.fasterxml.jackson.databind;

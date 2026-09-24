@@ -1,16 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<TabPane tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
-    <Tab text="Partenaires">
-        <fx:include source="partenaires.fxml"/>
-    </Tab>
-    <Tab text="Financements">
-        <fx:include source="financements.fxml"/>
-    </Tab>
-    <Tab text="Budgets">
-        <fx:include source="budgets.fxml"/>
-    </Tab>
-</TabPane>
+<VBox spacing="16" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.reboisgabon.client.controllers.finances.FinancesController">
+    <HBox spacing="14" alignment="CENTER_LEFT" styleClass="entete-page">
+        <StackPane styleClass="icone-page"><FontIcon iconLiteral="mdi2b-bank-outline"/></StackPane>
+        <VBox spacing="2" HBox.hgrow="ALWAYS">
+            <Label styleClass="titre-page" text="Finances du programme"/>
+            <Label styleClass="sous-titre" text="Partenaires, fonds reçus et budgets de campagne, avec le coût réel de chaque plantation." wrapText="true"/>
+        </VBox>
+        <Button fx:id="boutonRapportFinancier" onAction="#exporterRapportFinancier" styleClass="bouton-export" text="Rapport financier">
+            <graphic><FontIcon iconLiteral="mdi2f-file-pdf-outline" iconColor="#B3412E" iconSize="17"/></graphic>
+        </Button>
+        <Button fx:id="boutonFinancementsExcel" onAction="#exporterFinancements" styleClass="bouton-export" text="Financements Excel">
+            <graphic><FontIcon iconLiteral="mdi2m-microsoft-excel" iconColor="#1D7044" iconSize="17"/></graphic>
+        </Button>
+    </HBox>
+    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <Tab text="Partenaires">
+            <fx:include source="partenaires.fxml"/>
+        </Tab>
+        <Tab text="Financements">
+            <fx:include source="financements.fxml"/>
+        </Tab>
+        <Tab text="Budgets de campagne">
+            <fx:include source="budgets.fxml"/>
+        </Tab>
+    </TabPane>
+</VBox>

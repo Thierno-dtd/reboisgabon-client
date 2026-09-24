@@ -30,18 +30,21 @@ public class ReinitialiserMotDePasseController {
         String token = champToken.getText();
         String nouveauMotDePasse = champNouveauMotDePasse.getText();
         if (token == null || token.isBlank() || nouveauMotDePasse == null || nouveauMotDePasse.isBlank()) {
-            afficherMessage("Veuillez remplir tous les champs.", "badge-erreur");
+            afficherMessage("Renseignez le code reçu et votre nouveau mot de passe.", "message-erreur");
             return;
         }
         boutonValider.setDisable(true);
         new Thread(() -> {
             try {
                 authApi.reinitialiserMotDePasse(token, nouveauMotDePasse);
-                Platform.runLater(() -> SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/login.fxml"));
+                Platform.runLater(() -> {
+                    com.reboisgabon.client.util.AlertUtil.information("Mot de passe mis à jour", "Votre nouveau mot de passe est enregistré. Connectez-vous avec celui-ci.");
+                    SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/login.fxml");
+                });
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     boutonValider.setDisable(false);
-                    afficherMessage("Code invalide ou expiré.", "badge-erreur");
+                    afficherMessage("Ce code est invalide, expiré ou déjà utilisé. Demandez-en un nouveau.", "message-erreur");
                 });
             }
         }).start();
@@ -53,7 +56,7 @@ public class ReinitialiserMotDePasseController {
     }
 
     private void afficherMessage(String message, String classeStyle) {
-        libelleMessage.getStyleClass().removeAll("badge-erreur", "badge-succes");
+        libelleMessage.getStyleClass().removeAll("message-erreur", "message-succes");
         libelleMessage.getStyleClass().add(classeStyle);
         libelleMessage.setText(message);
         libelleMessage.setVisible(true);

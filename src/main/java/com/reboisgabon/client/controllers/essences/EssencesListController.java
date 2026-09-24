@@ -1,5 +1,7 @@
 package com.reboisgabon.client.controllers.essences;
 
+import com.reboisgabon.client.ui.Cellules;
+import com.reboisgabon.client.ui.Composants;
 import com.reboisgabon.client.api.ApiException;
 import com.reboisgabon.client.api.endpoints.EssencesApi;
 import com.reboisgabon.client.dto.essences.Essence;
@@ -48,6 +50,22 @@ public class EssencesListController implements Initializable {
                 new ReadOnlyStringWrapper(data.getValue().getDescription()));
 
         construireColonneActions();
+        Cellules.rendu(colonneNom, v -> {
+            javafx.scene.layout.StackPane vignette = new javafx.scene.layout.StackPane(com.reboisgabon.client.ui.Illustrations.feuille(
+                    com.reboisgabon.client.ui.Illustrations.especePour(v.toString()), 30, javafx.scene.paint.Color.web("#1F5136"), javafx.scene.paint.Color.web("#E4EFDE")));
+            vignette.setMinSize(34, 34);
+            vignette.setMaxSize(34, 34);
+            vignette.setStyle("-fx-background-color: #F4F7F1; -fx-background-radius: 6;");
+            javafx.scene.layout.HBox bloc = new javafx.scene.layout.HBox(10, vignette, Cellules.principal(v));
+            bloc.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            return bloc;
+        });
+        Cellules.rendu(colonneNomScientifique, v -> {
+            javafx.scene.control.Label l = new javafx.scene.control.Label(v.toString());
+            l.getStyleClass().add("nom-scientifique");
+            return l;
+        });
+        Cellules.preparer(tableEssences, "Aucune essence", "Ajoutez les espèces plantées dans le programme.");
 
         boolean peutCreer = SessionManager.getInstance().peutAcceder("essences", "create");
         boutonNouvelleEssence.setVisible(peutCreer);
@@ -63,7 +81,11 @@ public class EssencesListController implements Initializable {
 
             private final Button boutonModifier = BoutonIconeUtil.creer("✏️", "Modifier");
             private final Button boutonSupprimer = BoutonIconeUtil.creer("🗑️", "Supprimer", "bouton-icone-danger");
-            private final HBox conteneur = new HBox(6, boutonModifier, boutonSupprimer);
+            private final HBox conteneur = new HBox(4, boutonModifier, boutonSupprimer);
+
+            {
+                conteneur.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            }
 
             {
                 boutonModifier.setOnAction(evenement -> ouvrirModification(getTableView().getItems().get(getIndex())));

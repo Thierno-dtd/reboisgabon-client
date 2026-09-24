@@ -5,6 +5,8 @@ import java.time.LocalDate;
 
 public class Suivi {
 
+    private String essenceNom;
+    private String siteNom;
     private String id;
     private String campagne;
     private LocalDate dateControle;
@@ -67,5 +69,21 @@ public class Suivi {
 
     public void setProchaineDateControle(LocalDate prochaineDateControle) {
         this.prochaineDateControle = prochaineDateControle;
+    }
+
+    public String getSiteNom() {
+        return siteNom;
+    }
+
+    public void setSiteNom(String siteNom) {
+        this.siteNom = siteNom;
+    }
+
+    public String getEssenceNom() {
+        return essenceNom;
+    }
+
+    public void setEssenceNom(String essenceNom) {
+        this.essenceNom = essenceNom;
     }
 }

@@ -3,6 +3,9 @@ package com.reboisgabon.client.controllers;
 import com.reboisgabon.client.api.endpoints.NotificationsApi;
 import com.reboisgabon.client.session.Role;
 import com.reboisgabon.client.session.SessionManager;
+import com.reboisgabon.client.ui.Composants;
+import com.reboisgabon.client.ui.Illustrations;
+import com.reboisgabon.client.ui.Navigation;
 import com.reboisgabon.client.util.ContentHost;
 import com.reboisgabon.client.util.SceneNavigator;
 import javafx.animation.KeyFrame;
@@ -12,476 +15,215 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.EnumMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 public class ShellController implements Initializable {
 
-    @FXML
-    private VBox sidebar;
-
-    @FXML
-    private Button toggleSidebarBtn;
-
-    @FXML
-    private Label logoLabel;
-
-    @FXML
-    private StackPane zoneContenu;
-
-    @FXML
-    private Label libelleTitreEcran;
-
-    @FXML
-    private Label libelleNomUtilisateur;
-
-    @FXML
-    private Label libelleRoleUtilisateur;
-
-    @FXML
-    private Button boutonDashboard;
-
-    @FXML
-    private Button boutonSites;
-
-    @FXML
-    private Button boutonCampagnes;
-
-    @FXML
-    private Button boutonSuivis;
-
-    @FXML
-    private Button boutonEssences;
-
-    @FXML
-    private Button boutonObjectifs;
-
-    @FXML
-    private Button boutonFinances;
-
-    @FXML
-    private Button boutonIntelligence;
-
-    @FXML
-    private Button boutonUtilisateurs;
-
-    @FXML
-    private Button boutonJournal;
-
-    @FXML
-    private Label badgeNotifications;
-
-    @FXML
-    private Button boutonExports;
-
-    @FXML
-    private Button boutonParametres;
+    @FXML private StackPane zoneContenu;
+    @FXML private ScrollPane defilementContenu;
+    @FXML private HBox zoneMarque;
+    @FXML private VBox decorBarreLaterale;
+    @FXML private Label libelleDate;
+    @FXML private Label libelleNomUtilisateur;
+    @FXML private Label libelleRoleUtilisateur;
+    @FXML private Label libelleInitiales;
+    @FXML private Label badgeNotifications;
+    @FXML private Label groupeTerrain;
+    @FXML private Label groupeProgramme;
+    @FXML private Label groupeAdministration;
+    @FXML private Button boutonDashboard;
+    @FXML private Button boutonCarte;
+    @FXML private Button boutonSites;
+    @FXML private Button boutonCampagnes;
+    @FXML private Button boutonSuivis;
+    @FXML private Button boutonEssences;
+    @FXML private Button boutonObjectifs;
+    @FXML private Button boutonFinances;
+    @FXML private Button boutonIntelligence;
+    @FXML private Button boutonUtilisateurs;
+    @FXML private Button boutonJournal;
+    @FXML private Button boutonParametres;
+    @FXML private Button boutonNotifications;
+    @FXML private Button boutonDeconnexion;
 
     private final NotificationsApi notificationsApi = new NotificationsApi();
+    private final Map<Navigation.Ecran, Destination> destinations = new EnumMap<>(Navigation.Ecran.class);
+    private Timeline minuteurNotifications;
 
-    private boolean isExpanded = true;
+    private record Destination(Button bouton, String section, String titre, String fxml) {
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ContentHost.getInstance().definirConteneur(zoneContenu);
 
+        zoneMarque.getChildren().add(0, Illustrations.logo(38));
+        Illustrations.Canopee canopee = new Illustrations.Canopee(Color.web("#0D1F15"), 110, 11);
+        Illustrations.CourbesNiveau courbes = new Illustrations.CourbesNiveau(Color.web("#9DB8A4"), 0.10, 5);
+        VBox.setVgrow(courbes, Priority.ALWAYS);
+        decorBarreLaterale.getChildren().addAll(courbes, canopee);
+
+        libelleDate.setText(capitaliser(LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE d MMMM yyyy", Locale.FRANCE))));
+        boutonNotifications.setTooltip(new Tooltip("Notifications"));
+        boutonDeconnexion.setTooltip(new Tooltip("Se déconnecter"));
+
         var utilisateur = SessionManager.getInstance().getUtilisateurConnecte();
-
         if (utilisateur != null) {
-            if (libelleNomUtilisateur != null) {
-                libelleNomUtilisateur.setText(utilisateur.getNomComplet());
-            }
-
-            if (libelleRoleUtilisateur != null && utilisateur.getRole() != null) {
-                libelleRoleUtilisateur.setText(utilisateur.getRole().toString());
+            libelleNomUtilisateur.setText(utilisateur.getNomComplet());
+            libelleInitiales.setText(Composants.initiales(utilisateur.getNomComplet()));
+            if (utilisateur.getRole() != null) {
+                libelleRoleUtilisateur.setText(libelleRole(utilisateur.getRole()));
             }
         }
 
+        declarerDestinations();
         appliquerVisibilitePermissions();
-        allerDashboard();
+        Navigation.definirHote(this::aller);
+        Navigation.definirDeconnexion(this::seDeconnecter);
+        aller(Navigation.Ecran.TABLEAU_DE_BORD, null);
         demarrerRafraichissementNotifications();
     }
 
-    @FXML
-    private void handleToggleSidebar() {
-        isExpanded = !isExpanded;
+    private void declarerDestinations() {
+        String fx = "/com/reboisgabon/client/fxml/";
+        destinations.put(Navigation.Ecran.TABLEAU_DE_BORD, new Destination(boutonDashboard, "Pilotage", "Tableau de bord", fx + "dashboard.fxml"));
+        destinations.put(Navigation.Ecran.CARTE, new Destination(boutonCarte, "Pilotage", "Carte du territoire", fx + "carte.fxml"));
+        destinations.put(Navigation.Ecran.SITES, new Destination(boutonSites, "Terrain", "Sites de reboisement", fx + "sites-liste.fxml"));
+        destinations.put(Navigation.Ecran.CAMPAGNES, new Destination(boutonCampagnes, "Terrain", "Campagnes de plantation", fx + "campagnes.fxml"));
+        destinations.put(Navigation.Ecran.SUIVIS, new Destination(boutonSuivis, "Terrain", "Suivis de croissance", fx + "suivis.fxml"));
+        destinations.put(Navigation.Ecran.ESSENCES, new Destination(boutonEssences, "Terrain", "Essences", fx + "essences.fxml"));
+        destinations.put(Navigation.Ecran.OBJECTIFS, new Destination(boutonObjectifs, "Programme", "Objectifs de reboisement", fx + "objectifs.fxml"));
+        destinations.put(Navigation.Ecran.FINANCES, new Destination(boutonFinances, "Programme", "Finances", fx + "finances.fxml"));
+        destinations.put(Navigation.Ecran.INTELLIGENCE, new Destination(boutonIntelligence, "Programme", "Intelligence écologique", fx + "intelligence.fxml"));
+        destinations.put(Navigation.Ecran.UTILISATEURS, new Destination(boutonUtilisateurs, "Administration", "Utilisateurs", fx + "utilisateurs.fxml"));
+        destinations.put(Navigation.Ecran.JOURNAL, new Destination(boutonJournal, "Administration", "Journal d'activité", fx + "journal.fxml"));
+        destinations.put(Navigation.Ecran.PARAMETRES, new Destination(boutonParametres, "Compte", "Paramètres", fx + "parametres.fxml"));
+        destinations.put(Navigation.Ecran.NOTIFICATIONS, new Destination(null, "Compte", "Notifications", fx + "notifications.fxml"));
+    }
 
-        if (isExpanded) {
-            sidebar.setPrefWidth(240);
-
-            if (logoLabel != null) {
-                logoLabel.setVisible(true);
-                logoLabel.setManaged(true);
-            }
-
-            toggleSidebarBtn.setText("☰");
-
-            definirTexteBoutons(
-                    "📊  Dashboard",
-                    "📍  Sites",
-                    "🌱  Campagnes",
-                    "📈  Suivis",
-                    "🌳  Essences",
-                    "🎯  Objectifs",
-                    "💰  Finances",
-                    "🤖  IA Ecologique",
-                    "👥  Utilisateurs",
-                    "📜  Journal"
-            );
-
-        } else {
-            sidebar.setPrefWidth(72);
-
-            if (logoLabel != null) {
-                logoLabel.setVisible(false);
-                logoLabel.setManaged(false);
-            }
-
-            toggleSidebarBtn.setText("☰");
-
-            definirTexteBoutons(
-                    "📊",
-                    "📍",
-                    "🌱",
-                    "📈",
-                    "🌳",
-                    "🎯",
-                    "💰",
-                    "🤖",
-                    "👥",
-                    "📜"
-            );
+    private <T> void aller(Navigation.Ecran ecran, Consumer<T> configuration) {
+        Destination destination = destinations.get(ecran);
+        if (destination == null) {
+            return;
+        }
+        activerNavigation(destination.bouton());
+        SceneNavigator.getInstance().getStagePrincipal().setTitle("ReboisGabon — " + destination.titre());
+        ContentHost.getInstance().afficher(destination.fxml(), configuration);
+        defilementContenu.setVvalue(0);
+        if (ecran == Navigation.Ecran.NOTIFICATIONS) {
+            Platform.runLater(this::rafraichirBadgeNotifications);
         }
     }
 
-    private void definirTexteBoutons(
-            String dashboard,
-            String sites,
-            String campagnes,
-            String suivis,
-            String essences,
-            String objectifs,
-            String finances,
-            String intelligence,
-            String utilisateurs,
-            String journal
-    ) {
-        if (boutonDashboard != null) boutonDashboard.setText(dashboard);
-        if (boutonSites != null) boutonSites.setText(sites);
-        if (boutonCampagnes != null) boutonCampagnes.setText(campagnes);
-        if (boutonSuivis != null) boutonSuivis.setText(suivis);
-        if (boutonEssences != null) boutonEssences.setText(essences);
-        if (boutonObjectifs != null) boutonObjectifs.setText(objectifs);
-        if (boutonFinances != null) boutonFinances.setText(finances);
-        if (boutonIntelligence != null) boutonIntelligence.setText(intelligence);
-        if (boutonUtilisateurs != null) boutonUtilisateurs.setText(utilisateurs);
-        if (boutonJournal != null) boutonJournal.setText(journal);
+    private String libelleRole(Role role) {
+        return switch (role) {
+            case ADMIN -> "Administrateur";
+            case SUPERVISEUR -> "Superviseur";
+            case AGENT -> "Agent de terrain";
+            case FINANCIER -> "Financier";
+        };
+    }
+
+    private String capitaliser(String texte) {
+        return texte.isEmpty() ? texte : texte.substring(0, 1).toUpperCase(Locale.FRANCE) + texte.substring(1);
     }
 
     private void demarrerRafraichissementNotifications() {
         rafraichirBadgeNotifications();
-
-        Timeline minuteur = new Timeline(
-                new KeyFrame(
-                        Duration.seconds(60),
-                        evenement -> rafraichirBadgeNotifications()
-                )
-        );
-
-        minuteur.setCycleCount(Timeline.INDEFINITE);
-        minuteur.play();
+        minuteurNotifications = new Timeline(new KeyFrame(Duration.seconds(60), evenement -> rafraichirBadgeNotifications()));
+        minuteurNotifications.setCycleCount(Timeline.INDEFINITE);
+        minuteurNotifications.play();
     }
 
     private void rafraichirBadgeNotifications() {
         Thread thread = new Thread(() -> {
             try {
                 int nombre = notificationsApi.compterNonLues();
-
                 Platform.runLater(() -> {
-                    if (badgeNotifications == null) {
-                        return;
-                    }
-
-                    if (nombre > 0) {
-                        badgeNotifications.setText(String.valueOf(nombre));
-                        badgeNotifications.setVisible(true);
-                        badgeNotifications.setManaged(true);
-                    } else {
-                        badgeNotifications.setVisible(false);
-                        badgeNotifications.setManaged(false);
-                    }
+                    badgeNotifications.setText(nombre > 99 ? "99+" : String.valueOf(nombre));
+                    badgeNotifications.setVisible(nombre > 0);
                 });
-
             } catch (Exception ignored) {
             }
         });
-
         thread.setDaemon(true);
         thread.start();
     }
 
     private void appliquerVisibilitePermissions() {
         SessionManager session = SessionManager.getInstance();
-
         boolean estAdmin = session.getRole() == Role.ADMIN;
 
-        definirVisibilite(
-                boutonSites,
-                session.peutAcceder("sites", "view")
-        );
+        definirVisibilite(boutonSites, session.peutAcceder("sites", "view"));
+        definirVisibilite(boutonCarte, session.peutAcceder("sites", "view"));
+        definirVisibilite(boutonCampagnes, session.peutAcceder("campagnes", "view"));
+        definirVisibilite(boutonSuivis, session.peutAcceder("suivis", "view"));
+        definirVisibilite(boutonEssences, session.peutAcceder("essences", "view"));
+        definirVisibilite(boutonObjectifs, session.peutAcceder("objectifs", "view"));
+        definirVisibilite(boutonFinances, session.peutAcceder("finances", "view"));
+        definirVisibilite(boutonIntelligence, session.peutAcceder("intelligence", "view"));
+        definirVisibilite(boutonUtilisateurs, estAdmin);
+        definirVisibilite(boutonJournal, estAdmin);
 
-        definirVisibilite(
-                boutonCampagnes,
-                session.peutAcceder("campagnes", "view")
-        );
-
-        definirVisibilite(
-                boutonSuivis,
-                session.peutAcceder("suivis", "view")
-        );
-
-        definirVisibilite(
-                boutonEssences,
-                session.peutAcceder("essences", "view")
-        );
-
-        definirVisibilite(
-                boutonObjectifs,
-                session.peutAcceder("objectifs", "view")
-        );
-
-        definirVisibilite(
-                boutonFinances,
-                session.peutAcceder("finances", "view")
-        );
-
-        definirVisibilite(
-                boutonIntelligence,
-                session.peutAcceder("intelligence", "view")
-        );
-
-        definirVisibilite(
-                boutonUtilisateurs,
-                estAdmin
-        );
-
-        definirVisibilite(
-                boutonJournal,
-                estAdmin
-        );
+        definirVisibilite(groupeTerrain, boutonSites.isVisible() || boutonCampagnes.isVisible() || boutonSuivis.isVisible() || boutonEssences.isVisible());
+        definirVisibilite(groupeProgramme, boutonObjectifs.isVisible() || boutonFinances.isVisible() || boutonIntelligence.isVisible());
+        definirVisibilite(groupeAdministration, estAdmin);
     }
 
-    private void definirVisibilite(Button bouton, boolean visible) {
-        if (bouton == null) {
-            return;
-        }
-
-        bouton.setVisible(visible);
-        bouton.setManaged(visible);
+    private void definirVisibilite(javafx.scene.Node noeud, boolean visible) {
+        noeud.setVisible(visible);
+        noeud.setManaged(visible);
     }
 
     private void activerNavigation(Button boutonActif) {
-        Button[] boutons = {
-                boutonDashboard,
-                boutonSites,
-                boutonCampagnes,
-                boutonSuivis,
-                boutonEssences,
-                boutonObjectifs,
-                boutonFinances,
-                boutonIntelligence,
-                boutonUtilisateurs,
-                boutonJournal,
-                boutonExports,
-                boutonParametres
-        };
-
-        for (Button bouton : boutons) {
-            if (bouton != null) {
-                bouton.getStyleClass().remove("bouton-nav-actif");
-                bouton.getStyleClass().remove("active");
+        for (Destination destination : destinations.values()) {
+            if (destination.bouton() != null) {
+                destination.bouton().getStyleClass().removeAll("bouton-nav-actif", "active");
             }
         }
-
         if (boutonActif != null) {
-            boutonActif.getStyleClass().add("bouton-nav-actif");
             boutonActif.getStyleClass().add("active");
         }
     }
 
-    @FXML
-    private void allerDashboard() {
-        activerNavigation(boutonDashboard);
-
-        if (libelleTitreEcran != null) {
-            libelleTitreEcran.setText("Tableau de bord");
-        }
-
-        ContentHost.getInstance().afficher(
-                "/com/reboisgabon/client/fxml/dashboard.fxml"
-        );
-    }
-
-    @FXML
-    private void allerSites() {
-        activerNavigation(boutonSites);
-
-        if (libelleTitreEcran != null) {
-            libelleTitreEcran.setText("Sites de reboisement");
-        }
-
-        ContentHost.getInstance().afficher(
-                "/com/reboisgabon/client/fxml/sites.fxml"
-        );
-    }
-
-    @FXML
-    private void allerCampagnes() {
-        activerNavigation(boutonCampagnes);
-
-        if (libelleTitreEcran != null) {
-            libelleTitreEcran.setText("Campagnes de plantation");
-        }
-
-        ContentHost.getInstance().afficher(
-                "/com/reboisgabon/client/fxml/campagnes.fxml"
-        );
-    }
-
-    @FXML
-    private void allerSuivis() {
-        activerNavigation(boutonSuivis);
-
-        if (libelleTitreEcran != null) {
-            libelleTitreEcran.setText("Suivis de croissance");
-        }
-
-        ContentHost.getInstance().afficher(
-                "/com/reboisgabon/client/fxml/suivis.fxml"
-        );
-    }
-
-    @FXML
-    private void allerEssences() {
-        activerNavigation(boutonEssences);
-
-        if (libelleTitreEcran != null) {
-            libelleTitreEcran.setText("Essences");
-        }
-
-        ContentHost.getInstance().afficher(
-                "/com/reboisgabon/client/fxml/essences.fxml"
-        );
-    }
-
-    @FXML
-    private void allerObjectifs() {
-        activerNavigation(boutonObjectifs);
-
-        if (libelleTitreEcran != null) {
-            libelleTitreEcran.setText("Objectifs de reboisement");
-        }
-
-        ContentHost.getInstance().afficher(
-                "/com/reboisgabon/client/fxml/objectifs.fxml"
-        );
-    }
-
-    @FXML
-    private void allerFinances() {
-        activerNavigation(boutonFinances);
-
-        if (libelleTitreEcran != null) {
-            libelleTitreEcran.setText("Finances");
-        }
-
-        ContentHost.getInstance().afficher(
-                "/com/reboisgabon/client/fxml/finances.fxml"
-        );
-    }
-
-    @FXML
-    private void allerIntelligence() {
-        activerNavigation(boutonIntelligence);
-
-        if (libelleTitreEcran != null) {
-            libelleTitreEcran.setText("Intelligence écologique");
-        }
-
-        ContentHost.getInstance().afficher(
-                "/com/reboisgabon/client/fxml/intelligence.fxml"
-        );
-    }
-
-    @FXML
-    private void allerUtilisateurs() {
-        activerNavigation(boutonUtilisateurs);
-
-        if (libelleTitreEcran != null) {
-            libelleTitreEcran.setText("Utilisateurs");
-        }
-
-        ContentHost.getInstance().afficher(
-                "/com/reboisgabon/client/fxml/utilisateurs.fxml"
-        );
-    }
-
-    @FXML
-    private void allerJournal() {
-        activerNavigation(boutonJournal);
-
-        if (libelleTitreEcran != null) {
-            libelleTitreEcran.setText("Journal d'activité");
-        }
-
-        ContentHost.getInstance().afficher(
-                "/com/reboisgabon/client/fxml/journal.fxml"
-        );
-    }
-
-    @FXML
-    private void allerNotifications() {
-        if (libelleTitreEcran != null) {
-            libelleTitreEcran.setText("Notifications");
-        }
-
-        ContentHost.getInstance().afficher(
-                "/com/reboisgabon/client/fxml/notifications.fxml"
-        );
-    }
-
-    @FXML
-    private void allerParametres() {
-        if (libelleTitreEcran != null) {
-            libelleTitreEcran.setText("Paramètres du compte");
-        }
-
-        ContentHost.getInstance().afficher(
-                "/com/reboisgabon/client/fxml/parametres.fxml"
-        );
-    }
-
-    @FXML
-    private void allerExports() {
-        if (libelleTitreEcran != null) {
-            libelleTitreEcran.setText("Exports");
-        }
-
-        ContentHost.getInstance().afficher(
-                "/com/reboisgabon/client/fxml/exports.fxml"
-        );
-    }
+    @FXML private void allerDashboard() { aller(Navigation.Ecran.TABLEAU_DE_BORD, null); }
+    @FXML private void allerCarte() { aller(Navigation.Ecran.CARTE, null); }
+    @FXML private void allerSites() { aller(Navigation.Ecran.SITES, null); }
+    @FXML private void allerCampagnes() { aller(Navigation.Ecran.CAMPAGNES, null); }
+    @FXML private void allerSuivis() { aller(Navigation.Ecran.SUIVIS, null); }
+    @FXML private void allerEssences() { aller(Navigation.Ecran.ESSENCES, null); }
+    @FXML private void allerObjectifs() { aller(Navigation.Ecran.OBJECTIFS, null); }
+    @FXML private void allerFinances() { aller(Navigation.Ecran.FINANCES, null); }
+    @FXML private void allerIntelligence() { aller(Navigation.Ecran.INTELLIGENCE, null); }
+    @FXML private void allerUtilisateurs() { aller(Navigation.Ecran.UTILISATEURS, null); }
+    @FXML private void allerJournal() { aller(Navigation.Ecran.JOURNAL, null); }
+    @FXML private void allerNotifications() { aller(Navigation.Ecran.NOTIFICATIONS, null); }
+    @FXML private void allerParametres() { aller(Navigation.Ecran.PARAMETRES, null); }
 
     @FXML
     private void seDeconnecter() {
+        if (minuteurNotifications != null) {
+            minuteurNotifications.stop();
+        }
+        Navigation.definirHote(null);
+        Navigation.definirDeconnexion(null);
         SessionManager.getInstance().vider();
-
-        SceneNavigator.getInstance().naviguerVers(
-                "/com/reboisgabon/client/fxml/login.fxml"
-        );
+        SceneNavigator.getInstance().naviguerVers("/com/reboisgabon/client/fxml/login.fxml");
     }
 }

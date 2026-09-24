@@ -1,12 +1,21 @@
 package com.reboisgabon.client.controllers.sites;
 
 import com.reboisgabon.client.api.ApiException;
+import com.reboisgabon.client.api.endpoints.ExportsApi;
 import com.reboisgabon.client.api.endpoints.SitesApi;
 import com.reboisgabon.client.dto.common.PageDrf;
 import com.reboisgabon.client.dto.sites.Site;
 import com.reboisgabon.client.dto.sites.StatutSite;
 import com.reboisgabon.client.session.SessionManager;
-import com.reboisgabon.client.util.*;
+import com.reboisgabon.client.ui.Cellules;
+import com.reboisgabon.client.ui.Composants;
+import com.reboisgabon.client.ui.ExportUtil;
+import com.reboisgabon.client.ui.Icones;
+import com.reboisgabon.client.ui.Navigation;
+import com.reboisgabon.client.util.AlertUtil;
+import com.reboisgabon.client.util.DialogUtil;
+import com.reboisgabon.client.util.ErreurApiUtil;
+import com.reboisgabon.client.util.FiltreAutoUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,36 +26,42 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import com.reboisgabon.client.controllers.commun.DetailJsonController;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 
-import java.math.BigDecimal;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 public class SitesListController implements Initializable {
 
+    public static final List<String> PROVINCES = List.of("Estuaire", "Haut-Ogooué", "Moyen-Ogooué", "Ngounié", "Nyanga",
+            "Ogooué-Ivindo", "Ogooué-Lolo", "Ogooué-Maritime", "Woleu-Ntem");
+
+    @FXML private VBox zoneEntete;
     @FXML private TextField champRecherche;
-    @FXML private TextField champProvince;
+    @FXML private ComboBox<String> comboProvince;
     @FXML private ComboBox<StatutSite> comboStatut;
-    @FXML private TextField champTauxSurvieMin;
-    @FXML private Button boutonNouveauSite;
+    @FXML private ComboBox<Integer> comboSurvie;
     @FXML private TableView<Site> tableSites;
-    @FXML private TableColumn<Site, String> colonneNom;
-    @FXML private TableColumn<Site, String> colonneLocalite;
-    @FXML private TableColumn<Site, String> colonneProvince;
-    @FXML private TableColumn<Site, BigDecimal> colonneSuperficie;
-    @FXML private TableColumn<Site, StatutSite> colonneStatut;
-    @FXML private TableColumn<Site, BigDecimal> colonneTauxSurvie;
+    @FXML private TableColumn<Site, Site> colonneNom;
+    @FXML private TableColumn<Site, Site> colonneProvince;
+    @FXML private TableColumn<Site, Site> colonneSuperficie;
+    @FXML private TableColumn<Site, Site> colonneCampagnes;
+    @FXML private TableColumn<Site, Site> colonneStatut;
+    @FXML private TableColumn<Site, Site> colonneTauxSurvie;
     @FXML private TableColumn<Site, Void> colonneActions;
     @FXML private Button boutonPrecedent;
     @FXML private Button boutonSuivant;
     @FXML private Label libelleInfoPagination;
 
     private final SitesApi sitesApi = new SitesApi();
+    private final ExportsApi exportsApi = new ExportsApi();
     private PageDrf<Site> pageCourante;
+    private int numeroPage = 1;
 
     private interface FournisseurPage {
         PageDrf<Site> charger() throws Exception;
@@ -54,146 +69,128 @@ public class SitesListController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        Button export = Composants.boutonExportExcel("Exporter Excel", () -> {});
+        export.setOnAction(e -> ExportUtil.excel(export, "sites-reboisement", exportsApi::sitesExcel));
+        Button nouveau = Composants.bouton("Nouveau site", Icones.AJOUTER, "bouton-primaire");
+        nouveau.setOnAction(e -> ouvrirCreation());
+        boolean peutCreer = SessionManager.getInstance().peutAcceder("sites", "create");
+        nouveau.setVisible(peutCreer);
+        nouveau.setManaged(peutCreer);
+        zoneEntete.getChildren().setAll(Composants.entetePage(Icones.SITE, "Registre des sites",
+                "Les parcelles de reboisement, leur statut et le taux de survie calculé à partir des contrôles.", export, nouveau));
+
+        comboProvince.getItems().add(null);
+        comboProvince.getItems().addAll(PROVINCES);
+        comboProvince.setConverter(convertisseur(p -> p == null ? "Toutes les provinces" : p));
         comboStatut.getItems().add(null);
         comboStatut.getItems().addAll(StatutSite.values());
-        colonneNom.setCellValueFactory(data ->
-                new javafx.beans.property.ReadOnlyStringWrapper(
-                        data.getValue().getNom()
-                ));
+        comboStatut.setConverter(convertisseur(s -> s == null ? "Tous les statuts" : Composants.libelleStatutSite(s.name())));
+        comboSurvie.getItems().addAll(null, 50, 70, 80, 90);
+        comboSurvie.setConverter(convertisseur(v -> v == null ? "Toute survie" : "Survie ≥ " + v + " %"));
 
-        colonneLocalite.setCellValueFactory(data ->
-                new javafx.beans.property.ReadOnlyStringWrapper(
-                        data.getValue().getLocalite()
-                ));
-
-        colonneProvince.setCellValueFactory(data ->
-                new javafx.beans.property.ReadOnlyStringWrapper(
-                        data.getValue().getProvince()
-                ));
-
-        colonneSuperficie.setCellValueFactory(data ->
-                new javafx.beans.property.ReadOnlyObjectWrapper<>(
-                        data.getValue().getSuperficieHectares()
-                ));
-
-        colonneStatut.setCellValueFactory(data ->
-                new javafx.beans.property.ReadOnlyObjectWrapper<>(
-                        data.getValue().getStatut()
-                ));
-
-        colonneTauxSurvie.setCellValueFactory(data ->
-                new javafx.beans.property.ReadOnlyObjectWrapper<>(
-                        data.getValue().getTauxSurvieMoyen()
-                ));
+        Cellules.<Site>double_(colonneNom, Site::getNom, Site::getLocalite);
+        Cellules.<Site>texte(colonneProvince, Site::getProvince);
+        Cellules.<Site>droite(colonneSuperficie, s -> s.getSuperficieHectares() == null ? null : Composants.decimal(s.getSuperficieHectares()) + " ha");
+        Cellules.<Site>droite(colonneCampagnes, s -> s.getNombreCampagnes() == null ? "0" : String.valueOf(s.getNombreCampagnes()));
+        Cellules.<Site>noeud(colonneStatut, s -> Composants.pastilleStatutSite(s.getStatut() == null ? null : s.getStatut().name()));
+        Cellules.<Site>noeud(colonneTauxSurvie, s -> Composants.barreSurvie(s.getTauxSurvieMoyen(), 70));
         construireColonneActions();
-        boolean peutCreer = SessionManager.getInstance().peutAcceder("sites", "create");
-        boutonNouveauSite.setVisible(peutCreer);
-        boutonNouveauSite.setManaged(peutCreer);
+        Cellules.preparer(tableSites, "Aucun site ne correspond", "Modifiez les filtres ou créez un nouveau site de reboisement.");
+        tableSites.setRowFactory(t -> {
+            var ligne = new javafx.scene.control.TableRow<Site>();
+            ligne.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 2 && !ligne.isEmpty()) {
+                    voirSurCarte(ligne.getItem());
+                }
+            });
+            return ligne;
+        });
 
         FiltreAutoUtil.surSaisie(champRecherche, this::rechercher);
-        FiltreAutoUtil.surSaisie(champProvince, this::rechercher);
-        FiltreAutoUtil.surSaisie(champTauxSurvieMin, this::rechercher);
+        FiltreAutoUtil.surValeur(comboProvince, this::rechercher);
         FiltreAutoUtil.surValeur(comboStatut, this::rechercher);
+        FiltreAutoUtil.surValeur(comboSurvie, this::rechercher);
 
         rechercher();
     }
 
+    static <T> StringConverter<T> convertisseur(java.util.function.Function<T, String> libelle) {
+        return new StringConverter<>() {
+            @Override
+            public String toString(T objet) {
+                return libelle.apply(objet);
+            }
+
+            @Override
+            public T fromString(String texte) {
+                return null;
+            }
+        };
+    }
+
     private void construireColonneActions() {
         colonneActions.setCellFactory(colonne -> new TableCell<>() {
-
-            private final Button boutonModifier = BoutonIconeUtil.creer("✏️", "Modifier");
-            private final Button boutonScore = BoutonIconeUtil.creer("🍃", "Score écologique");
-            private final Button boutonSupprimer = BoutonIconeUtil.creer("🗑️", "Supprimer", "bouton-icone-danger");
-            private final HBox conteneur = new HBox(6, boutonModifier, boutonScore, boutonSupprimer);
+            private final Button boutonCarte = Composants.boutonIcone(Icones.CARTE, "Voir la fiche sur la carte", null);
+            private final Button boutonModifier = Composants.boutonIcone(Icones.MODIFIER, "Modifier", null);
+            private final Button boutonSupprimer = Composants.boutonIcone(Icones.SUPPRIMER, "Supprimer", "bouton-icone-danger");
+            private final HBox conteneur = new HBox(4, boutonCarte, boutonModifier, boutonSupprimer);
 
             {
-                boutonModifier.setOnAction(evenement -> {
-                    Site site = getTableView().getItems().get(getIndex());
-                    ouvrirModification(site);
-                });
+                conteneur.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            }
 
-                boutonScore.setOnAction(evenement -> {
-                    Site site = getTableView().getItems().get(getIndex());
-                    ouvrirScore(site);
-                });
-
-                boutonSupprimer.setOnAction(evenement -> {
-                    Site site = getTableView().getItems().get(getIndex());
-                    supprimer(site);
-                });
+            {
+                boutonCarte.setOnAction(e -> voirSurCarte(getTableView().getItems().get(getIndex())));
+                boutonModifier.setOnAction(e -> ouvrirModification(getTableView().getItems().get(getIndex())));
+                boutonSupprimer.setOnAction(e -> supprimer(getTableView().getItems().get(getIndex())));
+                boolean peutModifier = SessionManager.getInstance().peutAcceder("sites", "edit");
+                boolean peutSupprimer = SessionManager.getInstance().peutAcceder("sites", "delete");
+                boutonModifier.setVisible(peutModifier);
+                boutonModifier.setManaged(peutModifier);
+                boutonSupprimer.setVisible(peutSupprimer);
+                boutonSupprimer.setManaged(peutSupprimer);
             }
 
             @Override
             protected void updateItem(Void item, boolean vide) {
                 super.updateItem(item, vide);
-
-                if (vide || getIndex() < 0 || getIndex() >= getTableView().getItems().size()) {
-                    setGraphic(null);
-                    return;
-                }
-
-                boolean peutModifier =
-                        SessionManager.getInstance().peutAcceder("sites", "edit");
-
-                boolean peutSupprimer =
-                        SessionManager.getInstance().peutAcceder("sites", "delete");
-
-                boutonModifier.setVisible(peutModifier);
-                boutonModifier.setManaged(peutModifier);
-
-                boutonSupprimer.setVisible(peutSupprimer);
-                boutonSupprimer.setManaged(peutSupprimer);
-
-                setGraphic(conteneur);
+                setGraphic(vide || getIndex() < 0 || getIndex() >= getTableView().getItems().size() ? null : conteneur);
             }
         });
     }
 
-    private void ouvrirScore(Site site) {
-        new Thread(() -> {
-            try {
-                var score = sitesApi.scoreEcologique(site.getId());
+    private void voirSurCarte(Site site) {
+        Navigation.<CarteController>aller(Navigation.Ecran.CARTE, c -> c.focaliserSite(site.getId()));
+    }
 
-                javafx.application.Platform.runLater(() ->
-                        DialogUtil.<DetailJsonController>ouvrirModal(
-                                "/com/reboisgabon/client/fxml/detail-json.fxml",
-                                "Score écologique",
-                                controleur -> {
-                                    controleur.definirTitre(
-                                            "Score écologique — " + site.getNom()
-                                    );
-                                    controleur.definirContenu(score);
-                                }
-                        )
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                javafx.application.Platform.runLater(() ->
-                        AlertUtil.erreur(
-                                "Erreur",
-                                "Impossible de charger le score écologique."
-                        )
-                );
-            }
-        }).start();
+    @FXML
+    private void reinitialiserFiltres() {
+        champRecherche.clear();
+        comboProvince.setValue(null);
+        comboStatut.setValue(null);
+        comboSurvie.setValue(null);
+        rechercher();
     }
 
     @FXML
     private void rechercher() {
         Map<String, String> filtres = new HashMap<>();
         filtres.put("search", champRecherche.getText());
-        filtres.put("province", champProvince.getText());
+        filtres.put("province", comboProvince.getValue());
         if (comboStatut.getValue() != null) {
-            filtres.put("statut", comboStatut.getValue().toString());
+            filtres.put("statut", comboStatut.getValue().name());
         }
-        filtres.put("taux_survie_min", champTauxSurvieMin.getText());
+        if (comboSurvie.getValue() != null) {
+            filtres.put("taux_survie_min", String.valueOf(comboSurvie.getValue()));
+        }
+        numeroPage = 1;
         chargerPage(() -> sitesApi.rechercher(filtres));
     }
 
     @FXML
     private void pagePrecedente() {
         if (pageCourante != null && pageCourante.getPrevious() != null) {
+            numeroPage--;
             chargerPage(() -> sitesApi.rechercherUrl(pageCourante.getPrevious()));
         }
     }
@@ -201,6 +198,7 @@ public class SitesListController implements Initializable {
     @FXML
     private void pageSuivante() {
         if (pageCourante != null && pageCourante.getNext() != null) {
+            numeroPage++;
             chargerPage(() -> sitesApi.rechercherUrl(pageCourante.getNext()));
         }
     }
@@ -212,28 +210,23 @@ public class SitesListController implements Initializable {
                 Platform.runLater(() -> {
                     pageCourante = resultat;
                     tableSites.getItems().setAll(resultat.getResults());
-                    libelleInfoPagination.setText(resultat.getCount() + " résultats");
+                    libelleInfoPagination.setText(resultat.getCount() + " site" + (resultat.getCount() > 1 ? "s" : "") + "  ·  page " + numeroPage);
                     boutonPrecedent.setDisable(resultat.getPrevious() == null);
                     boutonSuivant.setDisable(resultat.getNext() == null);
                 });
             } catch (Exception e) {
-                Platform.runLater(() -> AlertUtil.erreur("Erreur", "Impossible de charger les sites."));
+                Platform.runLater(() -> AlertUtil.erreur("Chargement impossible", "La liste des sites n'a pas pu être chargée."));
             }
         }).start();
     }
 
-    @FXML
     private void ouvrirCreation() {
-        DialogUtil.<SiteFormController>ouvrirModal(
-                "/com/reboisgabon/client/fxml/site-form.fxml",
-                "Nouveau site",
+        DialogUtil.<SiteFormController>ouvrirModal("/com/reboisgabon/client/fxml/site-form.fxml", "Nouveau site",
                 controleur -> controleur.definirOnSucces(this::rechercher));
     }
 
     private void ouvrirModification(Site site) {
-        DialogUtil.<SiteFormController>ouvrirModal(
-                "/com/reboisgabon/client/fxml/site-form.fxml",
-                "Modifier le site",
+        DialogUtil.<SiteFormController>ouvrirModal("/com/reboisgabon/client/fxml/site-form.fxml", "Modifier le site",
                 controleur -> {
                     controleur.definirSiteExistant(site);
                     controleur.definirOnSucces(this::rechercher);
@@ -241,7 +234,8 @@ public class SitesListController implements Initializable {
     }
 
     private void supprimer(Site site) {
-        boolean confirme = AlertUtil.confirmation("Confirmation", "Supprimer le site \"" + site.getNom() + "\" ?");
+        boolean confirme = AlertUtil.confirmation("Supprimer ce site ?",
+                "« " + site.getNom() + " » et toutes ses campagnes et suivis seront définitivement supprimés.");
         if (!confirme) {
             return;
         }
@@ -250,9 +244,9 @@ public class SitesListController implements Initializable {
                 sitesApi.supprimer(site.getId());
                 Platform.runLater(this::rechercher);
             } catch (ApiException e) {
-                Platform.runLater(() -> AlertUtil.erreur("Erreur", ErreurApiUtil.message(e)));
+                Platform.runLater(() -> AlertUtil.erreur("Suppression refusée", ErreurApiUtil.message(e)));
             } catch (Exception e) {
-                Platform.runLater(() -> AlertUtil.erreur("Erreur", "Impossible de joindre le serveur."));
+                Platform.runLater(() -> AlertUtil.erreur("Serveur injoignable", "Impossible de joindre le serveur."));
             }
         }).start();
     }

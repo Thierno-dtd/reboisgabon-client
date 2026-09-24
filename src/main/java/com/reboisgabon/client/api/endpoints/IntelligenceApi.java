@@ -16,7 +16,7 @@ public class IntelligenceApi {
     }
 
     public JsonNode recommanderEssence(String province, int topN) throws Exception {
-        var reponse = ApiClient.getInstance().get("intelligence/recommander-essence/?province=" + province + "&top_n=" + topN);
+        var reponse = ApiClient.getInstance().get("intelligence/recommander-essence/?province=" + java.net.URLEncoder.encode(province, java.nio.charset.StandardCharsets.UTF_8) + "&top_n=" + topN);
         return JsonMapper.instance().readTree(reponse.body());
     }
 

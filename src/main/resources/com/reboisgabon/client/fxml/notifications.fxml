@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.StackPane?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.control.Label?>
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -7,16 +10,19 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="18" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<VBox spacing="16" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.reboisgabon.client.controllers.notifications.NotificationsController">
-    <HBox spacing="12" styleClass="carte-verre">
-        <padding>
-            <Insets bottom="16" left="16" right="16" top="16"/>
-        </padding>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button onAction="#toutMarquerLu" styleClass="bouton-secondaire" text="Tout marquer comme lu"/>
+    <HBox spacing="14" alignment="CENTER_LEFT" styleClass="entete-page">
+        <StackPane styleClass="icone-page"><FontIcon iconLiteral="mdi2b-bell-outline"/></StackPane>
+        <VBox spacing="2" HBox.hgrow="ALWAYS">
+            <Label styleClass="titre-page" text="Notifications"/>
+            <Label styleClass="sous-titre" text="Alertes de survie, contrôles en retard et échéances d'objectifs." wrapText="true"/>
+        </VBox>
+        <Button onAction="#toutMarquerLu" styleClass="bouton-secondaire" text="Tout marquer comme lu">
+            <graphic><FontIcon iconLiteral="mdi2c-check"/></graphic>
+        </Button>
     </HBox>
-    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="content-scroll">
         <VBox fx:id="conteneurNotifications" spacing="10"/>
     </ScrollPane>
 </VBox>

@@ -5,6 +5,8 @@ import java.time.LocalDate;
 
 public class Campagne {
 
+    private String essenceNom;
+    private String siteNom;
     private String id;
     private String site;
     private String essence;
@@ -67,5 +69,21 @@ public class Campagne {
 
     public void setTauxSurvieMoyen(BigDecimal tauxSurvieMoyen) {
         this.tauxSurvieMoyen = tauxSurvieMoyen;
+    }
+
+    public String getSiteNom() {
+        return siteNom;
+    }
+
+    public void setSiteNom(String siteNom) {
+        this.siteNom = siteNom;
+    }
+
+    public String getEssenceNom() {
+        return essenceNom;
+    }
+
+    public void setEssenceNom(String essenceNom) {
+        this.essenceNom = essenceNom;
     }
 }

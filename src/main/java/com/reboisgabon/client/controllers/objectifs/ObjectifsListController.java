@@ -1,5 +1,7 @@
 package com.reboisgabon.client.controllers.objectifs;
 
+import com.reboisgabon.client.ui.Cellules;
+import com.reboisgabon.client.ui.Composants;
 import com.reboisgabon.client.api.ApiException;
 import com.reboisgabon.client.api.endpoints.ObjectifsApi;
 import com.reboisgabon.client.dto.objectifs.Objectif;
@@ -72,6 +74,21 @@ public class ObjectifsListController implements Initializable {
 
         construireColonneProgression();
         construireColonneActions();
+        Cellules.rendu(colonneTitre, Cellules::principal);
+        Cellules.rendu(colonnePortee, v -> Composants.pastille(switch (v.toString()) {
+            case "SITE" -> "Site";
+            case "PROVINCE" -> "Province";
+            case "GLOBAL" -> "National";
+            default -> v.toString();
+        }, "neutre"));
+        Cellules.rendu(colonneEcheance, v -> new javafx.scene.control.Label(Composants.date(v.toString())));
+        Cellules.rendu(colonneStatut, v -> switch (v.toString()) {
+            case "ATTEINT" -> Composants.pastille("Atteint", "foret");
+            case "NON_ATTEINT" -> Composants.pastille("Non atteint", "rouge");
+            case "ANNULE" -> Composants.pastille("Annulé", "neutre");
+            default -> Composants.pastille("En cours", "ocean");
+        });
+        Cellules.preparer(tableObjectifs, "Aucun objectif", "Fixez une cible de plants et de survie pour le pays, une province ou un site.");
 
         boolean peutCreer = SessionManager.getInstance().peutAcceder("objectifs", "create");
         boutonNouvelObjectif.setVisible(peutCreer);
@@ -87,7 +104,11 @@ public class ObjectifsListController implements Initializable {
 
             private final Button boutonModifier = BoutonIconeUtil.creer("✏️", "Modifier");
             private final Button boutonSupprimer = BoutonIconeUtil.creer("🗑️", "Supprimer", "bouton-icone-danger");
-            private final HBox conteneur = new HBox(6, boutonModifier, boutonSupprimer);
+            private final HBox conteneur = new HBox(4, boutonModifier, boutonSupprimer);
+
+            {
+                conteneur.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            }
 
             {
                 boutonModifier.setOnAction(evenement -> ouvrirModification(getTableView().getItems().get(getIndex())));
@@ -114,26 +135,24 @@ public class ObjectifsListController implements Initializable {
 
     private void construireColonneProgression() {
         colonneProgression.setCellFactory(colonne -> new TableCell<>() {
-
-            private final ProgressBar barre = new ProgressBar();
-
-            {
-                barre.getStyleClass().add("barre-progression");
-                barre.setPrefWidth(160);
-            }
-
             @Override
             protected void updateItem(Double item, boolean vide) {
                 super.updateItem(item, vide);
-                if (vide) {
+                if (vide || getIndex() < 0 || getIndex() >= getTableView().getItems().size()) {
                     setGraphic(null);
                     return;
                 }
                 Objectif objectif = getTableView().getItems().get(getIndex());
-                double valeur = objectif.getProgressionPourcentage() != null
-                        ? objectif.getProgressionPourcentage().doubleValue() / 100.0 : 0.0;
-                barre.setProgress(Math.min(1.0, Math.max(0.0, valeur)));
-                setGraphic(barre);
+                double valeur = objectif.getProgressionPourcentage() != null ? objectif.getProgressionPourcentage().doubleValue() : 0.0;
+                boolean enEchec = "NON_ATTEINT".equals(objectif.getStatutCalcule());
+                javafx.scene.paint.Color couleur = enEchec ? javafx.scene.paint.Color.web("#B3412E")
+                        : valeur >= 100 ? javafx.scene.paint.Color.web("#1F5136") : javafx.scene.paint.Color.web("#C99A1C");
+                javafx.scene.control.Label pct = new javafx.scene.control.Label(Composants.decimal(valeur) + " %");
+                pct.getStyleClass().add("texte-corps");
+                pct.setMinWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
+                javafx.scene.layout.HBox ligne = new javafx.scene.layout.HBox(8, Composants.barreProgression(valeur / 100.0, 120, couleur), pct);
+                ligne.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                setGraphic(ligne);
             }
         });
     }

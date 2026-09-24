@@ -1,5 +1,7 @@
 package com.reboisgabon.client.controllers.utilisateurs;
 
+import com.reboisgabon.client.ui.Cellules;
+import com.reboisgabon.client.ui.Composants;
 import com.reboisgabon.client.api.ApiException;
 import com.reboisgabon.client.api.endpoints.UsersApi;
 import com.reboisgabon.client.dto.utilisateurs.UtilisateurSimple;
@@ -83,6 +85,20 @@ public class UtilisateursListController implements Initializable {
                 ).asObject());
 
         construireColonneActions();
+        Cellules.rendu(colonneEmail, Cellules::principal);
+        Cellules.rendu(colonneRole, v -> {
+            String r = v.toString();
+            String libelle = switch (r) {
+                case "ADMIN" -> "Administrateur";
+                case "SUPERVISEUR" -> "Superviseur";
+                case "AGENT" -> "Agent de terrain";
+                case "FINANCIER" -> "Financier";
+                default -> r;
+            };
+            return Composants.pastille(libelle, "ADMIN".equals(r) ? "or" : "FINANCIER".equals(r) ? "ocean" : "canopee");
+        });
+        Cellules.rendu(colonneActif, v -> Boolean.TRUE.equals(v) || "true".equals(v.toString()) ? Composants.pastille("Actif", "foret") : Composants.pastille("Désactivé", "rouge"));
+        Cellules.preparer(tableUtilisateurs, "Aucun utilisateur", "Créez les comptes des agents, superviseurs et financiers.");
 
         FiltreAutoUtil.surSaisie(champRecherche, this::rechercher);
         FiltreAutoUtil.surValeur(comboRole, this::rechercher);
@@ -97,7 +113,11 @@ public class UtilisateursListController implements Initializable {
             private final Button boutonModifier = BoutonIconeUtil.creer("✏️", "Modifier");
             private final Button boutonDesactiver = BoutonIconeUtil.creer("🚫", "Désactiver", "bouton-icone-danger");
             private final Button boutonReactiver = BoutonIconeUtil.creer("✅", "Réactiver", "bouton-icone-succes");
-            private final HBox conteneur = new HBox(6, boutonModifier, boutonDesactiver, boutonReactiver);
+            private final HBox conteneur = new HBox(4, boutonModifier, boutonDesactiver, boutonReactiver);
+
+            {
+                conteneur.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            }
 
             {
                 boutonModifier.setOnAction(evenement -> ouvrirModification(getTableView().getItems().get(getIndex())));

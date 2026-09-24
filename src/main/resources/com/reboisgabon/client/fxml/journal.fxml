@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.StackPane?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -10,26 +12,31 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="18" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<VBox spacing="16" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.reboisgabon.client.controllers.journal.JournalController">
-    <HBox spacing="12" styleClass="carte-verre">
-        <padding>
-            <Insets bottom="16" left="16" right="16" top="16"/>
-        </padding>
-        <TextField fx:id="champRecherche" promptText="Rechercher..." styleClass="champ-texte" HBox.hgrow="ALWAYS"/>
-        <ComboBox fx:id="comboAction" prefWidth="170" promptText="Action" styleClass="champ-texte"/>
-        <TextField fx:id="champModele" prefWidth="130" promptText="Modèle" styleClass="champ-texte"/>
-        <DatePicker fx:id="champDateDebut" prefWidth="140" promptText="Date début" styleClass="champ-texte"/>
-        <DatePicker fx:id="champDateFin" prefWidth="140" promptText="Date fin" styleClass="champ-texte"/>
-        <Button onAction="#rechercher" styleClass="bouton-primaire" text="Rechercher"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button onAction="#exporterCsv" styleClass="bouton-secondaire" text="Exporter CSV"/>
+    <HBox spacing="14" alignment="CENTER_LEFT" styleClass="entete-page">
+        <StackPane styleClass="icone-page"><FontIcon iconLiteral="mdi2h-history"/></StackPane>
+        <VBox spacing="2" HBox.hgrow="ALWAYS">
+            <Label styleClass="titre-page" text="Journal d'activité"/>
+            <Label styleClass="sous-titre" text="Traçabilité de toutes les créations, modifications et suppressions." wrapText="true"/>
+        </VBox>
+        <Button onAction="#exporterCsv" styleClass="bouton-export" text="Exporter CSV">
+            <graphic><FontIcon iconLiteral="mdi2f-file-document-outline" iconColor="#1D7044" iconSize="17"/></graphic>
+        </Button>
+    </HBox>
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="barre-filtres">
+        <FontIcon iconLiteral="mdi2f-filter-variant" iconSize="18" iconColor="#66766A"/>
+        <TextField fx:id="champRecherche" promptText="Rechercher..." HBox.hgrow="ALWAYS"/>
+        <ComboBox fx:id="comboAction" prefWidth="170" promptText="Action"/>
+        <TextField fx:id="champModele" prefWidth="130" promptText="Modèle"/>
+        <DatePicker fx:id="champDateDebut" prefWidth="140" promptText="Date début"/>
+        <DatePicker fx:id="champDateFin" prefWidth="140" promptText="Date fin"/>
     </HBox>
     <VBox fx:id="conteneurTableau" VBox.vgrow="ALWAYS"/>
     <HBox alignment="CENTER_LEFT" spacing="12" styleClass="barre-pagination">
-        <Button fx:id="boutonPrecedent" onAction="#pagePrecedente" styleClass="bouton-secondaire" text="Précédent"/>
         <Label fx:id="libelleInfoPagination" styleClass="texte-muet"/>
         <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="boutonPrecedent" onAction="#pagePrecedente" styleClass="bouton-secondaire" text="Précédent"/>
         <Button fx:id="boutonSuivant" onAction="#pageSuivante" styleClass="bouton-secondaire" text="Suivant"/>
     </HBox>
 </VBox>

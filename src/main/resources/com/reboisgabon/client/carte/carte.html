@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>/*LEAFLET_CSS*/</style>
+<style>
+html, body { height: 100%; margin: 0; padding: 0; background: #E9EEE4; font-family: "Public Sans", "Segoe UI", sans-serif; }
+#carte { position: absolute; inset: 0; background: #E9EEE4; }
+.leaflet-container { background: #E9EEE4; font-family: "Public Sans", "Segoe UI", sans-serif; }
+.leaflet-control-zoom a { color: #16291D; border-color: #DDE3D6; }
+.leaflet-control-attribution { font-size: 10px; background: rgba(255,255,255,0.8); }
+.etiquette-province { background: transparent; border: none; box-shadow: none; font-weight: 700; font-size: 11px; letter-spacing: 0.02em; padding: 0; }
+.etiquette-province::before { display: none; }
+.fond-satellite .etiquette-province { color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,0.85); }
+.fond-plan .etiquette-province, .fond-epure .etiquette-province { color: #16291D; text-shadow: 0 0 3px rgba(255,255,255,0.9); }
+.bulle-site { background: #12281B; color: #fff; border: none; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.25); font-size: 11.5px; padding: 5px 8px; }
+.bulle-site::before { border-top-color: #12281B; }
+.bulle-site b { display: block; font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="carte"></div>
+<script>/*LEAFLET_JS*/</script>
+<script>
+window.onerror = function (message, source, ligne) {
+    if (window.pontJava) { window.pontJava.journal('JS ' + message + ' @' + ligne); }
+};
+
+var carte = L.map('carte', { zoomControl: false, minZoom: 5.5, maxZoom: 16, zoomSnap: 0.5, attributionControl: true, fadeAnimation: false, preferCanvas: false });
+carte.attributionControl.setPrefix(false);
+L.control.zoom({ position: 'bottomright' }).addTo(carte);
+window.carteRebois = carte;
+
+var fonds = {
+    satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 18, keepBuffer: 4, attribution: 'Imagerie © Esri, Maxar, Earthstar Geographics'
+    }),
+    plan: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 18, attribution: 'Fond topographique © Esri, HERE, Garmin, OpenStreetMap'
+    })
+};
+var tuiles = { chargees: 0, erreurs: 0 };
+Object.keys(fonds).forEach(function (cle) {
+    fonds[cle].on('tileload', function () { tuiles.chargees++; });
+    fonds[cle].on('tileerror', function () { tuiles.erreurs++; });
+});
+window.etatTuiles = function () { return JSON.stringify(tuiles); };
+var fondActif = null;
+var typeFond = 'plan';
+
+var couleursStatut = { EN_COURS: '#3E8E5A', TERMINE: '#1F5136', PLANIFIE: '#2E6A9E', SUSPENDU: '#9A5B34' };
+var coucheProvinces = null;
+var coucheSites = L.layerGroup().addTo(carte);
+var anneauSelection = null;
+var emprise = null;
+var siteActif = null;
+var calquesProvinces = {};
+var marqueurs = {};
+var statsProvinces = {};
+var provinceActive = null;
+var limitesGabon = null;
+
+function normaliser(t) {
+    return (t || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+}
+
+function couleurSurvie(t) {
+    if (t === null || t === undefined) { return '#9FB0A2'; }
+    if (t >= 90) { return '#1F5136'; }
+    if (t >= 80) { return '#3E8E5A'; }
+    if (t >= 70) { return '#C99A1C'; }
+    if (t >= 60) { return '#9A5B34'; }
+    return '#B3412E';
+}
+
+function opaciteRemplissage(actif) {
+    if (typeFond === 'satellite') { return actif ? 0.06 : 0.16; }
+    if (typeFond === 'plan') { return actif ? 0.5 : 0.34; }
+    return actif ? 0.9 : 0.72;
+}
+
+function styleProvince(feature) {
+    var cle = normaliser(feature.properties.nom);
+    var stat = statsProvinces[cle];
+    var actif = provinceActive === cle;
+    var attenue = provinceActive && !actif;
+    if (siteActif) {
+        return { color: actif ? '#C99A1C' : '#FFFFFF', weight: actif ? 2.4 : 1.2, opacity: actif ? 0.95 : 0.6,
+                 fillColor: couleurSurvie(stat ? stat.survie : null), fillOpacity: 0.05 };
+    }
+    return {
+        color: actif ? '#C99A1C' : (typeFond === 'satellite' ? '#FFFFFF' : '#FFFFFF'),
+        weight: actif ? 3.2 : 1.4,
+        opacity: attenue ? 0.55 : 0.95,
+        fillColor: couleurSurvie(stat ? stat.survie : null),
+        fillOpacity: attenue ? opaciteRemplissage(false) * 0.45 : opaciteRemplissage(actif)
+    };
+}
+
+function rayonSite(superficie) {
+    return 5 + Math.sqrt(Math.max(superficie || 0, 1)) / 3.2;
+}
+
+window.initialiser = function (provinces, sites, stats) {
+    statsProvinces = {};
+    (stats || []).forEach(function (s) { statsProvinces[normaliser(s.province)] = s; });
+
+    if (coucheProvinces) { carte.removeLayer(coucheProvinces); }
+    calquesProvinces = {};
+    coucheProvinces = L.geoJSON(provinces, {
+        style: styleProvince,
+        onEachFeature: function (feature, calque) {
+            var nom = feature.properties.nom;
+            calquesProvinces[normaliser(nom)] = calque;
+            calque.bindTooltip(nom, { permanent: true, direction: 'center', className: 'etiquette-province' });
+            calque.on('mouseover', function () { if (provinceActive !== normaliser(nom)) { calque.setStyle({ weight: 2.4 }); } });
+            calque.on('mouseout', function () { coucheProvinces.resetStyle(calque); });
+            calque.on('click', function () { if (window.pontJava) { window.pontJava.ouvrirProvince(nom); } });
+        }
+    }).addTo(carte);
+    coucheProvinces.bringToBack();
+
+    coucheSites.clearLayers();
+    marqueurs = {};
+    (sites.features || []).forEach(function (f) {
+        if (!f.geometry || !f.geometry.coordinates) { return; }
+        var p = f.properties || {};
+        var latlng = L.latLng(f.geometry.coordinates[1], f.geometry.coordinates[0]);
+        var planifie = p.statut === 'PLANIFIE';
+        var marqueur = L.circleMarker(latlng, planifie ? {
+            radius: rayonSite(p.superficie_hectares),
+            color: '#2E6A9E', weight: 2.2, dashArray: '3,3', fillColor: '#FFFFFF', fillOpacity: 0.85
+        } : {
+            radius: rayonSite(p.superficie_hectares),
+            color: '#FFFFFF', weight: 2, fillColor: couleursStatut[p.statut] || '#2E6A9E', fillOpacity: 0.95
+        });
+        marqueur.proprietes = p;
+        marqueur.bindTooltip('<b>' + p.nom + '</b>' + p.localite + ' · ' + (p.superficie_hectares || 0) + ' ha'
+            + (p.taux_survie_moyen != null ? ' · survie ' + p.taux_survie_moyen + ' %' : ''),
+            { direction: 'top', offset: [0, -6], className: 'bulle-site' });
+        marqueur.on('click', function (e) {
+            L.DomEvent.stopPropagation(e);
+            if (window.pontJava) { window.pontJava.ouvrirSite(String(p.id)); }
+        });
+        marqueur.addTo(coucheSites);
+        marqueurs[String(p.id)] = marqueur;
+    });
+
+    limitesGabon = coucheProvinces.getBounds();
+    carte.setMaxBounds(limitesGabon.pad(0.35));
+    carte.invalidateSize(false);
+    carte.fitBounds(limitesGabon, { padding: [24, 24] });
+    setTimeout(function () {
+        carte.invalidateSize(false);
+        if (fondActif) { fondActif.redraw(); }
+    }, 400);
+    return Object.keys(marqueurs).length;
+};
+
+window.changerFond = function (type) {
+    typeFond = type;
+    if (fondActif) { carte.removeLayer(fondActif); fondActif = null; }
+    if (fonds[type]) { fondActif = fonds[type].addTo(carte); fondActif.bringToBack(); }
+    document.body.className = 'fond-' + type;
+    if (coucheProvinces) { coucheProvinces.setStyle(styleProvince); }
+};
+
+function effacerSelection() {
+    if (anneauSelection) { carte.removeLayer(anneauSelection); anneauSelection = null; }
+    if (emprise) { carte.removeLayer(emprise); emprise = null; }
+    siteActif = null;
+}
+
+function selectionnerMarqueur(id) {
+    effacerSelection();
+    var m = marqueurs[id];
+    if (!m) { return null; }
+    siteActif = id;
+    var hectares = Number(m.proprietes.superficie_hectares) || 0;
+    emprise = L.circle(m.getLatLng(), {
+        radius: Math.sqrt(hectares * 10000 / Math.PI), color: '#C99A1C', weight: 2, dashArray: '6,4',
+        fillColor: '#C99A1C', fillOpacity: 0.18, interactive: false
+    }).addTo(carte);
+    anneauSelection = L.circleMarker(m.getLatLng(), {
+        radius: m.options.radius + 6, color: '#C99A1C', weight: 3, fill: false, interactive: false
+    }).addTo(carte);
+    m.bringToFront();
+    return m;
+}
+
+window.focaliserSite = function (id) {
+    var m = selectionnerMarqueur(String(id));
+    if (!m) { return false; }
+    provinceActive = normaliser(m.proprietes.province);
+    coucheProvinces.setStyle(styleProvince);
+    carte.flyTo(m.getLatLng(), Math.max(carte.getZoom(), 11), { duration: 0.6 });
+    return true;
+};
+
+window.focaliserProvince = function (nom) {
+    var cle = normaliser(nom);
+    var calque = calquesProvinces[cle];
+    if (!calque) { return false; }
+    provinceActive = cle;
+    effacerSelection();
+    coucheProvinces.setStyle(styleProvince);
+    carte.flyToBounds(calque.getBounds(), { padding: [30, 30], duration: 0.6 });
+    return true;
+};
+
+window.vueNationale = function () {
+    provinceActive = null;
+    effacerSelection();
+    if (coucheProvinces) { coucheProvinces.setStyle(styleProvince); }
+    if (limitesGabon) { carte.flyToBounds(limitesGabon, { padding: [24, 24], duration: 0.6 }); }
+};
+
+window.recalculerTaille = function () {
+    setTimeout(function () {
+        carte.invalidateSize(false);
+        if (fondActif) { fondActif.redraw(); }
+    }, 120);
+};
+
+window.addEventListener('resize', function () { carte.invalidateSize(true); });
+window.changerFond('plan');
+</script>
+</body>
+</html>

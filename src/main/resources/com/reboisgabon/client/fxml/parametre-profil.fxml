@@ -4,22 +4,50 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<VBox maxWidth="440" spacing="14" styleClass="carte-verre" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<VBox maxWidth="720" maxHeight="-Infinity" styleClass="feuille" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.reboisgabon.client.controllers.parametres.ParametreProfilController">
-    <padding>
-        <Insets bottom="26" left="26" right="26" top="26"/>
-    </padding>
-    <Label styleClass="titre-2" text="Informations personnelles"/>
-    <VBox spacing="6">
-        <Label styleClass="texte-muet" text="Prénom"/>
-        <TextField fx:id="champPrenom" styleClass="champ-texte"/>
+    <VBox spacing="2" styleClass="feuille-titre">
+        <Label styleClass="titre-section" text="Informations personnelles"/>
+        <Label styleClass="texte-muet" wrapText="true" text="Votre nom apparaît dans le journal d'activité et sur les campagnes que vous enregistrez."/>
     </VBox>
-    <VBox spacing="6">
-        <Label styleClass="texte-muet" text="Nom"/>
-        <TextField fx:id="champNom" styleClass="champ-texte"/>
+    <VBox spacing="18">
+        <padding><Insets top="20" right="22" bottom="22" left="22"/></padding>
+        <GridPane hgap="16" vgap="16">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="50"/>
+                <ColumnConstraints percentWidth="50"/>
+            </columnConstraints>
+            <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <Label styleClass="libelle-champ" text="Prénom"/>
+                <TextField fx:id="champPrenom"/>
+            </VBox>
+            <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <Label styleClass="libelle-champ" text="Nom"/>
+                <TextField fx:id="champNom"/>
+            </VBox>
+            <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                <Label styleClass="libelle-champ" text="Adresse e-mail"/>
+                <TextField fx:id="champEmail" editable="false" focusTraversable="false" styleClass="champ-lecture"/>
+                <Label styleClass="texte-petit" text="Identifiant de connexion, modifiable par l'administrateur."/>
+            </VBox>
+            <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <Label styleClass="libelle-champ" text="Rôle"/>
+                <TextField fx:id="champRole" editable="false" focusTraversable="false" styleClass="champ-lecture"/>
+                <Label styleClass="texte-petit" text="Détermine les écrans et les actions autorisés."/>
+            </VBox>
+        </GridPane>
+        <Label fx:id="libelleMessage" managed="false" visible="false" wrapText="true" maxWidth="Infinity"/>
+        <HBox alignment="CENTER_RIGHT">
+            <Button fx:id="boutonEnregistrer" onAction="#enregistrer" styleClass="bouton-primaire" text="Enregistrer les modifications">
+                <graphic><FontIcon iconLiteral="mdi2c-check"/></graphic>
+            </Button>
+        </HBox>
     </VBox>
-    <Label fx:id="libelleMessage" managed="false" styleClass="texte-corps" visible="false" wrapText="true"/>
-    <Button fx:id="boutonEnregistrer" maxWidth="Infinity" onAction="#enregistrer" styleClass="bouton-primaire" text="Enregistrer"/>
 </VBox>

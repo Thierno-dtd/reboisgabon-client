@@ -24,6 +24,15 @@ public final class SceneNavigator {
 
     public void initialiser(Stage stage) {
         this.stagePrincipal = stage;
+        com.reboisgabon.client.ui.Polices.charger();
+        try {
+            javafx.scene.Node logo = com.reboisgabon.client.ui.Illustrations.logo(64);
+            new Scene(new javafx.scene.Group(logo));
+            javafx.scene.SnapshotParameters parametres = new javafx.scene.SnapshotParameters();
+            parametres.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            stage.getIcons().add(logo.snapshot(parametres, null));
+        } catch (Exception ignore) {
+        }
     }
 
     public void naviguerVers(String cheminFxml) {

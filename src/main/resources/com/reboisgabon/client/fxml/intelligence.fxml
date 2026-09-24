@@ -5,79 +5,86 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<VBox spacing="16" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<VBox spacing="18" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.reboisgabon.client.controllers.intelligence.IntelligenceController">
-    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="carte-verre">
-        <padding>
-            <Insets bottom="14" left="16" right="16" top="14"/>
-        </padding>
-        <Label styleClass="titre-2" text="Intelligence écologique"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="boutonReentrainer" onAction="#reentrainer" styleClass="bouton-secondaire" text="Réentraîner le modèle"/>
+    <HBox spacing="14" alignment="CENTER_LEFT" styleClass="entete-page">
+        <StackPane styleClass="icone-page"><FontIcon iconLiteral="mdi2f-flask-outline"/></StackPane>
+        <VBox spacing="2" HBox.hgrow="ALWAYS">
+            <Label styleClass="titre-page" text="Intelligence écologique"/>
+            <Label styleClass="sous-titre" wrapText="true" text="Un modèle entraîné sur l'historique des contrôles estime la survie avant de planter et signale les campagnes qui risquent de décrocher."/>
+        </VBox>
+        <Button fx:id="boutonReentrainer" onAction="#reentrainer" styleClass="bouton-secondaire" text="Réentraîner le modèle">
+            <graphic><FontIcon iconLiteral="mdi2r-refresh"/></graphic>
+        </Button>
     </HBox>
-    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
-        <Tab text="Prédiction de survie">
-            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
-                <VBox maxWidth="520" spacing="14" styleClass="carte-verre">
-                    <padding>
-                        <Insets bottom="26" left="26" right="26" top="26"/>
-                    </padding>
+
+    <GridPane hgap="18">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="56"/>
+            <ColumnConstraints percentWidth="44"/>
+        </columnConstraints>
+
+        <VBox styleClass="feuille" GridPane.columnIndex="0">
+            <VBox spacing="2" styleClass="feuille-titre">
+                <Label styleClass="titre-section" text="Simuler une campagne"/>
+                <Label styleClass="texte-muet" wrapText="true" text="Renseignez le projet de plantation : le modèle estime le taux de survie attendu."/>
+            </VBox>
+            <HBox spacing="20">
+                <padding><Insets top="16" right="18" bottom="18" left="18"/></padding>
+                <VBox spacing="12" HBox.hgrow="ALWAYS" prefWidth="100">
                     <VBox spacing="6">
-                        <Label styleClass="texte-muet" text="Essence"/>
-                        <ComboBox fx:id="comboEssence" maxWidth="Infinity" styleClass="champ-texte"/>
+                        <Label styleClass="libelle-champ" text="Essence"/>
+                        <ComboBox fx:id="comboEssence" maxWidth="Infinity" promptText="Choisir une essence"/>
                     </VBox>
                     <VBox spacing="6">
-                        <Label styleClass="texte-muet" text="Province"/>
-                        <TextField fx:id="champProvince" styleClass="champ-texte"/>
+                        <Label styleClass="libelle-champ" text="Province"/>
+                        <ComboBox fx:id="comboProvince" maxWidth="Infinity" promptText="Choisir une province"/>
                     </VBox>
-                    <HBox spacing="14">
+                    <HBox spacing="12">
                         <VBox HBox.hgrow="ALWAYS" spacing="6">
-                            <Label styleClass="texte-muet" text="Superficie du site (ha)"/>
-                            <TextField fx:id="champSuperficie" styleClass="champ-texte"/>
+                            <Label styleClass="libelle-champ" text="Superficie (ha)"/>
+                            <TextField fx:id="champSuperficie" promptText="120"/>
                         </VBox>
                         <VBox HBox.hgrow="ALWAYS" spacing="6">
-                            <Label styleClass="texte-muet" text="Nombre de plants"/>
-                            <TextField fx:id="champNombrePlants" styleClass="champ-texte"/>
+                            <Label styleClass="libelle-champ" text="Nombre de plants"/>
+                            <TextField fx:id="champNombrePlants" promptText="3 000"/>
                         </VBox>
                     </HBox>
                     <VBox spacing="6">
-                        <Label styleClass="texte-muet" text="Mois de plantation (1-12)"/>
-                        <TextField fx:id="champMoisPlantation" styleClass="champ-texte"/>
+                        <Label styleClass="libelle-champ" text="Mois de plantation"/>
+                        <ComboBox fx:id="comboMois" maxWidth="Infinity"/>
                     </VBox>
                     <CheckBox fx:id="caseCroissanceRapide" text="Essence à croissance rapide"/>
-                    <Button fx:id="boutonPredire" maxWidth="Infinity" onAction="#predire" styleClass="bouton-primaire" text="Prédire"/>
-                    <Label fx:id="libelleErreurPrediction" managed="false" styleClass="badge-erreur" visible="false" wrapText="true"/>
-                    <VBox fx:id="conteneurResultatPrediction" spacing="10"/>
+                    <Label fx:id="libelleErreurPrediction" managed="false" styleClass="message-erreur" visible="false" wrapText="true" maxWidth="Infinity"/>
+                    <Button fx:id="boutonPredire" maxWidth="Infinity" onAction="#predire" styleClass="bouton-primaire" text="Estimer la survie">
+                        <graphic><FontIcon iconLiteral="mdi2f-flask-outline"/></graphic>
+                    </Button>
                 </VBox>
-            </ScrollPane>
-        </Tab>
-        <Tab text="Recommandation d'essence">
-            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
-                <VBox spacing="16">
-                    <HBox spacing="12" styleClass="carte-verre">
-                        <padding>
-                            <Insets bottom="16" left="16" right="16" top="16"/>
-                        </padding>
-                        <TextField fx:id="champProvinceRecommandation" prefWidth="200" promptText="Province" styleClass="champ-texte"/>
-                        <TextField fx:id="champTopN" prefWidth="100" promptText="Top N" styleClass="champ-texte" text="3"/>
-                        <Button onAction="#recommander" styleClass="bouton-primaire" text="Recommander"/>
-                    </HBox>
-                    <VBox fx:id="conteneurRecommandation" spacing="10"/>
+                <VBox fx:id="conteneurResultatPrediction" spacing="12" prefWidth="230" minWidth="230" alignment="TOP_LEFT"/>
+            </HBox>
+        </VBox>
+
+        <VBox styleClass="feuille" GridPane.columnIndex="1">
+            <HBox spacing="10" alignment="CENTER_LEFT" styleClass="feuille-titre">
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label styleClass="titre-section" text="Essences recommandées"/>
+                    <Label styleClass="texte-muet" wrapText="true" text="Classées par survie observée dans la province."/>
                 </VBox>
-            </ScrollPane>
-        </Tab>
-        <Tab text="Détection de risques">
-            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
-                <VBox fx:id="conteneurDetectionRisque" spacing="10"/>
-            </ScrollPane>
-        </Tab>
-    </TabPane>
+                <ComboBox fx:id="comboProvinceRecommandation" prefWidth="170" promptText="Province"/>
+            </HBox>
+            <VBox fx:id="conteneurRecommandation" spacing="0">
+                <padding><Insets top="6" right="16" bottom="14" left="16"/></padding>
+            </VBox>
+        </VBox>
+    </GridPane>
+
+    <VBox fx:id="conteneurDetectionRisque" styleClass="feuille"/>
 </VBox>

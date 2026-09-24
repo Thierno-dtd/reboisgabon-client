@@ -1,5 +1,7 @@
 package com.reboisgabon.client.controllers.suivis;
 
+import com.reboisgabon.client.ui.Cellules;
+import com.reboisgabon.client.ui.Composants;
 import com.reboisgabon.client.api.ApiException;
 import com.reboisgabon.client.api.endpoints.SuivisApi;
 import com.reboisgabon.client.dto.common.PageDrf;
@@ -83,6 +85,11 @@ public class SuivisListController implements Initializable {
                 ));
 
         construireColonneActions();
+        Cellules.<Suivi>double_(colonneCampagne, x -> x.getSiteNom() != null ? x.getSiteNom() : CampagneCache.getInstance().libelleDe(x.getCampagne()), x -> x.getEssenceNom());
+        Cellules.rendu(colonneDateControle, v -> new javafx.scene.control.Label(Composants.date(v.toString())));
+        Cellules.rendu(colonneTauxSurvie, v -> Composants.barreSurvie(Cellules.enNombre(v), 70));
+        Cellules.rendu(colonnePlantsVivants, v -> Cellules.aDroite(Composants.nombre(Cellules.enNombre(v))));
+        Cellules.preparer(tableSuivis, "Aucun contrôle enregistré", "Les contrôles de terrain apparaîtront ici dès leur saisie.");
 
         boolean peutCreer = SessionManager.getInstance().peutAcceder("suivis", "create");
         boutonNouveauSuivi.setVisible(peutCreer);
@@ -102,7 +109,11 @@ public class SuivisListController implements Initializable {
             private final Button boutonModifier = BoutonIconeUtil.creer("✏️", "Modifier");
             private final Button boutonPhotos = BoutonIconeUtil.creer("🖼️", "Photos");
             private final Button boutonSupprimer = BoutonIconeUtil.creer("🗑️", "Supprimer", "bouton-icone-danger");
-            private final HBox conteneur = new HBox(6, boutonModifier, boutonPhotos, boutonSupprimer);
+            private final HBox conteneur = new HBox(4, boutonModifier, boutonPhotos, boutonSupprimer);
+
+            {
+                conteneur.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            }
 
             {
                 boutonModifier.setOnAction(evenement -> ouvrirModification(getTableView().getItems().get(getIndex())));

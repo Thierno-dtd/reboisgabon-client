@@ -2,1581 +2,779 @@ package com.reboisgabon.client.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.reboisgabon.client.api.endpoints.DashboardApi;
+import com.reboisgabon.client.api.endpoints.ExportsApi;
+import com.reboisgabon.client.api.endpoints.GeolocalisationApi;
+import com.reboisgabon.client.controllers.sites.CarteController;
 import com.reboisgabon.client.session.SessionManager;
-import com.reboisgabon.client.util.AlertUtil;
-import com.reboisgabon.client.util.JsonVueUtil;
+import com.reboisgabon.client.ui.CarteProvinces;
+import com.reboisgabon.client.ui.Composants;
+import com.reboisgabon.client.ui.ExportUtil;
+import com.reboisgabon.client.ui.Icones;
+import com.reboisgabon.client.ui.Illustrations;
+import com.reboisgabon.client.ui.Navigation;
+import com.reboisgabon.client.util.JsonMapper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 
 import java.net.URL;
-import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 public class DashboardController implements Initializable {
 
-    @FXML private TabPane ongletsDashboard;
-    @FXML private ComboBox<String> comboPeriode;
-
-    @FXML private Tab ongletApercu;
-    @FXML private Tab ongletSites;
-    @FXML private Tab ongletEssences;
-    @FXML private Tab ongletProvinces;
-    @FXML private Tab ongletEvolution;
-    @FXML private Tab ongletAlertes;
-    @FXML private Tab ongletResponsables;
-    @FXML private Tab ongletFinancier;
-    @FXML private Tab ongletObjectifs;
-    @FXML private Tab ongletScores;
-    @FXML private Tab ongletCarte;
-    @FXML private Tab ongletComparaison;
-
-    @FXML private ScrollPane defilementApercu;
-    @FXML private ScrollPane defilementSites;
-    @FXML private ScrollPane defilementEssences;
-    @FXML private ScrollPane defilementProvinces;
-    @FXML private ScrollPane defilementEvolution;
-    @FXML private ScrollPane defilementAlertes;
-    @FXML private ScrollPane defilementResponsables;
-    @FXML private ScrollPane defilementFinancier;
-    @FXML private ScrollPane defilementObjectifs;
-    @FXML private ScrollPane defilementScores;
-    @FXML private ScrollPane defilementCarte;
-    @FXML private ScrollPane defilementComparaison;
+    @FXML private VBox racine;
 
     private final DashboardApi dashboardApi = new DashboardApi();
-    private final Set<Tab> ongletsCharges = new HashSet<>();
+    private final ExportsApi exportsApi = new ExportsApi();
+    private final GeolocalisationApi geolocalisationApi = new GeolocalisationApi();
 
-    private final DecimalFormat formatNombre = new DecimalFormat("#,##0.##");
-
-    private static final Map<String, String> ICONES = new HashMap<>();
-    private static final Map<String, String> LIBELLES_COURTS = new HashMap<>();
-
-    static {
-        ICONES.put("site", "📍");
-        ICONES.put("sites", "📍");
-        ICONES.put("campagne", "🌱");
-        ICONES.put("campagnes", "🌱");
-        ICONES.put("essence", "🌳");
-        ICONES.put("essences", "🌳");
-        ICONES.put("province", "🗺️");
-        ICONES.put("provinces", "🗺️");
-        ICONES.put("objectif", "🎯");
-        ICONES.put("objectifs", "🎯");
-        ICONES.put("taux_survie", "📈");
-        ICONES.put("survie", "📈");
-        ICONES.put("superficie", "📐");
-        ICONES.put("plants", "🌿");
-        ICONES.put("plant", "🌿");
-        ICONES.put("budget", "💰");
-        ICONES.put("financement", "💰");
-        ICONES.put("financements", "💰");
-        ICONES.put("partenaire", "🤝");
-        ICONES.put("partenaires", "🤝");
-        ICONES.put("alerte", "⚠️");
-        ICONES.put("alertes", "⚠️");
-        ICONES.put("score", "🍃");
-        ICONES.put("scores", "🍃");
-        ICONES.put("utilisateur", "👥");
-        ICONES.put("utilisateurs", "👥");
-        ICONES.put("responsable", "👤");
-        ICONES.put("responsables", "👤");
-        ICONES.put("suivi", "📊");
-        ICONES.put("suivis", "📊");
-        ICONES.put("risque", "🚨");
-
-        LIBELLES_COURTS.put("taux_survie_moyen", "Taux survie moyen");
-        LIBELLES_COURTS.put("superficie_totale_hectares", "Superficie totale");
-        LIBELLES_COURTS.put("nombre_plants_total", "Plants total");
-        LIBELLES_COURTS.put("nombre_sites_actifs", "Sites actifs");
-        LIBELLES_COURTS.put("nombre_campagnes_actives", "Campagnes actives");
-        LIBELLES_COURTS.put("montant_total_finance", "Total financé");
-        LIBELLES_COURTS.put("budget_total_alloue", "Budget alloué");
-        LIBELLES_COURTS.put("budget_total_reel", "Budget dépensé");
-    }
-
-    private interface FournisseurJson {
-        JsonNode charger() throws Exception;
-    }
+    private final VBox zoneBandeau = new VBox();
+    private final VBox zoneCarte = new VBox();
+    private final VBox zoneAlertes = new VBox();
+    private final VBox zoneEvolution = new VBox();
+    private final VBox zoneComparaison = new VBox();
+    private final VBox zoneEssences = new VBox();
+    private final VBox zoneObjectifs = new VBox();
+    private final VBox zoneScores = new VBox();
+    private final VBox zoneFinances = new VBox();
+    private final VBox zoneEquipes = new VBox();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        boolean finances = SessionManager.getInstance().peutAcceder("finances", "view");
 
-        if (!SessionManager.getInstance().peutAcceder("finances", "view")) {
-            ongletsDashboard.getTabs().remove(ongletFinancier);
+        racine.getChildren().addAll(
+                zoneBandeau,
+                grille(new double[]{61, 39}, zoneCarte, zoneAlertes),
+                grille(new double[]{61, 39}, zoneEvolution, zoneComparaison),
+                grille(new double[]{50, 50}, zoneEssences, zoneObjectifs),
+                finances ? grille(new double[]{50, 50}, zoneScores, zoneFinances) : grille(new double[]{100}, zoneScores),
+                zoneEquipes
+        );
+
+        for (VBox zone : List.of(zoneCarte, zoneAlertes, zoneEvolution, zoneComparaison, zoneEssences, zoneObjectifs, zoneScores, zoneFinances, zoneEquipes)) {
+            zone.getChildren().setAll(Composants.section("Chargement…", null, Composants.chargement("Récupération des données…")));
+            VBox.setVgrow(zone, Priority.ALWAYS);
         }
 
-        comboPeriode.getItems().addAll("Semaine", "Mois", "Année");
-        comboPeriode.setValue("Mois");
-        comboPeriode.valueProperty().addListener((observable, ancien, nouveau) -> {
-            if (ongletsDashboard.getSelectionModel().getSelectedItem() == ongletComparaison) {
-                chargerComparaison();
+        charger(dashboardApi::overview, this::construireBandeau, zoneBandeau);
+        charger(this::chargerDonneesCarte, this::construireCarte, zoneCarte);
+        charger(() -> dashboardApi.alertes(1, 1), this::construireAlertes, zoneAlertes);
+        charger(dashboardApi::evolution, this::construireEvolution, zoneEvolution);
+        chargerComparaison("mois");
+        charger(dashboardApi::essences, this::construireEssences, zoneEssences);
+        charger(dashboardApi::objectifs, this::construireObjectifs, zoneObjectifs);
+        charger(this::chargerDonneesScores, this::construireScores, zoneScores);
+        if (finances) {
+            charger(dashboardApi::financier, this::construireFinances, zoneFinances);
+        }
+        charger(dashboardApi::responsables, this::construireEquipes, zoneEquipes);
+    }
+
+    private GridPane grille(double[] pourcentages, Node... enfants) {
+        GridPane grille = new GridPane();
+        grille.setHgap(18);
+        for (double p : pourcentages) {
+            ColumnConstraints colonne = new ColumnConstraints();
+            colonne.setPercentWidth(p);
+            colonne.setHgrow(Priority.ALWAYS);
+            colonne.setFillWidth(true);
+            grille.getColumnConstraints().add(colonne);
+        }
+        for (int i = 0; i < enfants.length; i++) {
+            grille.add(enfants[i], i, 0);
+            GridPane.setFillHeight(enfants[i], true);
+        }
+        return grille;
+    }
+
+    private void charger(Callable<JsonNode> source, Consumer<JsonNode> rendu, VBox zone) {
+        Thread tache = new Thread(() -> {
+            try {
+                JsonNode donnees = source.call();
+                Platform.runLater(() -> {
+                    try {
+                        rendu.accept(donnees);
+                    } catch (Exception e) {
+                        zone.getChildren().setAll(erreur());
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> zone.getChildren().setAll(erreur()));
             }
         });
-
-        ongletsDashboard.getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observable, ancien, nouveau) ->
-                        chargerOngletSiNecessaire(nouveau));
-
-        chargerOngletSiNecessaire(ongletApercu);
+        tache.setDaemon(true);
+        tache.start();
     }
 
-    private void chargerOngletSiNecessaire(Tab onglet) {
-
-        if (onglet == null || ongletsCharges.contains(onglet)) {
-            return;
-        }
-
-        ongletsCharges.add(onglet);
-
-        if (onglet == ongletApercu) {
-            chargerSynthese();
-        } else if (onglet == ongletSites) {
-            chargerSites();
-        } else if (onglet == ongletEssences) {
-            chargerOnglet(defilementEssences, dashboardApi::essences, "Essences");
-        } else if (onglet == ongletProvinces) {
-            chargerOnglet(defilementProvinces, dashboardApi::provinces, "Provinces");
-        } else if (onglet == ongletEvolution) {
-            chargerOnglet(defilementEvolution, dashboardApi::evolution, "Évolution");
-        } else if (onglet == ongletAlertes) {
-            chargerAlertes();
-        } else if (onglet == ongletResponsables) {
-            chargerOnglet(defilementResponsables, dashboardApi::responsables, "Responsables");
-        } else if (onglet == ongletFinancier) {
-            chargerOnglet(defilementFinancier, dashboardApi::financier, "Financier");
-        } else if (onglet == ongletObjectifs) {
-            chargerOnglet(defilementObjectifs, dashboardApi::objectifs, "Objectifs");
-        } else if (onglet == ongletScores) {
-            chargerScores();
-        } else if (onglet == ongletCarte) {
-            chargerOnglet(defilementCarte, dashboardApi::carteProvinces, "Carte");
-        } else if (onglet == ongletComparaison) {
-            chargerComparaison();
-        }
+    private Node erreur() {
+        Label message = new Label("Ces données n'ont pas pu être chargées. Vérifiez que l'API est joignable.");
+        message.getStyleClass().add("message-erreur");
+        message.setWrapText(true);
+        return Composants.section("Données indisponibles", null, message);
     }
 
-    private void chargerComparaison() {
-
-        String type;
-
-        switch (comboPeriode.getValue() == null ? "Mois" : comboPeriode.getValue()) {
-            case "Semaine":
-                type = "semaine";
-                break;
-            case "Année":
-                type = "annee";
-                break;
-            default:
-                type = "mois";
-        }
-
-        chargerOnglet(defilementComparaison, () -> dashboardApi.comparaisonPeriode(type), "Comparaison");
+    private double nombre(JsonNode n, String champ) {
+        return n != null && n.hasNonNull(champ) ? n.get(champ).asDouble() : 0;
     }
 
-    private void chargerSynthese() {
-
-        new Thread(() -> {
-
-            try {
-
-                JsonNode resultat = dashboardApi.overview();
-
-                Platform.runLater(() ->
-                        defilementApercu.setContent(
-                                construireDashboardGlobal(resultat)
-                        )
-                );
-
-            } catch (Exception e) {
-
-                Platform.runLater(() ->
-                        afficherErreur(defilementApercu,
-                                "Impossible de charger la synthèse du tableau de bord.")
-                );
-            }
-
-        }, "dashboard-overview").start();
+    private Double nombreOuNull(JsonNode n, String champ) {
+        return n != null && n.hasNonNull(champ) ? n.get(champ).asDouble() : null;
     }
 
-    private void chargerOnglet(
-            ScrollPane cible,
-            FournisseurJson fournisseur,
-            String titre
-    ) {
-
-        new Thread(() -> {
-
-            try {
-
-                JsonNode resultat = fournisseur.charger();
-
-                Platform.runLater(() ->
-                        cible.setContent(
-                                construireVueAnalytique(resultat, titre)
-                        )
-                );
-
-            } catch (Exception e) {
-
-                Platform.runLater(() ->
-                        afficherErreur(
-                                cible,
-                                "Impossible de charger les données de " + titre + "."
-                        )
-                );
-            }
-
-        }, "dashboard-" + titre.toLowerCase()).start();
+    private String texte(JsonNode n, String champ) {
+        return n != null && n.hasNonNull(champ) ? n.get(champ).asText() : "";
     }
 
-    private VBox construireDashboardGlobal(JsonNode resultat) {
+    private void construireBandeau(JsonNode o) {
+        StackPane bandeau = new StackPane();
+        bandeau.getStyleClass().add("bandeau-planche");
+        bandeau.setMinHeight(212);
+        Rectangle clip = new Rectangle();
+        clip.setArcWidth(16);
+        clip.setArcHeight(16);
+        clip.widthProperty().bind(bandeau.widthProperty());
+        clip.heightProperty().bind(bandeau.heightProperty());
+        bandeau.setClip(clip);
 
-        VBox principal = conteneurPrincipal();
+        Illustrations.CourbesNiveau courbes = new Illustrations.CourbesNiveau(Color.web("#DCEAD5"), 0.13, 21);
+        Illustrations.Canopee canopee = new Illustrations.Canopee(Color.web("#173F2A"), 64, 8);
+        VBox decor = new VBox(courbes, canopee);
+        VBox.setVgrow(courbes, Priority.ALWAYS);
+        decor.setMouseTransparent(true);
 
-        principal.getChildren().add(
-                construireEnteteSection(
-                        "Vue globale",
-                        "Les principaux indicateurs du programme ReboisGabon."
-                )
-        );
+        Color traitClair = Color.web("#DCEAD5");
+        Color remplissage = Color.web("#2A6446");
+        HBox feuilles = new HBox(-6,
+                Illustrations.feuille(Illustrations.Espece.PADOUK, 150, traitClair, remplissage),
+                Illustrations.feuille(Illustrations.Espece.OKOUME, 188, traitClair, remplissage),
+                Illustrations.feuille(Illustrations.Espece.MOABI, 138, traitClair, remplissage));
+        feuilles.setAlignment(Pos.BOTTOM_RIGHT);
+        feuilles.setMouseTransparent(true);
+        feuilles.setPadding(new Insets(0, 26, 6, 0));
+        feuilles.setOpacity(0.9);
 
-        List<Statistique> statistiques = extraireStatistiques(resultat, 8);
+        Label titre = new Label("Programme national de reboisement");
+        titre.getStyleClass().add("titre-bandeau");
+        Label sousTitre = new Label("Situation au " + LocalDate.now().format(DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.FRANCE))
+                + "  ·  " + (int) nombre(o, "total_campagnes") + " campagnes  ·  " + (int) nombre(o, "total_essences_utilisees") + " essences plantées");
+        sousTitre.getStyleClass().add("libelle-bandeau");
 
-        if (!statistiques.isEmpty()) {
-            principal.getChildren().add(
-                    construireCartesStatistiques(statistiques)
-            );
-        }
+        Label compteur = new Label(Composants.nombre(nombre(o, "total_plants_plantes")));
+        compteur.getStyleClass().add("chiffre-geant");
+        Label compteurLibelle = new Label("arbres plantés sur le territoire");
+        compteurLibelle.getStyleClass().add("libelle-bandeau");
+        VBox blocCompteur = new VBox(-2, compteur, compteurLibelle);
 
-        VBox contenuGraphique = new VBox(18);
+        HBox chiffres = new HBox(22,
+                chiffreBandeau(Composants.decimal(nombre(o, "superficie_totale_hectares")) + " ha", "surface reboisée"),
+                separateur(),
+                chiffreBandeau(Composants.pourcentage(nombreOuNull(o, "taux_survie_global")), "taux de survie moyen"),
+                separateur(),
+                chiffreBandeau(String.valueOf((int) nombre(o, "total_sites")), "sites de reboisement"),
+                separateur(),
+                chiffreBandeau(Composants.nombre(nombre(o, "total_suivis_effectues")), "contrôles de terrain"));
+        chiffres.setAlignment(Pos.CENTER_LEFT);
 
-        List<BlocGraphique> graphiques =
-                extraireGraphiques(resultat, 6);
+        Button export = Composants.boutonExportPdf("Rapport de synthèse", () -> {});
+        export.setOnAction(e -> ExportUtil.pdf(export, "rapport-synthese-reboisgabon", exportsApi::rapportSynthesePdf));
 
-        if (!graphiques.isEmpty()) {
+        VBox textes = new VBox(4, titre, sousTitre);
+        Region espace = new Region();
+        HBox.setHgrow(espace, Priority.ALWAYS);
+        HBox tete = new HBox(textes, espace, export);
+        tete.setAlignment(Pos.TOP_LEFT);
 
-            for (int i = 0; i < graphiques.size(); i += 2) {
+        VBox contenu = new VBox(16, tete, blocCompteur, chiffres);
+        contenu.setPadding(new Insets(22, 26, 24, 28));
+        contenu.setPickOnBounds(false);
 
-                HBox ligne = new HBox(18);
-                ligne.setFillHeight(true);
-
-                BlocGraphique premier = graphiques.get(i);
-
-                Region vuePremier = construireBlocGraphique(premier);
-                HBox.setHgrow(vuePremier, Priority.ALWAYS);
-
-                ligne.getChildren().add(vuePremier);
-
-                if (i + 1 < graphiques.size()) {
-
-                    BlocGraphique second = graphiques.get(i + 1);
-
-                    Region vueSecond = construireBlocGraphique(second);
-                    HBox.setHgrow(vueSecond, Priority.ALWAYS);
-
-                    ligne.getChildren().add(vueSecond);
-
-                } else {
-
-                    Region espace = new Region();
-                    HBox.setHgrow(espace, Priority.ALWAYS);
-                    ligne.getChildren().add(espace);
-                }
-
-                contenuGraphique.getChildren().add(ligne);
-            }
-        }
-
-        if (!contenuGraphique.getChildren().isEmpty()) {
-            principal.getChildren().add(contenuGraphique);
-        }
-
-        if (resultat != null && resultat.isObject()) {
-
-            VBox details = construireDetailsJson(
-                    resultat,
-                    "Données détaillées"
-            );
-
-            if (!details.getChildren().isEmpty()) {
-                principal.getChildren().add(details);
-            }
-        }
-
-        return principal;
+        bandeau.getChildren().addAll(decor, feuilles, contenu);
+        StackPane.setAlignment(feuilles, Pos.BOTTOM_RIGHT);
+        zoneBandeau.getChildren().setAll(bandeau);
     }
 
-    private VBox construireVueAnalytique(
-            JsonNode resultat,
-            String titre
-    ) {
-
-        VBox principal = conteneurPrincipal();
-
-        principal.getChildren().add(
-                construireEnteteSection(
-                        titre,
-                        "Analyse détaillée des données disponibles."
-                )
-        );
-
-        List<Statistique> statistiques =
-                extraireStatistiques(resultat, 6);
-
-        if (!statistiques.isEmpty()) {
-            principal.getChildren().add(
-                    construireCartesStatistiques(statistiques)
-            );
-        }
-
-        List<BlocGraphique> graphiques =
-                extraireGraphiques(resultat, 8);
-
-        for (int i = 0; i < graphiques.size(); i += 2) {
-
-            HBox ligne = new HBox(18);
-            ligne.setFillHeight(true);
-
-            Region premier =
-                    construireBlocGraphique(graphiques.get(i));
-
-            HBox.setHgrow(premier, Priority.ALWAYS);
-            ligne.getChildren().add(premier);
-
-            if (i + 1 < graphiques.size()) {
-
-                Region second =
-                        construireBlocGraphique(graphiques.get(i + 1));
-
-                HBox.setHgrow(second, Priority.ALWAYS);
-                ligne.getChildren().add(second);
-
-            } else {
-
-                Region espace = new Region();
-                HBox.setHgrow(espace, Priority.ALWAYS);
-                ligne.getChildren().add(espace);
-            }
-
-            principal.getChildren().add(ligne);
-        }
-
-        VBox details =
-                construireDetailsJson(resultat, "Données");
-
-        if (!details.getChildren().isEmpty()) {
-            principal.getChildren().add(details);
-        }
-
-        return principal;
+    private VBox chiffreBandeau(String valeur, String libelle) {
+        Label v = new Label(valeur);
+        v.getStyleClass().add("chiffre-bandeau");
+        Label l = new Label(libelle);
+        l.getStyleClass().add("libelle-bandeau");
+        return new VBox(1, v, l);
     }
 
-    private void chargerSites() {
-
-        new Thread(() -> {
-
-            try {
-
-                JsonNode resultat = dashboardApi.sites(1);
-
-                Platform.runLater(() -> {
-
-                    VBox principal = conteneurPrincipal();
-
-                    principal.getChildren().add(
-                            construireEnteteSection(
-                                    "Performance des sites",
-                                    "Classement et performance des sites enregistrés."
-                            )
-                    );
-
-                    List<Statistique> statistiques =
-                            extraireStatistiques(resultat, 4);
-
-                    if (!statistiques.isEmpty()) {
-                        principal.getChildren().add(
-                                construireCartesStatistiques(statistiques)
-                        );
-                    }
-
-                    JsonNode top =
-                            resultat.path("top_5");
-
-                    if (!top.isMissingNode() && !top.isNull()) {
-
-                        principal.getChildren().add(
-                                construireBlocDonnees(
-                                        "Top 5 des sites",
-                                        top
-                                )
-                        );
-                    }
-
-                    JsonNode classement =
-                            resultat.path("classement_complet");
-
-                    if (!classement.isMissingNode()
-                            && !classement.isNull()) {
-
-                        Label titre =
-                                new Label("Classement complet");
-
-                        titre.getStyleClass().add(
-                                "dashboard-section-title"
-                        );
-
-                        principal.getChildren().add(titre);
-
-                        principal.getChildren().add(
-                                JsonVueUtil.construireBlocPagine(
-                                        classement,
-                                        page -> dashboardApi
-                                                .sites(page)
-                                                .path("classement_complet")
-                                )
-                        );
-                    }
-
-                    defilementSites.setContent(principal);
-                });
-
-            } catch (Exception e) {
-
-                Platform.runLater(() ->
-                        afficherErreur(
-                                defilementSites,
-                                "Impossible de charger le classement des sites."
-                        )
-                );
-            }
-
-        }, "dashboard-sites").start();
+    private Region separateur() {
+        Region r = new Region();
+        r.getStyleClass().add("separateur-bandeau");
+        r.setMinHeight(36);
+        return r;
     }
 
-    private void chargerAlertes() {
-
-        new Thread(() -> {
-
-            try {
-
-                JsonNode resultat =
-                        dashboardApi.alertes(1, 1);
-
-                Platform.runLater(() -> {
-
-                    VBox principal =
-                            conteneurPrincipal();
-
-                    principal.getChildren().add(
-                            construireEnteteSection(
-                                    "Centre des alertes",
-                                    "Situations nécessitant une attention particulière."
-                            )
-                    );
-
-                    JsonNode critiques =
-                            resultat.path("campagnes_taux_critique");
-
-                    JsonNode sansSuivi =
-                            resultat.path("campagnes_sans_suivi_recent");
-
-                    if (!critiques.isMissingNode()) {
-
-                        principal.getChildren().add(
-                                construireBlocDonnees(
-                                        "Campagnes à taux critique",
-                                        critiques
-                                )
-                        );
-                    }
-
-                    if (!sansSuivi.isMissingNode()) {
-
-                        principal.getChildren().add(
-                                construireBlocDonnees(
-                                        "Campagnes sans suivi récent",
-                                        sansSuivi
-                                )
-                        );
-                    }
-
-                    defilementAlertes.setContent(principal);
-                });
-
-            } catch (Exception e) {
-
-                Platform.runLater(() ->
-                        afficherErreur(
-                                defilementAlertes,
-                                "Impossible de charger les alertes."
-                        )
-                );
-            }
-
-        }, "dashboard-alertes").start();
+    private JsonNode chargerDonneesCarte() throws Exception {
+        var noeud = JsonMapper.instance().createObjectNode();
+        noeud.set("provinces", dashboardApi.provinces());
+        noeud.set("sites", JsonMapper.instance().readTree(geolocalisationApi.sitesGeojson()));
+        return noeud;
     }
 
-    private void chargerScores() {
-
-        new Thread(() -> {
-
-            try {
-
-                JsonNode resultat =
-                        dashboardApi.scoresEcologiques(1);
-
-                Platform.runLater(() -> {
-
-                    VBox principal =
-                            conteneurPrincipal();
-
-                    principal.getChildren().add(
-                            construireEnteteSection(
-                                    "Scores écologiques",
-                                    "Classement écologique des éléments suivis."
-                            )
-                    );
-
-                    List<Statistique> statistiques =
-                            extraireStatistiques(resultat, 5);
-
-                    if (!statistiques.isEmpty()) {
-
-                        principal.getChildren().add(
-                                construireCartesStatistiques(statistiques)
-                        );
-                    }
-
-                    principal.getChildren().add(
-                            JsonVueUtil.construireBlocPagine(
-                                    resultat,
-                                    dashboardApi::scoresEcologiques
-                            )
-                    );
-
-                    defilementScores.setContent(principal);
-                });
-
-            } catch (Exception e) {
-
-                Platform.runLater(() ->
-                        afficherErreur(
-                                defilementScores,
-                                "Impossible de charger les scores écologiques."
-                        )
-                );
+    private void construireCarte(JsonNode donnees) {
+        CarteProvinces carte = new CarteProvinces();
+        carte.setPrefHeight(360);
+        List<CarteProvinces.Statistique> stats = new ArrayList<>();
+        for (JsonNode p : donnees.get("provinces")) {
+            stats.add(new CarteProvinces.Statistique(texte(p, "province"), (int) nombre(p, "nb_sites"),
+                    nombre(p, "superficie_totale"), (long) nombre(p, "total_plants"), nombreOuNull(p, "taux_survie_moyen")));
+        }
+        carte.appliquerStatistiques(stats);
+        List<CarteProvinces.Point> points = new ArrayList<>();
+        for (JsonNode f : donnees.path("sites").path("features")) {
+            JsonNode c = f.path("geometry").path("coordinates");
+            JsonNode pr = f.path("properties");
+            if (c.size() == 2) {
+                points.add(new CarteProvinces.Point(c.get(1).asDouble(), c.get(0).asDouble(), texte(pr, "statut"), texte(pr, "nom")));
             }
+        }
+        carte.afficherSites(points);
+        carte.definirSurClicProvince(nom -> Navigation.<CarteController>aller(Navigation.Ecran.CARTE, c -> c.focaliserProvince(nom)));
 
-        }, "dashboard-scores").start();
+        VBox classement = new VBox(0);
+        stats.sort((a, b) -> Double.compare(b.survie() == null ? 0 : b.survie(), a.survie() == null ? 0 : a.survie()));
+        for (CarteProvinces.Statistique s : stats) {
+            Label nom = new Label(s.province());
+            nom.getStyleClass().add("texte-corps");
+            nom.setMinWidth(118);
+            Label detail = new Label(s.sites() + " site" + (s.sites() > 1 ? "s" : ""));
+            detail.getStyleClass().add("texte-petit");
+            detail.setMinWidth(44);
+            HBox ligne = new HBox(8, nom, detail, Composants.barreSurvie(s.survie(), 60));
+            ligne.setAlignment(Pos.CENTER_LEFT);
+            ligne.setPadding(new Insets(5, 0, 5, 0));
+            classement.getChildren().add(ligne);
+        }
+
+        VBox cote = new VBox(10, legende(), classement);
+        cote.setMinWidth(260);
+        HBox ligneLarge = new HBox(18);
+        VBox colonneEtroite = new VBox(14);
+        HBox.setHgrow(carte, Priority.ALWAYS);
+        StackPane corps = new StackPane();
+        Runnable disposer = () -> {
+            boolean etroit = corps.getWidth() > 0 && corps.getWidth() < 640;
+            if (etroit && carte.getParent() != colonneEtroite) {
+                ligneLarge.getChildren().clear();
+                colonneEtroite.getChildren().setAll(carte, cote);
+                corps.getChildren().setAll(colonneEtroite);
+            } else if (!etroit && carte.getParent() != ligneLarge) {
+                colonneEtroite.getChildren().clear();
+                ligneLarge.getChildren().setAll(carte, cote);
+                corps.getChildren().setAll(ligneLarge);
+            }
+        };
+        ligneLarge.getChildren().setAll(carte, cote);
+        corps.getChildren().setAll(ligneLarge);
+        corps.widthProperty().addListener((o, a, n) -> Platform.runLater(disposer));
+
+        Button voirCarte = Composants.bouton("Ouvrir la carte", Icones.CARTE, "bouton-lien");
+        voirCarte.setOnAction(e -> Navigation.aller(Navigation.Ecran.CARTE));
+        zoneCarte.getChildren().setAll(Composants.section("Couvert reboisé par province",
+                "Couleur : taux de survie moyen. Points : sites. Cliquez une province pour l'explorer.", corps, voirCarte));
     }
 
-    private VBox conteneurPrincipal() {
-
-        VBox box = new VBox(20);
-
-        box.setPadding(
-                new Insets(10, 10, 30, 10)
-        );
-
-        box.setFillWidth(true);
-
-        return box;
-    }
-
-    private VBox construireEnteteSection(
-            String titre,
-            String description
-    ) {
-
-        VBox box = new VBox(4);
-
-        Label titreLabel =
-                new Label(titre);
-
-        titreLabel.getStyleClass().add(
-                "dashboard-section-title"
-        );
-
-        Label descriptionLabel =
-                new Label(description);
-
-        descriptionLabel.getStyleClass().add(
-                "dashboard-section-description"
-        );
-
-        descriptionLabel.setWrapText(true);
-
-        box.getChildren().addAll(
-                titreLabel,
-                descriptionLabel
-        );
-
-        return box;
-    }
-
-    private FlowPane construireCartesStatistiques(
-            List<Statistique> statistiques
-    ) {
-
-        FlowPane flow =
-                new FlowPane();
-
-        flow.setHgap(14);
-        flow.setVgap(14);
-
-        for (Statistique statistique : statistiques) {
-
-            VBox carte =
-                    new VBox(6);
-
-            carte.setPrefWidth(220);
-            carte.setMinWidth(190);
-            carte.setPadding(
-                    new Insets(18)
-            );
-
-            carte.getStyleClass().add(
-                    "dashboard-stat-card"
-            );
-
-            HBox entete = new HBox(8);
-            entete.setAlignment(Pos.CENTER_LEFT);
-
-            Label icone = new Label(iconePour(statistique.nom));
-            icone.setStyle("-fx-font-size: 16px;");
-
-            Label libelle =
-                    new Label(
-                            tronquer(libellePour(statistique.nom), 20)
-                    );
-
-            libelle.getStyleClass().add(
-                    "dashboard-stat-label"
-            );
-
-            libelle.setWrapText(true);
-
-            entete.getChildren().addAll(icone, libelle);
-
-            Tooltip.install(carte, new Tooltip(libellePour(statistique.nom)));
-
-            Label valeur =
-                    new Label(
-                            formaterNombre(
-                                    statistique.valeur
-                            )
-                    );
-
-            valeur.getStyleClass().add(
-                    "dashboard-stat-value"
-            );
-
-            valeur.setMaxWidth(
-                    Double.MAX_VALUE
-            );
-
-            carte.getChildren().addAll(
-                    entete,
-                    valeur
-            );
-
-            flow.getChildren().add(carte);
+    private Node legende() {
+        String[][] classes = {{"≥ 90 %", "95"}, {"80 – 90 %", "85"}, {"70 – 80 %", "75"}, {"60 – 70 %", "65"}, {"< 60 %", "50"}};
+        HBox ligne = new HBox(8);
+        ligne.setAlignment(Pos.CENTER_LEFT);
+        for (String[] c : classes) {
+            Rectangle carre = new Rectangle(11, 11, Composants.couleurSurvie(Double.parseDouble(c[1])));
+            carre.setArcWidth(3);
+            carre.setArcHeight(3);
+            Label l = new Label(c[0]);
+            l.getStyleClass().add("texte-petit");
+            HBox item = new HBox(4, carre, l);
+            item.setAlignment(Pos.CENTER_LEFT);
+            ligne.getChildren().add(item);
         }
-
-        return flow;
-    }
-
-    private Region construireBlocGraphique(
-            BlocGraphique bloc
-    ) {
-
-        VBox carte =
-                new VBox(12);
-
-        carte.setMinHeight(300);
-        carte.setPrefHeight(350);
-        carte.setPadding(
-                new Insets(18)
-        );
-
-        carte.getStyleClass().add(
-                "dashboard-chart-card"
-        );
-
-        String libelleComplet = libellePour(bloc.nom);
-
-        Label titre =
-                new Label(iconePour(bloc.nom) + "  " + tronquer(libelleComplet, 28));
-
-        titre.getStyleClass().add(
-                "dashboard-chart-title"
-        );
-
-        Tooltip.install(titre, new Tooltip(libelleComplet));
-
-        carte.getChildren().add(titre);
-
-        if (bloc.type == TypeGraphique.PIE) {
-
-            PieChart chart =
-                    new PieChart();
-
-            chart.setLegendVisible(true);
-            chart.setLabelsVisible(true);
-            chart.setAnimated(false);
-
-            for (Point point : bloc.points) {
-
-                chart.getData().add(
-                        new PieChart.Data(
-                                tronquer(humaniser(point.nom), 16),
-                                point.valeur
-                        )
-                );
-            }
-
-            VBox.setVgrow(chart, Priority.ALWAYS);
-
-            carte.getChildren().add(chart);
-
-        } else {
-
-            CategoryAxis axeX =
-                    new CategoryAxis();
-
-            NumberAxis axeY =
-                    new NumberAxis();
-
-            axeX.setLabel("");
-            axeY.setLabel("");
-            axeX.setTickLabelRotation(-30);
-
-            BarChart<String, Number> chart =
-                    new BarChart<>(
-                            axeX,
-                            axeY
-                    );
-
-            chart.setAnimated(false);
-            chart.setLegendVisible(false);
-            chart.setCategoryGap(12);
-            chart.setBarGap(4);
-
-            XYChart.Series<String, Number> serie =
-                    new XYChart.Series<>();
-
-            for (Point point : bloc.points) {
-
-                serie.getData().add(
-                        new XYChart.Data<>(
-                                tronquer(humaniser(point.nom), 12),
-                                point.valeur
-                        )
-                );
-            }
-
-            chart.getData().add(serie);
-
-            VBox.setVgrow(chart, Priority.ALWAYS);
-
-            carte.getChildren().add(chart);
-        }
-
-        return carte;
-    }
-
-    private List<Statistique> extraireStatistiques(
-            JsonNode node,
-            int maximum
-    ) {
-
-        List<Statistique> resultats =
-                new ArrayList<>();
-
-        extraireNombres(
-                node,
-                "",
-                resultats,
-                maximum
-        );
-
-        return resultats;
-    }
-
-    private void extraireNombres(
-            JsonNode node,
-            String chemin,
-            List<Statistique> resultats,
-            int maximum
-    ) {
-
-        if (node == null
-                || resultats.size() >= maximum) {
-            return;
-        }
-
-        if (node.isNumber()) {
-
-            String nom =
-                    chemin.isBlank()
-                            ? "Valeur"
-                            : chemin;
-
-            resultats.add(
-                    new Statistique(
-                            nom,
-                            node.doubleValue()
-                    )
-            );
-
-            return;
-        }
-
-        if (node.isObject()) {
-
-            Iterator<Map.Entry<String, JsonNode>> champs =
-                    node.fields();
-
-            while (champs.hasNext()
-                    && resultats.size() < maximum) {
-
-                Map.Entry<String, JsonNode> champ =
-                        champs.next();
-
-                String nouveauChemin =
-                        chemin.isBlank()
-                                ? champ.getKey()
-                                : chemin + "." + champ.getKey();
-
-                extraireNombres(
-                        champ.getValue(),
-                        nouveauChemin,
-                        resultats,
-                        maximum
-                );
-            }
-
-            return;
-        }
-
-        if (node.isArray()) {
-
-            for (int i = 0;
-                 i < node.size()
-                         && resultats.size() < maximum;
-                 i++) {
-
-                extraireNombres(
-                        node.get(i),
-                        chemin,
-                        resultats,
-                        maximum
-                );
-            }
-        }
-    }
-
-    private List<BlocGraphique> extraireGraphiques(
-            JsonNode node,
-            int maximum
-    ) {
-
-        List<BlocGraphique> graphiques =
-                new ArrayList<>();
-
-        extraireGraphiquesRecursif(
-                node,
-                "",
-                graphiques,
-                maximum
-        );
-
-        return graphiques;
-    }
-
-    private void extraireGraphiquesRecursif(
-            JsonNode node,
-            String nom,
-            List<BlocGraphique> resultats,
-            int maximum
-    ) {
-
-        if (node == null
-                || resultats.size() >= maximum) {
-            return;
-        }
-
-        if (node.isArray()
-                && node.size() >= 2) {
-
-            BlocGraphique graphique =
-                    construireGraphiqueDepuisTableau(
-                            nom,
-                            node
-                    );
-
-            if (graphique != null) {
-                resultats.add(graphique);
-            }
-
-            return;
-        }
-
-        if (node.isObject()) {
-
-            Iterator<Map.Entry<String, JsonNode>> champs =
-                    node.fields();
-
-            while (champs.hasNext()
-                    && resultats.size() < maximum) {
-
-                Map.Entry<String, JsonNode> champ =
-                        champs.next();
-
-                extraireGraphiquesRecursif(
-                        champ.getValue(),
-                        champ.getKey(),
-                        resultats,
-                        maximum
-                );
-            }
-        }
-    }
-
-    private BlocGraphique construireGraphiqueDepuisTableau(
-            String nom,
-            JsonNode tableau
-    ) {
-
-        if (tableau == null
-                || !tableau.isArray()
-                || tableau.size() < 2) {
-            return null;
-        }
-
-        List<Point> points =
-                new ArrayList<>();
-
-        String champLibelle = null;
-        String champValeur = null;
-
-        JsonNode premier =
-                tableau.get(0);
-
-        if (premier.isObject()) {
-
-            Iterator<Map.Entry<String, JsonNode>> champs =
-                    premier.fields();
-
-            while (champs.hasNext()) {
-
-                Map.Entry<String, JsonNode> champ =
-                        champs.next();
-
-                if (champValeur == null
-                        && champ.getValue().isNumber()) {
-
-                    champValeur = champ.getKey();
-                }
-
-                if (champLibelle == null
-                        && champ.getValue().isTextual()) {
-
-                    champLibelle = champ.getKey();
-                }
-            }
-
-            if (champValeur == null) {
-                return null;
-            }
-
-            for (JsonNode element : tableau) {
-
-                if (!element.isObject()) {
-                    continue;
-                }
-
-                JsonNode valeur =
-                        element.path(champValeur);
-
-                if (!valeur.isNumber()) {
-                    continue;
-                }
-
-                String libelle;
-
-                if (champLibelle != null
-                        && element.has(champLibelle)) {
-
-                    libelle =
-                            element.path(champLibelle).asText();
-
-                } else {
-
-                    libelle =
-                            "Élément " + (points.size() + 1);
-                }
-
-                points.add(
-                        new Point(
-                                libelle,
-                                valeur.doubleValue()
-                        )
-                );
-            }
-
-        } else if (premier.isNumber()) {
-
-            for (int i = 0;
-                 i < tableau.size();
-                 i++) {
-
-                JsonNode valeur =
-                        tableau.get(i);
-
-                if (valeur.isNumber()) {
-
-                    points.add(
-                            new Point(
-                                    String.valueOf(i + 1),
-                                    valeur.doubleValue()
-                            )
-                    );
-                }
-            }
-        }
-
-        if (points.size() < 2) {
-            return null;
-        }
-
-        if (points.size() > 10) {
-            points =
-                    new ArrayList<>(
-                            points.subList(0, 10)
-                    );
-        }
-
-        TypeGraphique type =
-                points.size() <= 6
-                        ? TypeGraphique.PIE
-                        : TypeGraphique.BAR;
-
-        return new BlocGraphique(
-                nom.isBlank()
-                        ? "Répartition"
-                        : nom,
-                points,
-                type
-        );
-    }
-
-    private VBox construireDetailsJson(
-            JsonNode node,
-            String titre
-    ) {
-
-        VBox principal =
-                new VBox(10);
-
-        Label label =
-                new Label(titre);
-
-        label.getStyleClass().add(
-                "dashboard-section-title"
-        );
-
-        principal.getChildren().add(label);
-
-        if (node == null
-                || node.isNull()
-                || node.isMissingNode()) {
-            return principal;
-        }
-
-        if (node.isObject()) {
-
-            GridPane grille =
-                    new GridPane();
-
-            grille.setHgap(10);
-            grille.setVgap(8);
-
-            int ligne = 0;
-
-            Iterator<Map.Entry<String, JsonNode>> champs =
-                    node.fields();
-
-            while (champs.hasNext()) {
-
-                Map.Entry<String, JsonNode> champ =
-                        champs.next();
-
-                if (champ.getValue().isArray()
-                        || champ.getValue().isObject()) {
-                    continue;
-                }
-
-                Label cle =
-                        new Label(
-                                humaniser(
-                                        champ.getKey()
-                                )
-                        );
-
-                cle.getStyleClass().add(
-                        "dashboard-detail-key"
-                );
-
-                Label valeur =
-                        new Label(
-                                afficherValeur(
-                                        champ.getValue()
-                                )
-                        );
-
-                valeur.getStyleClass().add(
-                        "dashboard-detail-value"
-                );
-
-                valeur.setWrapText(true);
-
-                grille.add(
-                        cle,
-                        0,
-                        ligne
-                );
-
-                grille.add(
-                        valeur,
-                        1,
-                        ligne
-                );
-
-                ligne++;
-            }
-
-            if (ligne > 0) {
-                principal.getChildren().add(grille);
-            }
-        }
-
-        return principal;
-    }
-
-    private VBox construireBlocDonnees(
-            String titre,
-            JsonNode donnees
-    ) {
-
-        VBox bloc =
-                new VBox(12);
-
-        bloc.getStyleClass().add(
-                "dashboard-data-card"
-        );
-
-        Label titreLabel =
-                new Label(titre);
-
-        titreLabel.getStyleClass().add(
-                "dashboard-card-title"
-        );
-
-        bloc.getChildren().add(titreLabel);
-
-        if (donnees == null
-                || donnees.isNull()
-                || donnees.isMissingNode()) {
-
-            Label vide =
-                    new Label("Aucune donnée disponible.");
-
-            vide.getStyleClass().add(
-                    "dashboard-empty"
-            );
-
-            bloc.getChildren().add(vide);
-
-            return bloc;
-        }
-
-        if (donnees.isArray()) {
-
-            for (JsonNode element : donnees) {
-
-                bloc.getChildren().add(
-                        construireLigneDonnee(element)
-                );
-            }
-
-        } else if (donnees.isObject()) {
-
-            bloc.getChildren().add(
-                    construireLigneDonnee(donnees)
-            );
-
-        } else {
-
-            Label valeur =
-                    new Label(
-                            afficherValeur(donnees)
-                    );
-
-            valeur.getStyleClass().add(
-                    "dashboard-detail-value"
-            );
-
-            bloc.getChildren().add(valeur);
-        }
-
+        VBox bloc = new VBox(6);
+        Label titre = new Label("SURVIE MOYENNE");
+        titre.getStyleClass().add("cle-etiquette");
+        javafx.scene.layout.FlowPane flux = new javafx.scene.layout.FlowPane(8, 6);
+        flux.getChildren().addAll(ligne.getChildren());
+        flux.setPrefWrapLength(230);
+        bloc.getChildren().addAll(titre, flux);
         return bloc;
     }
 
-    private Region construireLigneDonnee(
-            JsonNode element
-    ) {
+    private void construireAlertes(JsonNode a) {
+        JsonNode critiques = a.path("campagnes_taux_critique");
+        JsonNode sansSuivi = a.path("campagnes_sans_suivi_recent");
+        int nbCritiques = critiques.path("count").asInt();
+        int nbSansSuivi = sansSuivi.path("count").asInt();
 
-        if (!element.isObject()) {
+        HBox compteurs = new HBox(12,
+                compteurAlerte(String.valueOf(nbCritiques), "sous " + (int) nombre(a, "seuil_critique_pourcent") + " % de survie", nbCritiques > 0 ? "rouge" : "foret"),
+                compteurAlerte(String.valueOf(nbSansSuivi), "sans contrôle récent", nbSansSuivi > 0 ? "laterite" : "foret"));
 
-            Label valeur =
-                    new Label(
-                            afficherValeur(element)
-                    );
-
-            valeur.getStyleClass().add(
-                    "dashboard-list-value"
-            );
-
-            return valeur;
-        }
-
-        HBox ligne =
-                new HBox(14);
-
-        ligne.setAlignment(
-                Pos.CENTER_LEFT
-        );
-
-        ligne.setPadding(
-                new Insets(12)
-        );
-
-        ligne.getStyleClass().add(
-                "dashboard-list-row"
-        );
-
-        Iterator<Map.Entry<String, JsonNode>> champs =
-                element.fields();
-
-        int compteur = 0;
-
-        while (champs.hasNext()
-                && compteur < 4) {
-
-            Map.Entry<String, JsonNode> champ =
-                    champs.next();
-
-            if (champ.getValue().isObject()
-                    || champ.getValue().isArray()) {
-                continue;
+        VBox liste = new VBox();
+        List<JsonNode> lignes = new ArrayList<>();
+        critiques.path("results").forEach(lignes::add);
+        sansSuivi.path("results").forEach(lignes::add);
+        int affichees = 0;
+        for (JsonNode l : lignes) {
+            if (affichees++ >= 5) {
+                break;
             }
-
-            VBox colonne =
-                    new VBox(2);
-
-            HBox.setHgrow(
-                    colonne,
-                    Priority.ALWAYS
-            );
-
-            Label cle =
-                    new Label(
-                            humaniser(
-                                    champ.getKey()
-                            )
-                    );
-
-            cle.getStyleClass().add(
-                    "dashboard-list-key"
-            );
-
-            Label valeur =
-                    new Label(
-                            afficherValeur(
-                                    champ.getValue()
-                            )
-                    );
-
-            valeur.getStyleClass().add(
-                    "dashboard-list-value"
-            );
-
-            valeur.setWrapText(true);
-
-            colonne.getChildren().addAll(
-                    cle,
-                    valeur
-            );
-
-            ligne.getChildren().add(
-                    colonne
-            );
-
-            compteur++;
+            boolean critique = l.has("taux_survie_moyen") || l.has("taux_survie");
+            Label site = new Label(texte(l, "site"));
+            site.getStyleClass().add("titre-3");
+            Label detail = new Label(texte(l, "essence") + "  ·  plantée le " + Composants.date(texte(l, "date_plantation")));
+            detail.getStyleClass().add("texte-petit");
+            VBox textes = new VBox(2, site, detail);
+            HBox.setHgrow(textes, Priority.ALWAYS);
+            Label badge = critique
+                    ? Composants.pastille(Composants.pourcentage(nombreOuNull(l, l.has("taux_survie_moyen") ? "taux_survie_moyen" : "taux_survie")), "rouge")
+                    : Composants.pastille((int) nombre(l, "jours_depuis_derniere_activite") + " j sans contrôle", "laterite");
+            HBox ligne = new HBox(10, Composants.boutonIcone(critique ? Icones.ALERTE : Icones.HORLOGE, "Alerte", null), textes, badge);
+            ligne.getChildren().get(0).setMouseTransparent(true);
+            ligne.setAlignment(Pos.CENTER_LEFT);
+            ligne.getStyleClass().add("ligne-liste");
+            liste.getChildren().add(ligne);
         }
+        if (lignes.isEmpty()) {
+            liste.getChildren().add(Composants.etatVide("Aucune alerte", "Toutes les campagnes sont suivies et au-dessus du seuil critique."));
+        }
+        Button voir = Composants.bouton("Planifier les contrôles", Icones.CALENDRIER, "bouton-lien");
+        voir.setOnAction(e -> Navigation.aller(Navigation.Ecran.SUIVIS));
+        VBox corps = new VBox(12, compteurs, liste, voir);
+        zoneAlertes.getChildren().setAll(Composants.section("Alertes terrain", "Ce qui demande une intervention.", corps));
+    }
 
+    private VBox compteurAlerte(String valeur, String libelle, String variante) {
+        Label v = new Label(valeur);
+        v.getStyleClass().add("chiffre-moyen");
+        v.setStyle("-fx-text-fill: " + switch (variante) {
+            case "rouge" -> "#B3412E";
+            case "laterite" -> "#9A5B34";
+            default -> "#1F5136";
+        } + ";");
+        Label l = new Label(libelle);
+        l.getStyleClass().add("texte-petit");
+        l.setWrapText(true);
+        VBox bloc = new VBox(2, v, l);
+        bloc.setPadding(new Insets(10, 12, 10, 12));
+        bloc.setStyle("-fx-background-color: " + switch (variante) {
+            case "rouge" -> "#F8E3DE";
+            case "laterite" -> "#F4E6DB";
+            default -> "#E4EFDE";
+        } + "; -fx-background-radius: 6;");
+        HBox.setHgrow(bloc, Priority.ALWAYS);
+        bloc.setMaxWidth(Double.MAX_VALUE);
+        return bloc;
+    }
+
+    private void construireEvolution(JsonNode e) {
+        CategoryAxis axeX = new CategoryAxis();
+        NumberAxis axeY = new NumberAxis();
+        axeY.setTickLabelFormatter(new NumberAxis.DefaultFormatter(axeY) {
+            @Override
+            public String toString(Number valeur) {
+                return valeur.doubleValue() >= 1000 ? Composants.nombre(valeur.doubleValue() / 1000) + " k" : Composants.nombre(valeur);
+            }
+        });
+        BarChart<String, Number> graphique = new BarChart<>(axeX, axeY);
+        graphique.setAnimated(false);
+        graphique.setLegendVisible(false);
+        graphique.setCategoryGap(6);
+        graphique.setPrefHeight(270);
+        graphique.setMinHeight(240);
+        XYChart.Series<String, Number> serie = new XYChart.Series<>();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM yy", Locale.FRANCE);
+        List<JsonNode> mois = new ArrayList<>();
+        e.path("plantations_par_mois").forEach(mois::add);
+        int debut = Math.max(0, mois.size() - 18);
+        long total = 0;
+        for (int i = debut; i < mois.size(); i++) {
+            JsonNode m = mois.get(i);
+            String libelle = LocalDate.parse(texte(m, "mois")).format(format);
+            long plants = (long) nombre(m, "total_plants");
+            total += plants;
+            XYChart.Data<String, Number> point = new XYChart.Data<>(libelle, plants);
+            serie.getData().add(point);
+        }
+        graphique.getData().add(serie);
+        for (XYChart.Data<String, Number> point : serie.getData()) {
+            if (point.getNode() != null) {
+                Tooltip.install(point.getNode(), new Tooltip(point.getXValue() + " : " + Composants.nombre(point.getYValue()) + " plants"));
+            }
+        }
+        Label resume = new Label(Composants.nombre(total) + " plants mis en terre sur les 18 derniers mois");
+        resume.getStyleClass().add("texte-muet");
+        VBox corps = new VBox(4, resume, graphique);
+        zoneEvolution.getChildren().setAll(Composants.section("Plantations mensuelles", "Nombre de plants mis en terre chaque mois.", corps));
+    }
+
+    private void chargerComparaison(String type) {
+        charger(() -> dashboardApi.comparaisonPeriode(type), c -> construireComparaison(c, type), zoneComparaison);
+    }
+
+    private void construireComparaison(JsonNode c, String type) {
+        ToggleGroup groupe = new ToggleGroup();
+        ToggleButton mois = new ToggleButton("Mois");
+        ToggleButton annee = new ToggleButton("Année");
+        mois.setToggleGroup(groupe);
+        annee.setToggleGroup(groupe);
+        ("annee".equals(type) ? annee : mois).setSelected(true);
+        mois.setOnAction(e -> chargerComparaison("mois"));
+        annee.setOnAction(e -> chargerComparaison("annee"));
+        HBox segment = new HBox(2, mois, annee);
+        segment.getStyleClass().add("segment");
+
+        JsonNode actuelle = c.path("periode_actuelle");
+        JsonNode precedente = c.path("periode_precedente");
+        JsonNode evolution = c.path("evolution_pourcentage");
+        String periode = "Du " + Composants.date(texte(actuelle, "debut")) + " au " + Composants.date(texte(actuelle, "fin"))
+                + ", comparé à la période précédente";
+        Label libellePeriode = new Label(periode);
+        libellePeriode.getStyleClass().add("texte-petit");
+        libellePeriode.setWrapText(true);
+
+        VBox lignes = new VBox(
+                ligneComparaison(Icones.CAMPAGNE, "Campagnes lancées", Composants.nombre(nombre(actuelle, "nombre_campagnes")),
+                        Composants.nombre(nombre(precedente, "nombre_campagnes")), nombreOuNull(evolution, "nombre_campagnes")),
+                ligneComparaison(Icones.ARBRE, "Plants mis en terre", Composants.nombre(nombre(actuelle, "total_plants")),
+                        Composants.nombre(nombre(precedente, "total_plants")), nombreOuNull(evolution, "total_plants")),
+                ligneComparaison(Icones.SCORE, "Survie mesurée", Composants.pourcentage(nombreOuNull(actuelle, "taux_survie_moyen")),
+                        Composants.pourcentage(nombreOuNull(precedente, "taux_survie_moyen")), nombreOuNull(evolution, "taux_survie_moyen")));
+        VBox corps = new VBox(10, libellePeriode, lignes);
+        zoneComparaison.getChildren().setAll(Composants.section("Rythme du programme", null, corps, segment));
+    }
+
+    private HBox ligneComparaison(String icone, String libelle, String actuelle, String precedente, Double variation) {
+        StackPane pastilleIcone = new StackPane(Icones.icone(icone));
+        pastilleIcone.getStyleClass().add("icone-page");
+        pastilleIcone.setStyle("-fx-min-width: 34; -fx-min-height: 34; -fx-max-width: 34; -fx-max-height: 34;");
+        Label l = new Label(libelle);
+        l.getStyleClass().add("texte-petit");
+        Label v = new Label(actuelle);
+        v.getStyleClass().add("chiffre-moyen");
+        Label p = new Label("avant : " + precedente);
+        p.getStyleClass().add("texte-petit");
+        VBox textes = new VBox(0, l, v, p);
+        HBox.setHgrow(textes, Priority.ALWAYS);
+        Node badge;
+        if (variation == null) {
+            badge = Composants.pastille("n.d.", "neutre");
+        } else {
+            Label b = new Label((variation > 0 ? "+" : "") + Composants.decimal(variation) + " %", Icones.icone(variation >= 0 ? Icones.HAUSSE : Icones.BAISSE, 14,
+                    Color.web(variation >= 0 ? "#256B3E" : "#B3412E")));
+            b.getStyleClass().add(variation >= 0 ? "variation-hausse" : "variation-baisse");
+            badge = b;
+        }
+        HBox ligne = new HBox(12, pastilleIcone, textes, badge);
+        ligne.setAlignment(Pos.CENTER_LEFT);
+        ligne.getStyleClass().add("ligne-liste");
         return ligne;
     }
 
-    private String afficherValeur(
-            JsonNode valeur
-    ) {
-
-        if (valeur == null
-                || valeur.isNull()
-                || valeur.isMissingNode()) {
-            return "—";
-        }
-
-        if (valeur.isNumber()) {
-            return formaterNombre(
-                    valeur.doubleValue()
-            );
-        }
-
-        if (valeur.isBoolean()) {
-            return valeur.asBoolean()
-                    ? "Oui"
-                    : "Non";
-        }
-
-        return valeur.asText();
-    }
-
-    private String formaterNombre(
-            double nombre
-    ) {
-
-        if (nombre == Math.rint(nombre)) {
-            return formatNombre.format(
-                    (long) nombre
-            );
-        }
-
-        return formatNombre.format(nombre);
-    }
-
-    private String dernierSegment(String chemin) {
-        if (chemin == null || chemin.isBlank()) {
-            return "";
-        }
-        String[] parties = chemin.split("\\.");
-        return parties[parties.length - 1];
-    }
-
-    private String iconePour(String chemin) {
-        String cle = dernierSegment(chemin).toLowerCase();
-        for (Map.Entry<String, String> entree : ICONES.entrySet()) {
-            if (cle.contains(entree.getKey())) {
-                return entree.getValue();
+    private void construireEssences(JsonNode e) {
+        VBox lignes = new VBox();
+        int rang = 0;
+        for (JsonNode es : e) {
+            if (rang++ >= 7) {
+                break;
             }
-        }
-        return "📊";
-    }
-
-    private String libellePour(String chemin) {
-        String cle = dernierSegment(chemin).toLowerCase();
-        if (LIBELLES_COURTS.containsKey(cle)) {
-            return LIBELLES_COURTS.get(cle);
-        }
-        return humaniser(chemin);
-    }
-
-    private String tronquer(String valeur, int maximum) {
-        if (valeur == null) {
-            return "";
-        }
-        if (valeur.length() <= maximum) {
-            return valeur;
-        }
-        return valeur.substring(0, maximum - 1).trim() + "…";
-    }
-
-    private String humaniser(
-            String valeur
-    ) {
-
-        if (valeur == null
-                || valeur.isBlank()) {
-            return "Données";
-        }
-
-        String dernier = dernierSegment(valeur);
-
-        String resultat =
-                dernier
-                        .replace(".", " ")
-                        .replace("_", " ")
-                        .replace("-", " ");
-
-        StringBuilder builder =
-                new StringBuilder();
-
-        for (int i = 0;
-             i < resultat.length();
-             i++) {
-
-            char caractere =
-                    resultat.charAt(i);
-
-            if (i > 0
-                    && Character.isUpperCase(caractere)
-                    && Character.isLowerCase(
-                    resultat.charAt(i - 1))) {
-
-                builder.append(' ');
+            String nom = texte(es, "essence");
+            Node dessin = Illustrations.feuille(Illustrations.especePour(nom), 34, Color.web("#1F5136"), Color.web("#E4EFDE"));
+            StackPane vignette = new StackPane(dessin);
+            vignette.setMinSize(38, 38);
+            vignette.setMaxSize(38, 38);
+            vignette.setStyle("-fx-background-color: #F4F7F1; -fx-background-radius: 6;");
+            Label libelle = new Label(nom);
+            libelle.getStyleClass().add("titre-3");
+            Label scientifique = new Label(texte(es, "nom_scientifique"));
+            scientifique.getStyleClass().add("nom-scientifique");
+            scientifique.setStyle("-fx-font-size: 12px;");
+            HBox noms = new HBox(6, libelle);
+            if (es.path("croissance_rapide").asBoolean()) {
+                noms.getChildren().add(Composants.pastille("rapide", "or"));
             }
-
-            builder.append(caractere);
+            noms.setAlignment(Pos.CENTER_LEFT);
+            VBox textes = new VBox(0, noms, scientifique);
+            HBox.setHgrow(textes, Priority.ALWAYS);
+            Label plants = new Label(Composants.nombre(nombre(es, "total_plants")) + " plants");
+            plants.getStyleClass().add("texte-petit");
+            plants.setMinWidth(88);
+            HBox ligne = new HBox(12, vignette, textes, plants, Composants.barreSurvie(nombreOuNull(es, "taux_survie_moyen"), 80));
+            ligne.setAlignment(Pos.CENTER_LEFT);
+            ligne.getStyleClass().add("ligne-liste");
+            lignes.getChildren().add(ligne);
         }
-
-        resultat =
-                builder.toString()
-                        .trim()
-                        .toLowerCase();
-
-        if (!resultat.isEmpty()) {
-
-            resultat =
-                    Character.toUpperCase(
-                            resultat.charAt(0)
-                    )
-                            + resultat.substring(1);
-        }
-
-        return resultat;
+        Button voir = Composants.bouton("Toutes les essences", Icones.ESSENCE, "bouton-lien");
+        voir.setOnAction(ev -> Navigation.aller(Navigation.Ecran.ESSENCES));
+        zoneEssences.getChildren().setAll(Composants.section("Survie par essence", "Les espèces qui reprennent le mieux sur le terrain.", lignes, voir));
     }
 
-    private void afficherErreur(
-            ScrollPane cible,
-            String message
-    ) {
-
-        VBox box =
-                conteneurPrincipal();
-
-        box.setAlignment(
-                Pos.CENTER
-        );
-
-        Label titre =
-                new Label("Impossible de charger les données");
-
-        titre.getStyleClass().add(
-                "dashboard-error-title"
-        );
-
-        Label detail =
-                new Label(message);
-
-        detail.getStyleClass().add(
-                "dashboard-error-text"
-        );
-
-        detail.setWrapText(true);
-
-        box.getChildren().addAll(
-                titre,
-                detail
-        );
-
-        cible.setContent(box);
-
-        AlertUtil.erreur(
-                "Erreur",
-                message
-        );
-    }
-
-    private static class Statistique {
-
-        private final String nom;
-        private final double valeur;
-
-        private Statistique(
-                String nom,
-                double valeur
-        ) {
-
-            this.nom = nom;
-            this.valeur = valeur;
+    private void construireObjectifs(JsonNode o) {
+        HBox resume = new HBox(10,
+                compteurAlerte(String.valueOf((int) nombre(o, "total_objectifs_actifs")), "objectifs suivis", "foret"),
+                compteurAlerte(String.valueOf((int) nombre(o, "objectifs_atteints")), "atteints", "foret"),
+                compteurAlerte(String.valueOf((int) nombre(o, "objectifs_en_retard")), "en retard", nombre(o, "objectifs_en_retard") > 0 ? "rouge" : "foret"));
+        VBox lignes = new VBox();
+        int n = 0;
+        for (JsonNode ob : o.path("objectifs")) {
+            if (n++ >= 5) {
+                break;
+            }
+            Label titre = new Label(texte(ob, "titre"));
+            titre.getStyleClass().add("titre-3");
+            titre.setWrapText(true);
+            String statut = texte(ob, "statut_calcule");
+            Label pastille = switch (statut) {
+                case "ATTEINT" -> Composants.pastille("Atteint", "foret");
+                case "NON_ATTEINT" -> Composants.pastille("Non atteint", "rouge");
+                case "ANNULE" -> Composants.pastille("Annulé", "neutre");
+                default -> Composants.pastille("En cours", "ocean");
+            };
+            Region espace = new Region();
+            HBox.setHgrow(espace, Priority.ALWAYS);
+            HBox tete = new HBox(8, titre, espace, pastille);
+            tete.setAlignment(Pos.CENTER_LEFT);
+            double progression = nombre(ob, "progression_pourcentage");
+            Label detail = new Label(Composants.nombre(nombre(ob, "plants_realises")) + " / " + Composants.nombre(nombre(ob, "nombre_plants_cible"))
+                    + " plants  ·  échéance " + Composants.date(texte(ob, "date_echeance")));
+            detail.getStyleClass().add("texte-petit");
+            Label pct = new Label(Composants.decimal(progression) + " %");
+            pct.getStyleClass().add("titre-3");
+            HBox barre = Composants.barreProgression(progression / 100.0, 260,
+                    "NON_ATTEINT".equals(statut) ? Color.web("#B3412E") : progression >= 100 ? Color.web("#1F5136") : Color.web("#C99A1C"));
+            HBox ligneBarre = new HBox(10, barre, pct);
+            ligneBarre.setAlignment(Pos.CENTER_LEFT);
+            VBox bloc = new VBox(5, tete, ligneBarre, detail);
+            bloc.getStyleClass().add("ligne-liste");
+            lignes.getChildren().add(bloc);
         }
+        Button voir = Composants.bouton("Gérer les objectifs", Icones.OBJECTIF, "bouton-lien");
+        voir.setOnAction(e -> Navigation.aller(Navigation.Ecran.OBJECTIFS));
+        zoneObjectifs.getChildren().setAll(Composants.section("Objectifs de reboisement", "Progression calculée à partir des campagnes réelles.", new VBox(12, resume, lignes), voir));
     }
 
-    private static class Point {
+    private JsonNode chargerDonneesScores() throws Exception {
+        var noeud = JsonMapper.instance().createObjectNode();
+        noeud.set("scores", dashboardApi.scoresEcologiques(1));
+        noeud.set("sites", dashboardApi.sites(1));
+        return noeud;
+    }
 
-        private final String nom;
-        private final double valeur;
+    private void construireScores(JsonNode d) {
+        JsonNode scores = d.path("scores");
+        Label moyenne = new Label(Composants.decimal(nombre(scores, "score_moyen_national")));
+        moyenne.getStyleClass().add("chiffre-fort");
+        Label sur = new Label("/ 100  score écologique moyen national");
+        sur.getStyleClass().add("unite");
+        HBox tete = new HBox(6, moyenne, sur);
+        tete.setAlignment(Pos.BASELINE_LEFT);
 
-        private Point(
-                String nom,
-                double valeur
-        ) {
-
-            this.nom = nom;
-            this.valeur = valeur;
+        VBox meilleurs = new VBox();
+        int n = 0;
+        for (JsonNode s : scores.path("classement").path("results")) {
+            if (n++ >= 4) {
+                break;
+            }
+            meilleurs.getChildren().add(ligneSite(n, texte(s, "nom"), texte(s, "localite"), texte(s, "id"),
+                    Composants.pastille(Composants.decimal(nombre(s, "score_global")) + " · " + libelleClasse(texte(s, "classe")), varianteClasse(texte(s, "classe")))));
         }
-    }
-
-    private static class BlocGraphique {
-
-        private final String nom;
-        private final List<Point> points;
-        private final TypeGraphique type;
-
-        private BlocGraphique(
-                String nom,
-                List<Point> points,
-                TypeGraphique type
-        ) {
-
-            this.nom = nom;
-            this.points = points;
-            this.type = type;
+        VBox risques = new VBox();
+        n = 0;
+        for (JsonNode s : d.path("sites").path("top_5_sites_a_risque")) {
+            if (n++ >= 4) {
+                break;
+            }
+            risques.getChildren().add(ligneSite(n, texte(s, "nom"), texte(s, "localite") + " · " + texte(s, "province"), texte(s, "id"),
+                    Composants.barreSurvie(nombreOuNull(s, "taux_survie_moyen"), 50)));
         }
+        Label t1 = new Label("MEILLEURS SCORES");
+        t1.getStyleClass().add("cle-etiquette");
+        Label t2 = new Label("SURVIE LA PLUS FAIBLE");
+        t2.getStyleClass().add("cle-etiquette");
+        VBox colonne1 = new VBox(6, t1, meilleurs);
+        VBox colonne2 = new VBox(6, t2, risques);
+        HBox.setHgrow(colonne1, Priority.ALWAYS);
+        HBox.setHgrow(colonne2, Priority.ALWAYS);
+        colonne1.setPrefWidth(100);
+        colonne2.setPrefWidth(100);
+        HBox colonnes = new HBox(18, colonne1, colonne2);
+        zoneScores.getChildren().setAll(Composants.section("Classement des sites", "Score écologique : survie, régularité des suivis, diversité, statut.", new VBox(12, tete, colonnes)));
     }
 
-    private enum TypeGraphique {
-        BAR,
-        PIE
+    private HBox ligneSite(int rang, String nom, String lieu, String id, Node droite) {
+        Label numero = new Label(String.valueOf(rang));
+        numero.getStyleClass().add("titre-3");
+        numero.setMinWidth(16);
+        Label libelle = new Label(nom);
+        libelle.getStyleClass().add("titre-3");
+        Label detail = new Label(lieu);
+        detail.getStyleClass().add("texte-petit");
+        VBox textes = new VBox(1, libelle, detail);
+        HBox.setHgrow(textes, Priority.ALWAYS);
+        textes.setMinWidth(0);
+        HBox ligne = new HBox(10, numero, textes, droite);
+        ligne.setAlignment(Pos.CENTER_LEFT);
+        ligne.getStyleClass().addAll("ligne-liste", "ligne-liste-cliquable");
+        ligne.setPadding(new Insets(8, 4, 8, 4));
+        ligne.setOnMouseClicked(e -> Navigation.<CarteController>aller(Navigation.Ecran.CARTE, c -> c.focaliserSite(id)));
+        Tooltip.install(ligne, new Tooltip("Voir la fiche du site sur la carte"));
+        return ligne;
+    }
+
+    private String libelleClasse(String classe) {
+        return switch (classe) {
+            case "EXCELLENT" -> "Excellent";
+            case "BON" -> "Bon";
+            case "MOYEN" -> "Moyen";
+            case "FAIBLE" -> "Faible";
+            case "CRITIQUE" -> "Critique";
+            default -> classe;
+        };
+    }
+
+    private String varianteClasse(String classe) {
+        return switch (classe) {
+            case "EXCELLENT" -> "foret";
+            case "BON" -> "canopee";
+            case "MOYEN" -> "or";
+            case "FAIBLE" -> "laterite";
+            default -> "rouge";
+        };
+    }
+
+    private void construireFinances(JsonNode f) {
+        double finance = nombre(f, "total_finance");
+        double budget = nombre(f, "budget_total_alloue");
+        double cout = nombre(f, "cout_reel_total");
+
+        GridPane chiffres = new GridPane();
+        chiffres.setHgap(18);
+        chiffres.setVgap(10);
+        chiffres.add(chiffreFinance("Fonds mobilisés", Composants.montant(finance)), 0, 0);
+        chiffres.add(chiffreFinance("Partenaires actifs", String.valueOf((int) nombre(f, "nombre_partenaires_actifs"))), 1, 0);
+        chiffres.add(chiffreFinance("Budget alloué", Composants.montant(budget)), 0, 1);
+        chiffres.add(chiffreFinance("Coût par plant survivant", Composants.nombre(nombre(f, "cout_moyen_par_plant_survivant")) + " FCFA"), 1, 1);
+
+        double ratio = budget > 0 ? cout / budget : 0;
+        Label consommation = new Label("Dépenses réelles : " + Composants.montant(cout) + " (" + Composants.decimal(ratio * 100) + " % du budget alloué)");
+        consommation.getStyleClass().add("texte-petit");
+        HBox barre = Composants.barreProgression(Math.min(1, ratio), 420, ratio > 1 ? Color.web("#B3412E") : Color.web("#1F5136"));
+
+        HBox repartition = new HBox();
+        repartition.setMinHeight(12);
+        repartition.setMaxHeight(12);
+        VBox legendeTypes = new VBox(4);
+        String[] couleurs = {"#1F5136", "#C99A1C", "#2E6A9E", "#9A5B34", "#7FA88A"};
+        int i = 0;
+        for (JsonNode t : f.path("financement_par_type_partenaire")) {
+            double part = finance > 0 ? nombre(t, "total") / finance : 0;
+            Region segment = new Region();
+            segment.setStyle("-fx-background-color: " + couleurs[i % couleurs.length] + ";");
+            segment.prefWidthProperty().bind(repartition.widthProperty().multiply(part));
+            repartition.getChildren().add(segment);
+            Circle puce = new Circle(5, Color.web(couleurs[i % couleurs.length]));
+            Label l = new Label(libelleTypePartenaire(texte(t, "partenaire__type_partenaire")) + "  —  " + Composants.montant(nombre(t, "total"))
+                    + "  (" + Composants.decimal(part * 100) + " %)");
+            l.getStyleClass().add("texte-petit");
+            HBox item = new HBox(8, puce, l);
+            item.setAlignment(Pos.CENTER_LEFT);
+            legendeTypes.getChildren().add(item);
+            i++;
+        }
+        Rectangle clip = new Rectangle();
+        clip.setArcWidth(10);
+        clip.setArcHeight(10);
+        clip.widthProperty().bind(repartition.widthProperty());
+        clip.heightProperty().bind(repartition.heightProperty());
+        repartition.setClip(clip);
+
+        Label t = new Label("ORIGINE DES FONDS");
+        t.getStyleClass().add("cle-etiquette");
+        Button voir = Composants.bouton("Ouvrir les finances", Icones.FINANCES, "bouton-lien");
+        voir.setOnAction(e -> Navigation.aller(Navigation.Ecran.FINANCES));
+        VBox corps = new VBox(12, chiffres, new VBox(6, consommation, barre), new VBox(8, t, repartition, legendeTypes));
+        zoneFinances.getChildren().setAll(Composants.section("Financement du programme", "Bailleurs, budgets et coûts réels.", corps, voir));
+    }
+
+    private VBox chiffreFinance(String libelle, String valeur) {
+        Label l = new Label(libelle);
+        l.getStyleClass().add("texte-petit");
+        Label v = new Label(valeur);
+        v.getStyleClass().add("chiffre-moyen");
+        return new VBox(1, l, v);
+    }
+
+    private String libelleTypePartenaire(String type) {
+        return switch (type) {
+            case "BAILLEUR_INTL" -> "Bailleurs internationaux";
+            case "ONG" -> "ONG";
+            case "ENTREPRISE" -> "Entreprises (RSE)";
+            case "ETAT" -> "État gabonais";
+            default -> type;
+        };
+    }
+
+    private void construireEquipes(JsonNode r) {
+        GridPane grille = new GridPane();
+        grille.setHgap(18);
+        for (int c = 0; c < 2; c++) {
+            ColumnConstraints colonne = new ColumnConstraints();
+            colonne.setPercentWidth(50);
+            grille.getColumnConstraints().add(colonne);
+        }
+        int n = 0;
+        for (JsonNode a : r) {
+            if (n >= 8) {
+                break;
+            }
+            Label avatar = new Label(Composants.initiales(texte(a, "agent")));
+            avatar.getStyleClass().add("avatar");
+            avatar.setStyle("-fx-background-color: #E4EFDE; -fx-text-fill: #1F5136;");
+            Label nom = new Label(texte(a, "agent"));
+            nom.getStyleClass().add("titre-3");
+            Label detail = new Label((int) nombre(a, "nombre_campagnes") + " campagnes  ·  " + Composants.nombre(nombre(a, "total_plants")) + " plants");
+            detail.getStyleClass().add("texte-petit");
+            VBox textes = new VBox(1, nom, detail);
+            HBox.setHgrow(textes, Priority.ALWAYS);
+            HBox ligne = new HBox(10, avatar, textes, Composants.barreSurvie(nombreOuNull(a, "taux_survie_moyen"), 60));
+            ligne.setAlignment(Pos.CENTER_LEFT);
+            ligne.getStyleClass().add("ligne-liste");
+            grille.add(ligne, n % 2, n / 2);
+            n++;
+        }
+        zoneEquipes.getChildren().setAll(Composants.section("Équipes de terrain", "Responsables de campagnes, par volume planté et survie obtenue.", grille));
     }
 }

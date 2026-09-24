@@ -18,6 +18,7 @@ public final class PartenaireCache {
     private final Map<String, Partenaire> parId = new ConcurrentHashMap<>();
     private volatile boolean charge = false;
     private volatile boolean enCoursDeChargement = false;
+    private final java.util.List<Consumer<List<Partenaire>>> enAttente = new java.util.concurrent.CopyOnWriteArrayList<>();
 
     private PartenaireCache() {
     }
@@ -28,9 +29,12 @@ public final class PartenaireCache {
 
     public void assurerCharge(Consumer<List<Partenaire>> auChargement) {
         if (charge) {
-            auChargement.accept(List.copyOf(parId.values()));
+            List<Partenaire> liste = new java.util.ArrayList<>(parId.values());
+            liste.sort(java.util.Comparator.comparing(Object::toString, String.CASE_INSENSITIVE_ORDER));
+            auChargement.accept(List.copyOf(liste));
             return;
         }
+        enAttente.add(auChargement);
         if (enCoursDeChargement) {
             return;
         }
@@ -45,7 +49,11 @@ public final class PartenaireCache {
                 }
                 charge = true;
                 enCoursDeChargement = false;
-                Platform.runLater(() -> auChargement.accept(List.copyOf(parId.values())));
+                List<Partenaire> liste = new java.util.ArrayList<>(parId.values());
+                liste.sort(java.util.Comparator.comparing(Object::toString, String.CASE_INSENSITIVE_ORDER));
+                List<Consumer<List<Partenaire>>> abonnes = new java.util.ArrayList<>(enAttente);
+                enAttente.clear();
+                Platform.runLater(() -> abonnes.forEach(a -> a.accept(List.copyOf(liste))));
             } catch (Exception e) {
                 enCoursDeChargement = false;
             }

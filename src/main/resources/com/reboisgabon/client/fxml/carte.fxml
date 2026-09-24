@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.web.WebView?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<HBox fx:id="racine" spacing="0" styleClass="feuille" minHeight="560"
+      xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.reboisgabon.client.controllers.sites.CarteController">
+
+    <StackPane fx:id="zoneCarte" HBox.hgrow="ALWAYS" minWidth="420">
+        <WebView fx:id="vueCarte" minHeight="400"/>
+
+        <HBox fx:id="barreCarte" spacing="8" alignment="CENTER_LEFT" StackPane.alignment="TOP_LEFT" pickOnBounds="false" maxHeight="-Infinity">
+            <padding><Insets top="12" left="12" right="12"/></padding>
+            <HBox styleClass="legende-carte" alignment="CENTER_LEFT" spacing="8">
+                <FontIcon iconLiteral="mdi2m-map-marker-radius-outline" iconSize="16" iconColor="#1F5136"/>
+                <Label fx:id="libelleZone" styleClass="titre-3" text="Gabon — vue nationale"/>
+                <Button fx:id="boutonVueNationale" onAction="#vueNationale" styleClass="bouton-lien" text="Recentrer">
+                    <graphic><FontIcon iconLiteral="mdi2c-crosshairs"/></graphic>
+                </Button>
+            </HBox>
+        </HBox>
+
+        <HBox spacing="2" styleClass="segment" StackPane.alignment="TOP_RIGHT" maxWidth="-Infinity" maxHeight="-Infinity">
+            <StackPane.margin><Insets top="12" right="12"/></StackPane.margin>
+            <ToggleButton fx:id="fondPlan" text="Plan" selected="true" onAction="#fondPlan"/>
+            <ToggleButton fx:id="fondSatellite" text="Satellite" onAction="#fondSatellite"/>
+            <ToggleButton fx:id="fondEpure" text="Épuré" onAction="#fondEpure"/>
+        </HBox>
+
+        <VBox fx:id="legende" spacing="6" styleClass="legende-carte" StackPane.alignment="BOTTOM_LEFT" maxWidth="-Infinity" maxHeight="-Infinity" pickOnBounds="false">
+            <StackPane.margin><Insets bottom="22" left="12"/></StackPane.margin>
+        </VBox>
+    </StackPane>
+
+    <ScrollPane fx:id="defilementFiche" fitToWidth="true" hbarPolicy="NEVER" prefWidth="372" minWidth="372" maxWidth="372" styleClass="panneau-fiche">
+        <VBox fx:id="fiche" spacing="16">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+        </VBox>
+    </ScrollPane>
+</HBox>

@@ -1,23 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<TabPane tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
-    <Tab text="Profil">
-        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
-            <fx:include source="parametre-profil.fxml"/>
-        </ScrollPane>
-    </Tab>
-    <Tab text="Mot de passe">
-        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
-            <fx:include source="parametre-mot-de-passe.fxml"/>
-        </ScrollPane>
-    </Tab>
-    <Tab text="2FA">
-        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
-            <fx:include source="parametre-2fa.fxml"/>
-        </ScrollPane>
-    </Tab>
-</TabPane>
+<VBox spacing="18" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.reboisgabon.client.controllers.parametres.ParametresController">
+    <HBox spacing="14" alignment="CENTER_LEFT" styleClass="entete-page">
+        <StackPane styleClass="icone-page"><FontIcon iconLiteral="mdi2c-cog-outline"/></StackPane>
+        <VBox spacing="2" HBox.hgrow="ALWAYS">
+            <Label styleClass="titre-page" text="Paramètres du compte"/>
+            <Label styleClass="sous-titre" text="Vos informations, la sécurité de votre accès et les droits attachés à votre rôle." wrapText="true"/>
+        </VBox>
+    </HBox>
+
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+        <VBox spacing="14" prefWidth="270" minWidth="270" maxWidth="270">
+            <VBox fx:id="carteIdentite" spacing="10" alignment="CENTER" styleClass="feuille">
+                <padding><Insets top="22" right="18" bottom="18" left="18"/></padding>
+                <Label fx:id="libelleAvatar" styleClass="avatar-grand" text="RG"/>
+                <Label fx:id="libelleNom" styleClass="titre-section" text="Utilisateur" wrapText="true"/>
+                <Label fx:id="libelleEmail" styleClass="texte-muet" text="—"/>
+                <HBox fx:id="zonePastilles" spacing="6" alignment="CENTER"/>
+            </VBox>
+            <VBox spacing="2" styleClass="nav-parametres">
+                <Button fx:id="ongletProfil" maxWidth="Infinity" onAction="#afficherProfil" styleClass="nav-button" text="Profil">
+                    <graphic><FontIcon iconLiteral="mdi2a-account-outline"/></graphic>
+                </Button>
+                <Button fx:id="ongletMotDePasse" maxWidth="Infinity" onAction="#afficherMotDePasse" styleClass="nav-button" text="Mot de passe">
+                    <graphic><FontIcon iconLiteral="mdi2k-key-outline"/></graphic>
+                </Button>
+                <Button fx:id="ongletDeuxFacteurs" maxWidth="Infinity" onAction="#afficherDeuxFacteurs" styleClass="nav-button" text="Double authentification">
+                    <graphic><FontIcon iconLiteral="mdi2s-shield-lock-outline"/></graphic>
+                </Button>
+                <Button fx:id="ongletSession" maxWidth="Infinity" onAction="#afficherSession" styleClass="nav-button" text="Session et permissions">
+                    <graphic><FontIcon iconLiteral="mdi2s-shield-account-outline"/></graphic>
+                </Button>
+            </VBox>
+        </VBox>
+
+        <StackPane HBox.hgrow="ALWAYS" alignment="TOP_LEFT">
+            <fx:include fx:id="pageProfil" source="parametre-profil.fxml"/>
+            <fx:include fx:id="pageMotDePasse" source="parametre-mot-de-passe.fxml"/>
+            <fx:include fx:id="pageDeuxFacteurs" source="parametre-2fa.fxml"/>
+            <VBox fx:id="pageSession" spacing="0" styleClass="feuille" maxWidth="720" maxHeight="-Infinity"/>
+        </StackPane>
+    </HBox>
+</VBox>

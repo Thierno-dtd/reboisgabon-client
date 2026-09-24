@@ -1,0 +1,84 @@
+{
+  "title": "Univers visuel de ReboisGabon",
+  "question": "Le tirage propose « Planche d'herbier ». Garder, prendre une alternative, ou relancer.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Planche d'herbier national",
+      "kicker": "THE ROLL",
+      "lineage": "Herbier National du Gabon : planches montées, étiquettes de détermination, n° de collecte",
+      "thesis": "Chaque site, campagne et essence se lit comme un spécimen catalogué : planche blanche, feuille pressée dessinée, étiquette normalisée en bas à droite.",
+      "palette": ["#F7F8F4", "#1E3A2B", "#3F7D4E", "#C9A227", "#2F5E8C", "#8A5A3B"],
+      "materials": ["papier d'archive blanc", "feuilles pressées dessinées au trait", "étiquettes de détermination", "tampon de collection"],
+      "viewport": "Tableau de bord clair : bandeau-planche avec illustrations d'okoumé, moabi et padouk, compteurs d'arbres en chiffres tabulaires, carte des 9 provinces et étiquettes-spécimen pour les sites.",
+      "risk": "Peut tourner au rétro « papier crème + serif » si les planches ne sont pas franches, blanches et fonctionnelles.",
+      "raised": [
+        {"from": "challenger-nixie", "raise": "Les quantités deviennent l'interface : chiffres tabulaires à positions fixes pour les plants, hectares et taux de survie."},
+        {"from": "challenger-metro", "raise": "Une vraie rampe typographique : les grands chiffres portent la page, le chrome est supprimé."},
+        {"from": "challenger-origami", "raise": "Une colonne de marge numérotée pour le cycle de vie d'une campagne : plantation, contrôles, survie."}
+      ]
+    },
+    {
+      "id": "model-pick",
+      "label": "Carte d'aménagement forestier",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Plans d'aménagement, cartes IGN, cartouches de légende",
+      "thesis": "L'application entière se lit comme une carte : parcelles hachurées, courbes de niveau, cartouche de légende, la carte en premier plan.",
+      "palette": ["#F4F6F1", "#20392B", "#6FA36B", "#D8C27A", "#3B6E9C"],
+      "materials": ["hachures", "courbes de niveau", "cartouche"],
+      "viewport": "La carte du Gabon occupe l'écran d'accueil, les indicateurs dans un cartouche latéral.",
+      "risk": "Proche de l'esthétique SIG familière ; c'est aussi là qu'atterrissent la plupart des outils du secteur."
+    },
+    {
+      "id": "challenger-metro",
+      "label": "Tuiles Metro",
+      "verdict": "declined",
+      "lineage": "Windows Phone Metro",
+      "thesis": "Tuiles plates et typographie géante sur fond noir.",
+      "palette": ["#000000", "#00ABA9", "#A4C400", "#FFFFFF"],
+      "materials": ["tuiles plates"],
+      "viewport": "Panorama de tuiles vivantes.",
+      "risk": "Fond noir et néon : trop loin d'un ministère.",
+      "case": "Perd sur la crédibilité institutionnelle et sur la lisibilité des données.",
+      "kept": "Le courage de la rampe typographique."
+    },
+    {
+      "id": "challenger-nixie",
+      "label": "Compteur Nixie",
+      "verdict": "declined",
+      "lineage": "compteurs de laboratoire",
+      "thesis": "Chaque indicateur est un banc de tubes lumineux.",
+      "palette": ["#111111", "#FF7A1A", "#8A8F94"],
+      "materials": ["verre", "acier"],
+      "viewport": "Bancs de chiffres orange.",
+      "risk": "Gadget et sombre.",
+      "case": "Perd sur les deux axes.",
+      "kept": "Les quantités sont l'interface, en chiffres à positions fixes."
+    },
+    {
+      "id": "challenger-origami",
+      "label": "Grue en origami",
+      "verdict": "declined",
+      "lineage": "diagrammes de pliage",
+      "thesis": "Une feuille qui se plie en 32 étapes.",
+      "palette": ["#D23B2A", "#F4EFE6", "#C9A227"],
+      "materials": ["washi"],
+      "viewport": "Séquence de plis numérotés.",
+      "risk": "Sans rapport avec la forêt gabonaise.",
+      "case": "Perd sur les deux axes.",
+      "kept": "La colonne d'étapes numérotées pour un cycle de vie."
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "code", "toggle": false},
+  "canon": true,
+  "canonCard": {
+    "label": "Le standard du secteur",
+    "thesis": "Un tableau de bord SaaS clair, sidebar sombre et accents verts, exécuté proprement.",
+    "palette": ["#FFFFFF", "#111827", "#16A34A"],
+    "materials": ["grille propre", "cartes"],
+    "viewport": "Sidebar, indicateurs, graphiques : ce qu'on attend.",
+    "risk": "Indiscernable de la concurrence, par construction."
+  },
+  "steer": true
+}

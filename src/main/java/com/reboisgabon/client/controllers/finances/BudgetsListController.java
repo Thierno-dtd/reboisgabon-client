@@ -1,5 +1,7 @@
 package com.reboisgabon.client.controllers.finances;
 
+import com.reboisgabon.client.ui.Cellules;
+import com.reboisgabon.client.ui.Composants;
 import com.reboisgabon.client.api.endpoints.BudgetsApi;
 import com.reboisgabon.client.dto.campagnes.Campagne;
 import com.reboisgabon.client.dto.finances.BudgetCampagne;
@@ -67,6 +69,16 @@ public class BudgetsListController implements Initializable {
         boutonNouveauBudget.setVisible(peutCreer);
         boutonNouveauBudget.setManaged(peutCreer);
 
+        Cellules.rendu(colonneCampagne, Cellules::principal);
+        Cellules.rendu(colonneMontantAlloue, v -> {
+            Double n = Cellules.enNombre(v);
+            return Cellules.aDroite(n == null ? v.toString() : Composants.nombre(n) + " FCFA");
+        });
+        Cellules.rendu(colonneMontantReel, v -> {
+            Double n = Cellules.enNombre(v);
+            return Cellules.aDroite(n == null ? v.toString() : Composants.nombre(n) + " FCFA");
+        });
+        Cellules.preparer(tableBudgets, "Aucun budget", "Associez un budget prévisionnel à chaque campagne.");
         FiltreAutoUtil.surValeur(comboCampagne, this::rechercher);
 
         rechercher();

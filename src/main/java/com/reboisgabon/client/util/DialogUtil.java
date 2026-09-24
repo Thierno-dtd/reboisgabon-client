@@ -25,6 +25,14 @@ public final class DialogUtil {
             Stage fenetreModale = new Stage();
             fenetreModale.setTitle(titre);
             fenetreModale.initModality(Modality.APPLICATION_MODAL);
+            Stage principal = SceneNavigator.getInstance().getStagePrincipal();
+            if (principal != null && principal.isShowing()) {
+                fenetreModale.initOwner(principal);
+                fenetreModale.getIcons().setAll(principal.getIcons());
+            }
+            if (!racine.getStyleClass().contains("fond-application")) {
+                racine.getStyleClass().add("fond-application");
+            }
             Scene scene = new Scene(racine);
             scene.getStylesheets().add(DialogUtil.class.getResource("/com/reboisgabon/client/theme/theme.css").toExternalForm());
             fenetreModale.setScene(scene);

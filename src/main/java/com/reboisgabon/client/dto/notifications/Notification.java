@@ -1,18 +1,17 @@
 package com.reboisgabon.client.dto.notifications;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 public class Notification {
 
     private String id;
+    private String titre;
     private String message;
-
-    @JsonProperty("est_lue")
+    private String typeNotification;
     private boolean lue;
-
-    private ZonedDateTime dateCreation;
+    private String lienObjetId;
+    private String lienModele;
+    private OffsetDateTime createdAt;
 
     public String getId() {
         return id;
@@ -20,6 +19,14 @@ public class Notification {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getTitre() {
+        return titre;
+    }
+
+    public void setTitre(String titre) {
+        this.titre = titre;
     }
 
     public String getMessage() {
@@ -30,6 +37,14 @@ public class Notification {
         this.message = message;
     }
 
+    public String getTypeNotification() {
+        return typeNotification;
+    }
+
+    public void setTypeNotification(String typeNotification) {
+        this.typeNotification = typeNotification;
+    }
+
     public boolean isLue() {
         return lue;
     }
@@ -38,11 +53,27 @@ public class Notification {
         this.lue = lue;
     }
 
-    public ZonedDateTime getDateCreation() {
-        return dateCreation;
+    public String getLienObjetId() {
+        return lienObjetId;
     }
 
-    public void setDateCreation(ZonedDateTime dateCreation) {
-        this.dateCreation = dateCreation;
+    public void setLienObjetId(String lienObjetId) {
+        this.lienObjetId = lienObjetId;
+    }
+
+    public String getLienModele() {
+        return lienModele;
+    }
+
+    public void setLienModele(String lienModele) {
+        this.lienModele = lienModele;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.StackPane?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.control.Label?>
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -10,25 +13,24 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="18" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<VBox spacing="16" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.reboisgabon.client.controllers.finances.PartenairesListController">
-    <HBox spacing="12" styleClass="carte-verre">
-        <padding>
-            <Insets bottom="16" left="16" right="16" top="16"/>
-        </padding>
-        <TextField fx:id="champRecherche" promptText="Rechercher..." styleClass="champ-texte" HBox.hgrow="ALWAYS"/>
-        <ComboBox fx:id="comboType" prefWidth="160" promptText="Type" styleClass="champ-texte"/>
-        <Button onAction="#rechercher" styleClass="bouton-primaire" text="Rechercher"/>
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="barre-filtres">
+        <FontIcon iconLiteral="mdi2f-filter-variant" iconSize="18" iconColor="#66766A"/>
+        <TextField fx:id="champRecherche" promptText="Rechercher..." HBox.hgrow="ALWAYS"/>
+        <ComboBox fx:id="comboType" prefWidth="160" promptText="Type"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="boutonNouveauPartenaire" onAction="#ouvrirCreation" styleClass="bouton-primaire" text="Nouveau partenaire"/>
+        <Button fx:id="boutonNouveauPartenaire" onAction="#ouvrirCreation" styleClass="bouton-primaire" text="Nouveau partenaire">
+            <graphic><FontIcon iconLiteral="mdi2p-plus"/></graphic>
+        </Button>
     </HBox>
-    <TableView fx:id="tablePartenaires" styleClass="table-generique" VBox.vgrow="ALWAYS">
+    <TableView fx:id="tablePartenaires" minHeight="340" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="colonneNom" prefWidth="200" text="Nom"/>
-            <TableColumn fx:id="colonneType" prefWidth="150" text="Type"/>
-            <TableColumn fx:id="colonnePays" prefWidth="150" text="Pays"/>
-            <TableColumn fx:id="colonneActif" prefWidth="80" text="Actif"/>
-            <TableColumn fx:id="colonneActions" prefWidth="120" text="Actions"/>
+            <TableColumn fx:id="colonneNom" prefWidth="200" text="NOM"/>
+            <TableColumn fx:id="colonneType" prefWidth="150" text="TYPE"/>
+            <TableColumn fx:id="colonnePays" prefWidth="150" text="PAYS"/>
+            <TableColumn fx:id="colonneActif" prefWidth="80" text="ACTIF"/>
+            <TableColumn fx:id="colonneActions" prefWidth="120" text=""/>
         </columns>
     </TableView>
 </VBox>
